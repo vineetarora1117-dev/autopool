@@ -1,0 +1,26 @@
+{
+  "first_names": [
+    "Aarav", "Vivaan", "Aditya", "Vihaan", "Arjun", "Sai", "Reyansh", "Ayaan", "Krishna", "Ishaan",
+    "Shaurya", "Atharv", "Advik", "Pranav", "Rishabh", "Kabir", "Ritvik", "Dhruv", "Aryan", "Rudra",
+    "Om", "Ansh", "Rohan", "Rahul", "Amit", "Vikram", "Surya", "Karan", "Ravi", "Sanjay",
+    "Anil", "Deepak", "Vivek", "Ashish", "Ajay", "Vijay", "Raj", "Samir", "Gaurav", "Manish",
+    "Nikhil", "Praveen", "Suresh", "Ramesh", "Mahesh", "Dinesh", "Kunal", "Harish", "Mohit", "Tarun",
+    "Diya", "Sanya", "Kavya", "Aadhya", "Ananya", "Myra", "Kiara", "Vanya", "Riya", "Aanya",
+    "Navya", "Amaira", "Prisha", "Zara", "Mahi", "Avni", "Sara", "Nandini", "Tanya", "Pari",
+    "Neha", "Priya", "Anjali", "Pooja", "Sneha", "Aarti", "Kirti", "Shruti", "Swati", "Nisha",
+    "Megha", "Shikha", "Jyoti", "Rachna", "Preeti", "Komal", "Simran", "Payal", "Anu", "Divya",
+    "Richa", "Sonal", "Monika", "Poonam", "Shweta", "Reena", "Bhavna", "Anita", "Sunita", "Kiran"
+  ],
+  "surnames": [
+    "Sharma", "Singh", "Patel", "Kumar", "Gupta", "Reddy", "Rao", "Jain", "Desai", "Mehta",
+    "Bose", "Das", "Mukherjee", "Banerjee", "Chatterjee", "Nair", "Pillai", "Menon", "Iyer", "Iyengar",
+    "Verma", "Yadav", "Chauhan", "Bhatia", "Kapoor", "Chopra", "Malhotra", "Srivastava", "Agarwal", "Bansal",
+    "Joshi", "Kulkarni", "Deshpande", "Gokhale", "Bhattacharya", "Sen", "Roy", "Nandi", "Ghosh", "Mishra",
+    "Tiwari", "Pandey", "Shukla", "Dubey", "Dixit", "Goswami", "Sinha", "Thakur", "Rathore", "Rajput",
+    "Saini", "Garg", "Mittal", "Goyal", "Mahajan", "Kaur", "Ahluwalia", "Gill", "Sandhu", "Brar",
+    "Dhillon", "Khatri", "Arora", "Suri", "Bhasin", "Kohli", "Narang", "Oberoi", "Sethi", "Mehra",
+    "Ahuja", "Chawla", "Bhandari", "Jha", "Thapa", "Chettri", "Gowda", "Hegde", "Shetty", "Kamat",
+    "Prabhu", "Kini", "Shenoy", "Pai", "Naidu", "Chowdary", "Goud", "Venkatesh", "Krishnan", "Rajan",
+    "Swaminathan", "Illa", "Babu", "Varghese", "Mathew", "Thomas", "Kurien", "Panicker", "Kurup", "Balakrishnan"
+  ]
+}
