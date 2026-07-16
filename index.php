@@ -380,7 +380,11 @@
         }
 
         async function resetMatrix() {
-            if (confirm("Are you sure you want to clear the entire matrix?")) {
+            if (confirm("Are you sure you want to clear the entire matrix and database?")) {
+                const fd = new FormData();
+                fd.append('action', 'clear_db');
+                await fetch('api.php', { method: 'POST', body: fd });
+                
                 document.getElementById('tree-container').innerHTML = '';
                 document.getElementById('clearBtn').style.display = 'none';
                 document.getElementById('startContainer').style.display = 'block';

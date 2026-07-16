@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     type ENUM('sponsor', 'autopool', 'level', 'reward') NOT NULL,
     level INT DEFAULT 0,
     status ENUM('completed', 'pending') DEFAULT 'completed',
+    blocked_by_user_id INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (from_user_id) REFERENCES users(id)

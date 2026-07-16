@@ -43,6 +43,7 @@ if ($action === 'start_simulation') {
     // Automatically add the status and reward_level columns if they are missing
     try {
         $pdo->exec("ALTER TABLE transactions ADD COLUMN status ENUM('completed', 'pending') DEFAULT 'completed'");
+        $pdo->exec("ALTER TABLE transactions ADD COLUMN blocked_by_user_id INT DEFAULT NULL");
     } catch (PDOException $e) { }
 
     try {
@@ -68,6 +69,33 @@ if ($action === 'start_simulation') {
     $stmt->execute([$name]);
 
     echo json_encode(['success' => true, 'message' => 'Simulation started. Root user created.']);
+    exit;
+}
+
+if ($action === 'clear_db') {
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE transactions; TRUNCATE TABLE users; SET FOREIGN_KEY_CHECKS = 1;");
+    try { $pdo->exec("TRUNCATE TABLE company_wallet;"); } catch (PDOException $e) { }
+    try {
+        $pdo->exec("ALTER TABLE transactions ADD COLUMN status ENUM('completed', 'pending') DEFAULT 'completed'");
+        $pdo->exec("ALTER TABLE transactions ADD COLUMN blocked_by_user_id INT DEFAULT NULL");
+    } catch (PDOException $e) { }
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN reward_level INT DEFAULT 0");
+    } catch (PDOException $e) { }
+    try {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS db_auth (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                passcode VARCHAR(50) NOT NULL
+            )
+        ");
+        $stmt = $pdo->query("SELECT COUNT(*) FROM db_auth");
+        if ($stmt->fetchColumn() == 0) {
+            $pdo->exec("INSERT INTO db_auth (passcode) VALUES ('000')");
+        }
+    } catch (PDOException $e) { }
+    
+    echo json_encode(['success' => true]);
     exit;
 }
 
@@ -125,8 +153,8 @@ if ($action === 'add_user') {
 
         // Check if the upline just completed a pair (downlines count became 2)
         if ($downlines_count == 1) {
-            // Release pending transactions for the upline
-            $stmt = $pdo->prepare("SELECT id, amount FROM transactions WHERE user_id = ? AND type IN ('autopool', 'level') AND status = 'pending'");
+            // Release pending transactions blocked by this upline
+            $stmt = $pdo->prepare("SELECT id, amount, user_id FROM transactions WHERE blocked_by_user_id = ? AND status = 'pending'");
             $stmt->execute([$upline_id]);
             $pending_txs = $stmt->fetchAll();
 
@@ -134,12 +162,14 @@ if ($action === 'add_user') {
                 // Update transaction status
                 $pdo->prepare("UPDATE transactions SET status = 'completed' WHERE id = ?")->execute([$tx['id']]);
                 // Add earnings
-                $pdo->prepare("UPDATE users SET total_earnings = total_earnings + ? WHERE id = ?")->execute([$tx['amount'], $upline_id]);
+                $pdo->prepare("UPDATE users SET total_earnings = total_earnings + ? WHERE id = ?")->execute([$tx['amount'], $tx['user_id']]);
             }
         }
 
         // 4. Autopool Distribution ($4 over 8 levels)
         $current_upline = $upline_id;
+        $current_blocker = null;
+        
         for ($level = 1; $level <= 8; $level++) {
             if (!$current_upline)
                 break;
@@ -151,17 +181,21 @@ if ($action === 'add_user') {
             $stmt->execute([$current_upline]);
             $children_count = $stmt->fetchColumn();
 
-            if ($children_count >= 2) {
+            if ($children_count < 2) {
+                $current_blocker = $current_upline;
+            }
+
+            if ($current_blocker !== null) {
+                // Insert pending transaction
+                $stmt = $pdo->prepare("INSERT INTO transactions (user_id, from_user_id, amount, type, level, status, blocked_by_user_id) VALUES (?, ?, ?, 'autopool', ?, 'pending', ?)");
+                $stmt->execute([$current_upline, $new_user_id, $amount, $level, $current_blocker]);
+            } else {
                 // Insert completed transaction
                 $stmt = $pdo->prepare("INSERT INTO transactions (user_id, from_user_id, amount, type, level, status) VALUES (?, ?, ?, 'autopool', ?, 'completed')");
                 $stmt->execute([$current_upline, $new_user_id, $amount, $level]);
 
                 // Update earnings
                 $pdo->prepare("UPDATE users SET total_earnings = total_earnings + ? WHERE id = ?")->execute([$amount, $current_upline]);
-            } else {
-                // Insert pending transaction
-                $stmt = $pdo->prepare("INSERT INTO transactions (user_id, from_user_id, amount, type, level, status) VALUES (?, ?, ?, 'autopool', ?, 'pending')");
-                $stmt->execute([$current_upline, $new_user_id, $amount, $level]);
             }
 
             // Fetch next upline
@@ -174,12 +208,21 @@ if ($action === 'add_user') {
         // 5. Level Income Distribution ($1 over 10 levels = $0.10 per level)
         $current_sponsor = $sponsor_id;
         $level_amount = 0.1000;
+        $current_level_blocker = null;
         
         for ($lvl = 1; $lvl <= 10; $lvl++) {
             $qualifying_user = null; // null means flushed to company wallet
-            $is_pending = false;
 
             if ($current_sponsor) {
+                // Check if they have a complete binary pair (Gateway logic)
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE upline_id = ?");
+                $stmt->execute([$current_sponsor]);
+                $children_count = $stmt->fetchColumn();
+                
+                if ($children_count < 2) {
+                    $current_level_blocker = $current_sponsor;
+                }
+
                 // Check if sponsor's reward level qualifies them for this level
                 $stmt = $pdo->prepare("SELECT reward_level FROM users WHERE id = ?");
                 $stmt->execute([$current_sponsor]);
@@ -187,23 +230,14 @@ if ($action === 'add_user') {
 
                 if ($reward_level >= $lvl) {
                     $qualifying_user = $current_sponsor;
-                    
-                    // Check if they have a complete binary pair
-                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE upline_id = ?");
-                    $stmt->execute([$current_sponsor]);
-                    $children_count = $stmt->fetchColumn();
-                    
-                    if ($children_count < 2) {
-                        $is_pending = true;
-                    }
                 }
             }
 
             if ($qualifying_user) {
-                if ($is_pending) {
+                if ($current_level_blocker !== null) {
                     // Insert pending transaction for the qualified sponsor
-                    $stmt = $pdo->prepare("INSERT INTO transactions (user_id, from_user_id, amount, type, level, status) VALUES (?, ?, ?, 'level', ?, 'pending')");
-                    $stmt->execute([$qualifying_user, $new_user_id, $level_amount, $lvl]);
+                    $stmt = $pdo->prepare("INSERT INTO transactions (user_id, from_user_id, amount, type, level, status, blocked_by_user_id) VALUES (?, ?, ?, 'level', ?, 'pending', ?)");
+                    $stmt->execute([$qualifying_user, $new_user_id, $level_amount, $lvl, $current_level_blocker]);
                 } else {
                     // Insert completed transaction
                     $stmt = $pdo->prepare("INSERT INTO transactions (user_id, from_user_id, amount, type, level, status) VALUES (?, ?, ?, 'level', ?, 'completed')");

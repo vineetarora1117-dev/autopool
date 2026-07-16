@@ -30,10 +30,10 @@ $user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-light); padding: 2rem; display: flex; justify-content: center; min-height: 100vh;}
         
-        .layout-wrapper { display: flex; gap: 2rem; max-width: 1200px; width: 100%; }
+        .layout-wrapper { display: flex; flex-direction: column; gap: 2rem; max-width: 1200px; width: 100%; }
         
-        .sidebar { width: 300px; display: flex; flex-direction: column; gap: 1rem; }
-        .main-content { flex: 1; background: var(--bg-card); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .dashboard-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .main-content { flex: 1; background: var(--bg-card); padding: 2rem; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 25px 50px rgba(0,0,0,0.5); display: none; }
         
         h2 { margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; font-size: 1.8rem; }
         
@@ -69,11 +69,7 @@ $user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
 </head>
 <body>
     <div class="layout-wrapper">
-        <div class="sidebar">
-            <div class="tab active" id="tab-all" onclick="filterTransactions('all')">
-                <div class="tab-title">Cumulative Earnings</div>
-                <div class="tab-amount" id="amt-all">$0.0000</div>
-            </div>
+        <div class="dashboard-cards">
             <div class="tab tab-sponsor" id="tab-sponsor" onclick="filterTransactions('sponsor')">
                 <div class="tab-title">Sponsor Earnings</div>
                 <div class="tab-amount" id="amt-sponsor">$0.0000</div>
@@ -85,6 +81,10 @@ $user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
             <div class="tab tab-level" id="tab-level" onclick="filterTransactions('level')">
                 <div class="tab-title">Level Income</div>
                 <div class="tab-amount" id="amt-level">$0.0000</div>
+            </div>
+            <div class="tab tab-all" id="tab-all" onclick="filterTransactions('all')">
+                <div class="tab-title">Cumulative Earnings</div>
+                <div class="tab-amount" id="amt-all">$0.0000</div>
             </div>
         </div>
         
@@ -109,7 +109,7 @@ $user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
     <script>
         const userId = <?php echo $user_id; ?>;
         let allTransactions = [];
-        let currentFilter = 'all';
+        let currentFilter = null;
         
         async function loadStatement() {
             if (!userId) {
@@ -126,7 +126,7 @@ $user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
                 allTransactions = data.transactions;
                 
                 calculateTotals();
-                renderTable();
+                // We do not call renderTable() here because it's hidden by default
             } else {
                 document.getElementById('statementBody').innerHTML = `<tr><td colspan="4" style="text-align:center; color: red;">Error: ${data.error}</td></tr>`;
             }
@@ -153,6 +153,7 @@ $user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
             currentFilter = type;
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${type}`).classList.add('active');
+            document.querySelector('.main-content').style.display = 'block';
             renderTable();
         }
         
