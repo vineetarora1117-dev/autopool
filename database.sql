@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     upline_id INT DEFAULT NULL,
     position ENUM('left', 'right') DEFAULT NULL,
     total_earnings DECIMAL(10, 4) DEFAULT 0.0000,
+    reward_level INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -18,6 +19,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     amount DECIMAL(10, 4) NOT NULL,
     type ENUM('sponsor', 'autopool', 'level', 'reward') NOT NULL,
     level INT DEFAULT 0,
+    status ENUM('completed', 'pending') DEFAULT 'completed',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (from_user_id) REFERENCES users(id)

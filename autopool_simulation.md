@@ -94,5 +94,18 @@ When a user joins, their **$4 Autopool fee** is distributed upwards to 8 levels 
 * **Level 5 to Level 8 Uplines:** Receive **$0.875** each (4 levels * $0.875 = $3.50)
 * **Total Distributed:** $0.50 + $3.50 = **$4.00**
 
+## 6. Level Income Conditions ($1)
+
+The $1 allocated to Level Income is distributed based on the level of the joining member in relation to their sponsor uplines.
+To qualify for level income from a specific level, a user must meet the **direct referral criteria**:
+* **Level 1:** Requires 2 direct referrals
+* **Level 2:** Requires 4 direct referrals (2 additional)
+* **Level 3:** Requires 6 direct referrals (2 additional)
+* ... and so on ...
+* **Level 10:** Requires 20 direct referrals
+
+If a user does not meet the direct referral condition for a specific level, they will not receive the level income from that level.
+
 ## Next Steps
-- Define the **Level ($1)** and **Reward ($1)** criteria.
+- Implement the **Level Income ($1)** logic into `api.php`.
+- Define the **Reward ($1)** criteria.
