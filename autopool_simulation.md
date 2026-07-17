@@ -9,7 +9,7 @@
 * **Sponsor (Direct Referral):** $5
 * **Autopool:** $4
 * **Level Income:** $1 (Pending further clarification)
-* **Reward:** $1 (Pending further clarification)
+* **Reward:** $1 (Paid into a reward fund/pool and awarded based on Sponsor Tree leg milestones)
 * **Total Allocated:** $11
 
 ---
@@ -106,6 +106,31 @@ To qualify for level income from a specific level, a user must meet the **direct
 
 If a user does not meet the direct referral condition for a specific level, they will not receive the level income from that level.
 
+## 7. Reward System Rules ($1)
+
+The $1 Reward fee from each entry goes into a reward reserve fund. Users earn rewards from this fund based on their own sponsor network (referral tree) legs:
+
+* **Sponsor Legs Definition:** Each direct referral starts a separate "leg" for a user.
+* **Qualification Metric:** Targets are evaluated using the user's **Strong Leg** (the direct referral leg with the largest team size) vs. **Other Legs Combined** (the sum of the team sizes of all other direct referrals).
+* **Team Size Tracking:** A member's team size is the total count of their referral downline recursively.
+
+### Reward Levels & Targets (Cumulative)
+
+| Level | Additional Leg Requirement | Cumulative Target (Strong + Others) | Reward Amount |
+| :---: | :------------------------: | :---------------------------------: | :-----------: |
+|   1   |          15 + 15           |               15 + 15               |      $15      |
+|   2   |           +3 + +3          |               18 + 18               |      $3       |
+|   3   |           +6 + +6          |               24 + 24               |      $6       |
+|   4   |          +12 + +12         |               36 + 36               |      $12      |
+|   5   |          +24 + +24         |               60 + 60               |      $24      |
+|   6   |          +48 + +48         |              108 + 108              |      $48      |
+|   7   |          +96 + +96         |              204 + 204              |      $96      |
+|   8   |         +192 + +192        |              396 + 396              |     $192      |
+|   9   |         +384 + +384        |              780 + 780              |     $384      |
+|  10   |         +768 + +768        |             1548 + 1548             |     $768      |
+
 ## Next Steps
-- Implement the **Level Income ($1)** logic into `api.php`.
-- Define the **Reward ($1)** criteria.
+- Create database tables for storing reward levels configuration (`reward_levels`) and user achievements (`user_rewards`).
+- Implement tracking of referral team size in the database (`sponsor_team_size` on `users` table, updated recursively on sign-up).
+- Implement the Reward qualification checker and distribution code.
+

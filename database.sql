@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     position ENUM('left', 'right') DEFAULT NULL,
     total_earnings DECIMAL(10, 4) DEFAULT 0.0000,
     reward_level INT DEFAULT 0,
+    sponsor_team_size INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -25,3 +26,21 @@ CREATE TABLE IF NOT EXISTS transactions (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (from_user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS reward_targets (
+    level INT PRIMARY KEY,
+    strong_leg_target INT NOT NULL,
+    other_legs_target INT NOT NULL,
+    reward_amount DECIMAL(10, 4) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_rewards (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    level INT NOT NULL,
+    amount DECIMAL(10, 4) NOT NULL,
+    achieved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    UNIQUE KEY unique_user_level (user_id, level)
+);
+

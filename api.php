@@ -34,7 +34,11 @@ function getRandomName()
 
 if ($action === 'start_simulation') {
     // Reset the database
-    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE transactions; TRUNCATE TABLE users; SET FOREIGN_KEY_CHECKS = 1;");
+    try {
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE transactions; TRUNCATE TABLE users; TRUNCATE TABLE user_rewards; SET FOREIGN_KEY_CHECKS = 1;");
+    } catch (PDOException $e) {
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE transactions; TRUNCATE TABLE users; SET FOREIGN_KEY_CHECKS = 1;");
+    }
     
     try {
         $pdo->exec("TRUNCATE TABLE company_wallet;");
@@ -50,6 +54,10 @@ if ($action === 'start_simulation') {
         $pdo->exec("ALTER TABLE users ADD COLUMN reward_level INT DEFAULT 0");
     } catch (PDOException $e) { }
 
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN sponsor_team_size INT DEFAULT 0");
+    } catch (PDOException $e) { }
+
     // Create company wallet table if missing
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS company_wallet (
@@ -63,6 +71,47 @@ if ($action === 'start_simulation') {
         )
     ");
 
+    // Create reward_targets table
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS reward_targets (
+            level INT PRIMARY KEY,
+            strong_leg_target INT NOT NULL,
+            other_legs_target INT NOT NULL,
+            reward_amount DECIMAL(10, 4) NOT NULL
+        )
+    ");
+
+    // Seed reward_targets table
+    $targets = [
+        [1, 15, 15, 15.0000],
+        [2, 18, 18, 3.0000],
+        [3, 24, 24, 6.0000],
+        [4, 36, 36, 12.0000],
+        [5, 60, 60, 24.0000],
+        [6, 108, 108, 48.0000],
+        [7, 204, 204, 96.0000],
+        [8, 396, 396, 192.0000],
+        [9, 780, 780, 384.0000],
+        [10, 1548, 1548, 768.0000]
+    ];
+    $stmt = $pdo->prepare("INSERT INTO reward_targets (level, strong_leg_target, other_legs_target, reward_amount) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE strong_leg_target = VALUES(strong_leg_target), other_legs_target = VALUES(other_legs_target), reward_amount = VALUES(reward_amount)");
+    foreach ($targets as $target) {
+        $stmt->execute($target);
+    }
+
+    // Create user_rewards table
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS user_rewards (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            level INT NOT NULL,
+            amount DECIMAL(10, 4) NOT NULL,
+            achieved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            UNIQUE KEY unique_user_level (user_id, level)
+        )
+    ");
+
     $name = getRandomName();
 
     $stmt = $pdo->prepare("INSERT INTO users (name, sponsor_id, upline_id, position, total_earnings) VALUES (?, NULL, NULL, NULL, 0.00)");
@@ -73,7 +122,11 @@ if ($action === 'start_simulation') {
 }
 
 if ($action === 'clear_db') {
-    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE transactions; TRUNCATE TABLE users; SET FOREIGN_KEY_CHECKS = 1;");
+    try {
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE transactions; TRUNCATE TABLE users; TRUNCATE TABLE user_rewards; SET FOREIGN_KEY_CHECKS = 1;");
+    } catch (PDOException $e) {
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE transactions; TRUNCATE TABLE users; SET FOREIGN_KEY_CHECKS = 1;");
+    }
     try { $pdo->exec("TRUNCATE TABLE company_wallet;"); } catch (PDOException $e) { }
     try {
         $pdo->exec("ALTER TABLE transactions ADD COLUMN status ENUM('completed', 'pending') DEFAULT 'completed'");
@@ -82,6 +135,10 @@ if ($action === 'clear_db') {
     try {
         $pdo->exec("ALTER TABLE users ADD COLUMN reward_level INT DEFAULT 0");
     } catch (PDOException $e) { }
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN sponsor_team_size INT DEFAULT 0");
+    } catch (PDOException $e) { }
+
     try {
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS db_auth (
@@ -150,6 +207,58 @@ if ($action === 'add_user') {
         
         $new_reward_level = min(10, floor($sponsor_directs / 2));
         $pdo->prepare("UPDATE users SET reward_level = ? WHERE id = ? AND reward_level < ?")->execute([$new_reward_level, $sponsor_id, $new_reward_level]);
+
+        // Increment sponsor_team_size recursively for all sponsors up the chain and check rewards
+        $temp_sponsor = $sponsor_id;
+        while ($temp_sponsor) {
+            $pdo->prepare("UPDATE users SET sponsor_team_size = sponsor_team_size + 1 WHERE id = ?")->execute([$temp_sponsor]);
+            
+            // Check reward targets for this sponsor
+            $stmt_refs = $pdo->prepare("SELECT (sponsor_team_size + 1) as leg_size FROM users WHERE sponsor_id = ?");
+            $stmt_refs->execute([$temp_sponsor]);
+            $leg_sizes = $stmt_refs->fetchAll(PDO::FETCH_COLUMN);
+            
+            if (count($leg_sizes) > 0) {
+                rsort($leg_sizes);
+                $strong_leg = (int) $leg_sizes[0];
+                $other_legs = (int) array_sum(array_slice($leg_sizes, 1));
+                
+                // Fetch unachieved reward targets
+                $stmt_targets = $pdo->prepare("
+                    SELECT rt.* 
+                    FROM reward_targets rt
+                    LEFT JOIN user_rewards ur ON ur.user_id = ? AND ur.level = rt.level
+                    WHERE ur.id IS NULL
+                    ORDER BY rt.level ASC
+                ");
+                $stmt_targets->execute([$temp_sponsor]);
+                $pending_rewards = $stmt_targets->fetchAll();
+                
+                foreach ($pending_rewards as $target) {
+                    if ($strong_leg >= $target['strong_leg_target'] && $other_legs >= $target['other_legs_target']) {
+                        // Qualify for the reward!
+                        $stmt_insert_reward = $pdo->prepare("INSERT IGNORE INTO user_rewards (user_id, level, amount) VALUES (?, ?, ?)");
+                        $stmt_insert_reward->execute([$temp_sponsor, $target['level'], $target['reward_amount']]);
+                        
+                        if ($stmt_insert_reward->rowCount() > 0) {
+                            // Insert completed transaction of type 'reward'
+                            $stmt_tx = $pdo->prepare("INSERT INTO transactions (user_id, from_user_id, amount, type, level, status) VALUES (?, ?, ?, 'reward', ?, 'completed')");
+                            $stmt_tx->execute([$temp_sponsor, $new_user_id, $target['reward_amount'], $target['level']]);
+                            
+                            // Update total earnings
+                            $pdo->prepare("UPDATE users SET total_earnings = total_earnings + ? WHERE id = ?")->execute([$target['reward_amount'], $temp_sponsor]);
+                        }
+                    } else {
+                        break; // Sorted by level, so if they don't qualify here, they won't qualify for higher levels
+                    }
+                }
+            }
+            
+            // Go to parent sponsor
+            $stmt_parent = $pdo->prepare("SELECT sponsor_id FROM users WHERE id = ?");
+            $stmt_parent->execute([$temp_sponsor]);
+            $temp_sponsor = $stmt_parent->fetchColumn();
+        }
 
         // Check if the upline just completed a pair (downlines count became 2)
         if ($downlines_count == 1) {
@@ -299,6 +408,103 @@ if ($action === 'get_statement') {
     $transactions = $stmt->fetchAll();
 
     echo json_encode(['success' => true, 'transactions' => $transactions]);
+    exit;
+}
+
+function getDownlinesRecursive($pdo, $upline_id, $current_level = 1) {
+    $stmt = $pdo->prepare("SELECT id, name, upline_id, position, total_earnings, created_at FROM users WHERE upline_id = ?");
+    $stmt->execute([$upline_id]);
+    $children = $stmt->fetchAll();
+    
+    $all_downlines = [];
+    foreach ($children as $child) {
+        $child['level'] = $current_level;
+        $all_downlines[] = $child;
+        $child_downlines = getDownlinesRecursive($pdo, $child['id'], $current_level + 1);
+        $all_downlines = array_merge($all_downlines, $child_downlines);
+    }
+    return $all_downlines;
+}
+
+function getSponsorDownlinesRecursive($pdo, $sponsor_id, $current_level = 1) {
+    $stmt = $pdo->prepare("SELECT id, name, sponsor_id, sponsor_team_size, reward_level, created_at FROM users WHERE sponsor_id = ?");
+    $stmt->execute([$sponsor_id]);
+    $referrals = $stmt->fetchAll();
+    
+    $all_downlines = [];
+    foreach ($referrals as $ref) {
+        $ref['level'] = $current_level;
+        $all_downlines[] = $ref;
+        $child_downlines = getSponsorDownlinesRecursive($pdo, $ref['id'], $current_level + 1);
+        $all_downlines = array_merge($all_downlines, $child_downlines);
+    }
+    return $all_downlines;
+}
+
+if ($action === 'get_network_and_rewards') {
+    $user_id = isset($_GET['user_id']) ? (int) $_GET['user_id'] : 0;
+
+    if (!$user_id) {
+        echo json_encode(['error' => 'User ID required.']);
+        exit;
+    }
+
+    // 1. Get user name
+    $stmt = $pdo->prepare("SELECT name FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user_name = $stmt->fetchColumn() ?: "Unknown User";
+
+    // 2. Get recursive sponsor referrals (sponsor downlines)
+    $referrals = getSponsorDownlinesRecursive($pdo, $user_id);
+
+    // 3. Get reward targets
+    $stmt = $pdo->query("SELECT * FROM reward_targets ORDER BY level ASC");
+    $reward_targets = $stmt->fetchAll();
+
+    // 4. Get achieved rewards
+    $stmt = $pdo->prepare("SELECT level, achieved_at FROM user_rewards WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $achieved_rewards_raw = $stmt->fetchAll();
+    $achieved_levels = [];
+    foreach ($achieved_rewards_raw as $ar) {
+        $achieved_levels[(int)$ar['level']] = $ar['achieved_at'];
+    }
+
+    // 5. Calculate strong leg and other legs sizes
+    $stmt_refs = $pdo->prepare("SELECT id, name, (sponsor_team_size + 1) as leg_size FROM users WHERE sponsor_id = ?");
+    $stmt_refs->execute([$user_id]);
+    $legs = $stmt_refs->fetchAll();
+    
+    $strong_leg = 0;
+    $strong_leg_id = null;
+    $strong_leg_name = "N/A";
+    $other_legs = 0;
+    
+    if (count($legs) > 0) {
+        usort($legs, function($a, $b) {
+            return $b['leg_size'] - $a['leg_size'];
+        });
+        
+        $strong_leg = (int) $legs[0]['leg_size'];
+        $strong_leg_id = (int) $legs[0]['id'];
+        $strong_leg_name = $legs[0]['name'];
+        
+        for ($i = 1; $i < count($legs); $i++) {
+            $other_legs += (int)$legs[$i]['leg_size'];
+        }
+    }
+
+    echo json_encode([
+        'success' => true,
+        'user_name' => $user_name,
+        'referrals' => $referrals,
+        'strong_leg' => $strong_leg,
+        'strong_leg_id' => $strong_leg_id,
+        'strong_leg_name' => $strong_leg_name,
+        'other_legs' => $other_legs,
+        'reward_targets' => $reward_targets,
+        'achieved_levels' => (object)$achieved_levels
+    ]);
     exit;
 }
 
