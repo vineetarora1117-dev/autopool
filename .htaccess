@@ -1,0 +1,12 @@
+# Disable directory listing
+Options -Indexes
+
+RewriteEngine On
+
+# Route /register or /register.php to UserPanel/register.php
+RewriteRule ^register(?:\.php)?$ UserPanel/register.php [L,QSA]
+
+# Internally add .php if the file exists
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [L]

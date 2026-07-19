@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to {{SITE_NAME}}</title>
+    <style>
+        body {
+            background-color: #1a1a2e;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #16213e;
+            border: 1px solid #bfa100;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #0f3460;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #bfa100;
+        }
+        .header h1 {
+            color: #ffb703;
+            margin: 0;
+        }
+        .content {
+            padding: 30px;
+            line-height: 1.6;
+        }
+        .credentials {
+            background-color: #1a1a2e;
+            padding: 15px;
+            border-left: 4px solid #ffb703;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .credentials p {
+            margin: 5px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #0f3460;
+            font-size: 12px;
+            color: #cccccc;
+            border-top: 1px solid #bfa100;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #bfa100;
+            color: #1a1a2e;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .btn:hover {
+            background-color: #ffb703;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{SITE_NAME}}</h1>
+        </div>
+        <div class="content">
+            <h2>Hello {{USER_NAME}},</h2>
+            <p>Welcome to {{SITE_NAME}}! We are thrilled to have you join our platform. Your account has been successfully created.</p>
+            
+            <div class="credentials">
+                <p><strong>Login Details:</strong></p>
+                <p>User ID: <span style="color: #ffb703;">{{USER_ID}}</span></p>
+                <p>Password: <span style="color: #ffb703;">{{PASSWORD}}</span></p>
+            </div>
+            
+            <p>Please keep your login credentials secure and do not share them with anyone. We recommend logging in and updating your password immediately.</p>
+            
+            <div style="text-align: center;">
+                <a href="{{SITE_URL}}/login.php" class="btn">Login to Your Account</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 {{SITE_NAME}}. All rights reserved.</p>
+            <p>This is an automated message, please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>
