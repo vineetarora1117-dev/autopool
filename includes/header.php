@@ -1260,7 +1260,7 @@
             <div class="user-profile-wrapper">
                 <div class="user-profile-menu" id="profileMenuBtn">
                     <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
-                    <span class="user-name">RJ129688 <i class="fa-solid fa-chevron-down" style="font-size: 10px; color:#ffb703; margin-left: 2px;"></i></span>
+                    <span class="user-name"><?php echo htmlspecialchars($_SESSION['user_id'] ?? $user_id ?? 'User'); ?> <i class="fa-solid fa-chevron-down" style="font-size: 10px; color:#ffb703; margin-left: 2px;"></i></span>
                 </div>
 
                 <div class="profile-dropdown" id="profileDropdownMenu">

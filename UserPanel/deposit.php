@@ -1,8 +1,13 @@
 <?php 
 require_once '../libs/db.php';
-$stmt = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'usdt_address'");
+$stmt = $pdo->prepare("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('company_usdt_address', 'company_qr_code_path')");
 $stmt->execute();
-$usdt_address = $stmt->fetchColumn() ?: 'TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+$db_settings = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $db_settings[$row['setting_key']] = $row['setting_value'];
+}
+$usdt_address = $db_settings['company_usdt_address'] ?? 'TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+$qr_code_path = $db_settings['company_qr_code_path'] ?? '';
 ?>
 <?php include '../includes/header.php'; ?>
 <style>
@@ -52,7 +57,11 @@ $usdt_address = $stmt->fetchColumn() ?: 'TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
         <div class="wallet-address" id="companyWallet"><?php echo htmlspecialchars($usdt_address); ?></div>
         <button class="btn-submit-gold" style="padding: 5px 15px; margin-top: 10px; font-size: 12px;" onclick="navigator.clipboard.writeText(document.getElementById('companyWallet').innerText); Swal.fire({icon:'success', title:'Copied!', text:'Wallet Address Copied', timer:1500, showConfirmButton:false, background:'#1a1a2e', color:'#fff'});">Copy Address</button>
         <div style="margin-top: 20px;">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?php echo urlencode($usdt_address); ?>&bgcolor=030b14&color=ffb703" alt="QR Code" style="max-width: 200px; border: 2px solid #ffb703; border-radius: 8px;">
+            <?php if (!empty($qr_code_path) && file_exists(__DIR__ . '/../' . $qr_code_path)): ?>
+                <img src="../<?php echo htmlspecialchars($qr_code_path); ?>" alt="QR Code" style="max-width: 200px; border: 2px solid #ffb703; border-radius: 8px;">
+            <?php else: ?>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?php echo urlencode($usdt_address); ?>&bgcolor=030b14&color=ffb703" alt="QR Code" style="max-width: 200px; border: 2px solid #ffb703; border-radius: 8px;">
+            <?php endif; ?>
         </div>
     </div>
 
@@ -89,7 +98,7 @@ document.getElementById('depositForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(this);
     
-    fetch('<?php echo rtrim($env['SITE_URL'] ?? 'http://localhost/autopool', '/'); ?>/UserPanel/api/deposit.php', {
+    fetch('api/deposit.php', {
         method: 'POST',
         body: formData
     })
@@ -98,7 +107,7 @@ document.getElementById('depositForm').addEventListener('submit', function(e) {
         if(data.success) {
             Swal.fire({icon: 'success', title: 'Success', text: data.message || 'Deposit request submitted successfully!', background: '#1a1a2e', color: '#fff'})
             .then(() => {
-                window.location.href = 'depositHistory';
+                window.location.href = 'depositHistory.php';
             });
         } else {
             Swal.fire({icon: 'error', title: 'Error', text: data.message || 'Failed to submit deposit request.', background: '#1a1a2e', color: '#fff'});

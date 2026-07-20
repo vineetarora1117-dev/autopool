@@ -27,7 +27,7 @@ require_once 'includes/header.php';
                 <tr>
                     <th>User ID</th>
                     <th>Name</th>
-                    <th>Email</th>
+                    <th>Sponsor ID</th>
                     <th>Phone</th>
                     <th>Status</th>
                     <th>Package</th>
@@ -46,7 +46,7 @@ require_once 'includes/header.php';
                     <tr>
                         <td><?php echo htmlspecialchars($m['user_id']); ?></td>
                         <td><?php echo htmlspecialchars($m['name']); ?></td>
-                        <td><?php echo htmlspecialchars($m['email']); ?></td>
+                        <td><?php echo htmlspecialchars($m['sponsor_id'] ?? '-'); ?></td>
                         <td><?php echo htmlspecialchars($m['phone']); ?></td>
                         <td>
                             <?php 

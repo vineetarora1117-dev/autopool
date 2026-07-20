@@ -26,6 +26,21 @@ $summary = $stmt->fetch(PDO::FETCH_ASSOC);
 $current_package = $summary['my_package'] ?? 0;
 $direct_team_count = $summary['direct_team_count'] ?? 0;
 
+// Fetch target user's active direct referral count (referrals with status='Active' and package >= 11)
+$stmtActiveDirects = $pdo->prepare("
+    SELECT COUNT(*) 
+    FROM users u 
+    INNER JOIN user_financial_summary ufs ON u.user_id = ufs.user_id 
+    WHERE u.sponsor_id = ? AND u.status = 'Active' AND ufs.my_package >= 11
+");
+$stmtActiveDirects->execute([$target_user_id]);
+$active_direct_team_count = (int)$stmtActiveDirects->fetchColumn();
+
+// Fetch logged in user's main wallet balance for display
+$stmtUserBalance = $pdo->prepare("SELECT main_deposit_balance FROM user_financial_summary WHERE user_id = ?");
+$stmtUserBalance->execute([$user_id]);
+$loggedInUserBalance = $stmtUserBalance->fetchColumn() ?: 0.00;
+
 $packages = [];
 foreach ($PACKAGE_CONFIG as $key => $conf) {
     $packages[] = [
@@ -138,6 +153,22 @@ include '../includes/header.php';
         <div class="profile-header-title">Autopool Packages</div>
         <div class="profile-breadcrumb"><a href="index.php">Home</a> &raquo; Buy Package</div>
     </div>
+
+    <!-- Main Wallet Balance Card -->
+    <div style="background: rgba(6, 17, 33, 0.75); border: 1px solid rgba(255, 183, 3, 0.3); border-radius: 12px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="background: rgba(255, 183, 3, 0.1); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 183, 3, 0.3);">
+                <i class="fa-solid fa-wallet" style="color: #ffb703; font-size: 20px;"></i>
+            </div>
+            <div>
+                <div style="color: #a0aec0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Main Wallet Balance</div>
+                <div style="color: #fff; font-size: 24px; font-weight: bold; margin-top: 2px;">$<?php echo number_format($loggedInUserBalance, 2); ?></div>
+            </div>
+        </div>
+        <a href="deposit.php" class="btn btn-gold" style="padding: 8px 16px; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: bold; background: #ffb703; color: #000; border-radius: 6px; border: none; transition: 0.2s;">
+            <i class="fa-solid fa-circle-plus"></i> Deposit
+        </a>
+    </div>
     
     <div class="package-grid">
         <?php foreach ($packages as $index => $pkg): 
@@ -145,15 +176,14 @@ include '../includes/header.php';
             
             // To unlock a package, user might need previous package activated and required directs
             // For simplicity, we just check required directs here. 
-            // In real app, we check if they bought previous package too.
-            $is_locked = !$is_activated && ($direct_team_count < $pkg['req_direct'] || ($index > 0 && $current_package < $packages[$index-1]['price']));
+            $is_locked = !$is_activated && ($active_direct_team_count < $pkg['req_direct'] || ($index > 0 && $current_package < $packages[$index-1]['price']));
             $lock_reason = "";
             if ($is_locked) {
                 if ($index > 0 && $current_package < $packages[$index-1]['price']) {
                     $lock_reason = "Unlock previous package first";
-                } elseif ($direct_team_count < $pkg['req_direct']) {
-                    $needed = $pkg['req_direct'] - $direct_team_count;
-                    $lock_reason = "Need $needed more direct referral(s)";
+                } elseif ($active_direct_team_count < $pkg['req_direct']) {
+                    $needed = $pkg['req_direct'] - $active_direct_team_count;
+                    $lock_reason = "Need $needed more active direct referral(s)";
                 }
             }
         ?>

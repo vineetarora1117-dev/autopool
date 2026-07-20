@@ -40,8 +40,13 @@ if (!$isActive) {
         $isPrevActive = (bool)$stmt->fetch();
     }
     
-    // Check downlines count
-    $stmt = $pdo->prepare("SELECT direct_team_count FROM user_financial_summary WHERE user_id = ?");
+    // Check active downlines count (status='Active' and my_package >= 11)
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) 
+        FROM users u 
+        INNER JOIN user_financial_summary ufs ON u.user_id = ufs.user_id 
+        WHERE u.sponsor_id = ? AND u.status = 'Active' AND ufs.my_package >= 11
+    ");
     $stmt->execute([$user_id]);
     $current_downlines = (int)($stmt->fetchColumn() ?: 0);
     
@@ -55,7 +60,7 @@ if (!$isActive) {
         </div>
         <h2 style="color: #ff4d4d; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Autopool Pack <?php echo $pack; ?> Not Active</h2>
         <p style="color: #a0aec0; font-size: 15px; margin-bottom: 30px;">You do not have this package active. Please review your eligibility status below to upgrade.</p>
-
+ 
         <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 20px; text-align: left; margin-bottom: 30px; border: 1px dashed rgba(255,183,3,0.3);">
             <h4 style="color: #ffb703; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; font-size: 16px; font-weight: bold;">ELIGIBILITY CHECKLIST</h4>
             
@@ -72,9 +77,9 @@ if (!$isActive) {
                     </span>
                 </div>
                 <?php endif; ?>
-
+ 
                 <div style="display: flex; justify-content: space-between; align-items: center; font-size: 14px;">
-                    <span style="color: #e2e8f0; font-weight: 500;">Direct Downlines (Required: <?php echo $req_downlines; ?>)</span>
+                    <span style="color: #e2e8f0; font-weight: 500;">Active Direct Downlines (Required: <?php echo $req_downlines; ?>)</span>
                     <span>
                         <span style="color: <?php echo ($current_downlines >= $req_downlines) ? '#2ecc71' : '#ff4d4d'; ?>; font-weight: bold;">
                             <i class="fa-solid <?php echo ($current_downlines >= $req_downlines) ? 'fa-circle-check' : 'fa-circle-xmark'; ?>"></i> 

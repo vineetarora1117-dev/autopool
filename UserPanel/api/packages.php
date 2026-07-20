@@ -127,6 +127,17 @@ if ($action === 'list') {
         exit;
     }
     
+    // Check if it's a booster purchase
+    if (strpos($packageType, 'booster_') === 0) {
+        try {
+            processBoosterPurchase($pdo, $targetUserId, $packageType, $userId !== $targetUserId ? $userId : null);
+            echo json_encode(['success' => true, 'message' => 'Booster purchased successfully!']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        exit;
+    }
+    
     // Check eligibility
     $eligibility = checkPackageEligibility($pdo, $targetUserId, $packageType);
     if (!$eligibility['eligible']) {

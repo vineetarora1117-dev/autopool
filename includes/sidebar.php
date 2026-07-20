@@ -38,7 +38,6 @@
                 </div>
                 <div class="submenu-container" id="teamSubmenu">
                     <a class="submenu-item" href="directMember"><i class="fa-regular fa-square"></i> Direct Team</a>
-                    <a class="submenu-item" href="levelTeam"><i class="fa-regular fa-square"></i> Level Team</a>
                 </div>
                 <!-- Activation Menu (Hidden)
                 <div class="nav-item sidebar-toggle" data-target="activationSubmenu">
@@ -111,6 +110,7 @@
                 <div class="submenu-container" id="infinityPack<?php echo $i; ?>Submenu">
                     <a class="submenu-item" href="infinityPackMatrix?pack=<?php echo $i; ?>"><i class="fa-regular fa-square"></i> Matrix</a>
                     <a class="submenu-item" href="infinityPackIncomeReport?pack=<?php echo $i; ?>"><i class="fa-regular fa-square"></i> Income Report</a>
+                    <a class="submenu-item" href="infinityPackWallet?pack=<?php echo $i; ?>"><i class="fa-regular fa-square"></i> Wallet</a>
                 </div>
                 <?php endfor; ?>
 

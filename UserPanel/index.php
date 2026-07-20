@@ -109,7 +109,7 @@ $marquee_text = !empty($announcements) ? implode(' â˜… ', $announcements) . ' â˜
     <!-- Quick Action Button Bars Matrix -->
     <div class="db-actions-row">
         <div class="db-action-btn" onclick="window.location.href='deposit.php'">Deposit</div>
-        <div class="db-action-btn" onclick="window.location.href='withdrawal.php'">Withdrawal</div>
+        <div class="db-action-btn" onclick="window.location.href='newWithdrawal.php'">Withdrawal</div>
         <div class="db-action-btn" onclick="window.location.href='autopoolPackage.php'">Buy Package</div>
     </div>
 

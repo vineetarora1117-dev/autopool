@@ -272,59 +272,67 @@
         </div>
         <ul class="nav-list">
             <li>
-                <div class="nav-item active" id="tab-database-btn">
+                <a class="nav-item active" id="tab-database-btn" href="index.php" style="text-decoration: none;">
                     📦 Database
-                </div>
+                </a>
+            </li>
+            <li>
+                <a class="nav-item" id="tab-simulation-btn" href="simulation.php" style="text-decoration: none;">
+                    🎮 Simulation
+                </a>
             </li>
         </ul>
     </aside>
 
     <!-- Main Content Panel (Right Column) -->
     <main class="main-content">
-        <header>
-            <h1>Database Configuration & States</h1>
-            <p>Control states, snapshots, and prepare test database scenarios for Autopool simulations.</p>
-        </header>
+        <!-- Database Tab Content -->
+        <div id="content-database">
+            <header>
+                <h1>Database Configuration & States</h1>
+                <p>Control states, snapshots, and prepare test database scenarios for Autopool simulations.</p>
+            </header>
 
-        <!-- Database Empty State Card -->
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">1) Empty State</h2>
-                <p class="card-desc">
-                    Allows you to capture the current state of the database to act as the "Empty State" baseline, and restore it instantly during testing.
-                </p>
-            </div>
-
-            <!-- Status Info -->
-            <div id="empty-state-badge" class="status-badge empty">Checking status...</div>
-
-            <div class="info-grid" id="status-info-grid" style="display: none;">
-                <div class="info-item">
-                    <span class="info-label">Snapshot Name</span>
-                    <span class="info-value">empty_state.sql</span>
+            <!-- Database Empty State Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">1) Empty State</h2>
+                    <p class="card-desc">
+                        Allows you to capture the current state of the database to act as the "Empty State" baseline, and restore it instantly during testing.
+                    </p>
                 </div>
-                <div class="info-item">
-                    <span class="info-label">File Size</span>
-                    <span class="info-value" id="val-size">-</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Last Saved</span>
-                    <span class="info-value" id="val-modified">-</span>
-                </div>
-            </div>
 
-            <!-- Controls -->
-            <div class="actions-group">
-                <button class="btn btn-primary" onclick="executeAction('store')">
-                    💾 Store Current State
-                </button>
-                <button class="btn btn-secondary" id="btn-restore" onclick="executeAction('restore')" disabled>
-                    🔄 Restore Empty State
-                </button>
-            </div>
+                <!-- Status Info -->
+                <div id="empty-state-badge" class="status-badge empty">Checking status...</div>
 
-            <!-- Messages/Alerts -->
-            <div id="alert-box" class="alert"></div>
+                <div class="info-grid" id="status-info-grid" style="display: none;">
+                    <div class="info-item">
+                        <span class="info-label">Snapshot Name</span>
+                        <span class="info-value">empty_state.sql</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">File Size</span>
+                        <span class="info-value" id="val-size">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Last Saved</span>
+                        <span class="info-value" id="val-modified">-</span>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="actions-group">
+                    <button class="btn btn-primary" onclick="executeAction('store')">
+                        💾 Store Current State
+                    </button>
+                    <button class="btn btn-secondary" id="btn-restore" onclick="executeAction('restore')" disabled>
+                        🔄 Restore Empty State
+                    </button>
+                </div>
+
+                <!-- Messages/Alerts -->
+                <div id="alert-box" class="alert"></div>
+            </div>
         </div>
     </main>
 

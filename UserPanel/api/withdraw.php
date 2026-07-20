@@ -27,6 +27,12 @@ $allowedWallets = [
     'earnings_120_wallet' => 'earnings_120',
     'earnings_240_wallet' => 'earnings_240',
     'earnings_480_wallet' => 'earnings_480',
+    'booster_10_wallet'   => 'booster_10',
+    'booster_20_wallet'   => 'booster_20',
+    'booster_40_wallet'   => 'booster_40',
+    'booster_80_wallet'   => 'booster_80',
+    'booster_160_wallet'  => 'booster_160',
+    'booster_320_wallet'  => 'booster_320',
 ];
 
 if (!array_key_exists($sourceWallet, $allowedWallets)) {
@@ -51,7 +57,7 @@ try {
         exit;
     }
 
-    // 2. Check referral qualification criteria: no of directs >= Level No * 2
+    // 2. Check referral qualification criteria: no of directs >= Level No * 2 (only for main packages)
     $levelMap = [
         'earnings_11_wallet'  => 1,
         'earnings_30_wallet'  => 2,
@@ -60,21 +66,32 @@ try {
         'earnings_240_wallet' => 5,
         'earnings_480_wallet' => 6,
     ];
-    $levelNo = $levelMap[$sourceWallet];
-    $requiredDirects = $levelNo * 2;
-    $directsCount = intval($summary['direct_team_count'] ?? 0);
+    if (array_key_exists($sourceWallet, $levelMap)) {
+        $levelNo = $levelMap[$sourceWallet];
+        $requiredDirects = $levelNo * 2;
+        
+        // Check active direct referrals qualification criteria (status='Active' and package >= 11)
+        $stmtActive = $pdo->prepare("
+            SELECT COUNT(*) 
+            FROM users u 
+            INNER JOIN user_financial_summary ufs ON u.user_id = ufs.user_id 
+            WHERE u.sponsor_id = ? AND u.status = 'Active' AND ufs.my_package >= 11
+        ");
+        $stmtActive->execute([$userId]);
+        $activeDirectsCount = (int)$stmtActive->fetchColumn();
 
-    if ($directsCount < $requiredDirects) {
-        echo json_encode([
-            'success' => false, 
-            'message' => "Withdrawal Blocked: Withdrawals from the level $levelNo wallet require a minimum of $requiredDirects direct referrals. You currently have $directsCount directs."
-        ]);
-        $pdo->rollBack();
-        exit;
+        if ($activeDirectsCount < $requiredDirects) {
+            echo json_encode([
+                'success' => false, 
+                'message' => "Withdrawal Blocked: Withdrawals from the level $levelNo wallet require a minimum of $requiredDirects active direct referrals (with active package >= $11). You currently have $activeDirectsCount active directs."
+            ]);
+            $pdo->rollBack();
+            exit;
+        }
     }
 
     // 3. Fetch withdrawal fee percentage configuration
-    $stmtConfig = $pdo->prepare("SELECT withdrawal_fee_percent FROM wallet_configurations WHERE wallet_type = ?");
+    $stmtConfig = $pdo->prepare("SELECT external_withdrawal_fee_percent FROM wallet_configurations WHERE wallet_type = ?");
     $stmtConfig->execute([$walletConfigKey]);
     $feePercent = floatval($stmtConfig->fetchColumn() ?: 10.00);
 

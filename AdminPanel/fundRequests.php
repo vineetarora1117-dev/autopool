@@ -24,7 +24,7 @@ $stmt = $pdo->query("SELECT COUNT(*) FROM deposit_requests");
 $total_rows = $stmt->fetchColumn();
 $total_pages = max(1, ceil($total_rows / $limit));
 
-$stmt = $pdo->prepare("SELECT d.*, u.name FROM deposit_requests d LEFT JOIN users u ON d.user_id = u.user_id ORDER BY d.id DESC LIMIT ? OFFSET ?");
+$stmt = $pdo->prepare("SELECT d.*, u.name FROM deposit_requests d LEFT JOIN users u ON d.user_id = u.user_id ORDER BY CASE WHEN d.status = 'Pending' THEN 0 ELSE 1 END ASC, d.id DESC LIMIT ? OFFSET ?");
 $stmt->execute([$limit, $offset]);
 $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
