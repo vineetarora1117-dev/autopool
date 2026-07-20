@@ -24,9 +24,9 @@ if ($currentPage !== 'login.php') {
         .top-navbar h2 { margin: 0; font-size: 20px; font-weight: bold; }
         .admin-profile { display: flex; align-items: center; gap: 10px; font-weight: bold; }
         
-        .content-layout { display: flex; flex: 1; height: calc(100vh - 60px); }
+        .content-layout { display: flex; flex: 1; height: calc(100vh - 60px); position: relative; }
         
-        sidebar { width: 260px; background: #061121; border-right: 1px solid #ffb703; padding: 20px 10px; display: flex; flex-direction: column; overflow-y: auto; transition: margin-left 0.3s ease; }
+        sidebar { width: 260px; background: #061121; border-right: 1px solid #ffb703; padding: 20px 10px; display: flex; flex-direction: column; overflow-y: auto; transition: left 0.3s ease; }
         .nav-list { display: flex; flex-direction: column; gap: 8px; list-style: none; }
         .nav-item a { display: flex; align-items: center; gap: 12px; padding: 12px; color: #e2e8f0; text-decoration: none; border-radius: 6px; font-size: 14px; transition: background 0.2s; }
         .nav-item a:hover { background: rgba(255, 183, 3, 0.1); color: #ffb703; }
@@ -60,19 +60,112 @@ if ($currentPage !== 'login.php') {
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; color: #ffb703; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid #ffb703; color: #fff; border-radius: 4px; }
+
+        /* Mobile specific controls */
+        #toggleSidebarBtn {
+            background: none;
+            border: none;
+            color: #000;
+            font-size: 22px;
+            cursor: pointer;
+            display: none;
+            margin-right: 12px;
+            outline: none;
+        }
+
+        #sidebarBackdrop {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100vw;
+            height: calc(100vh - 60px);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(3px);
+            z-index: 99;
+        }
+
+        @media (max-width: 768px) {
+            #toggleSidebarBtn {
+                display: block;
+            }
+            
+            sidebar {
+                position: fixed;
+                top: 60px;
+                left: -260px;
+                height: calc(100vh - 60px);
+                z-index: 100;
+                width: 260px;
+            }
+            
+            sidebar.show {
+                left: 0;
+            }
+            
+            #sidebarBackdrop.show {
+                display: block;
+            }
+            
+            main {
+                padding: 15px;
+            }
+            
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+        }
         
+        @media (max-width: 480px) {
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-navbar h2 {
+                font-size: 16px;
+            }
+            
+            .top-navbar {
+                padding: 0 10px;
+            }
+        }
     </style>
 </head>
 <body>
 <?php if ($currentPage !== 'login.php'): ?>
     <div class="top-navbar">
-        <h2>SAPG Admin Panel</h2>
+        <div style="display: flex; align-items: center;">
+            <button id="toggleSidebarBtn"><i class="fas fa-bars"></i></button>
+            <h2>SAPG Admin Panel</h2>
+        </div>
         <div class="admin-profile">
             <i class="fas fa-user-shield"></i>
             <span>Admin</span>
         </div>
     </div>
+    <div id="sidebarBackdrop"></div>
     <div class="content-layout">
         <?php include 'sidebar.php'; ?>
         <main>
+        
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('toggleSidebarBtn');
+            const sidebar = document.querySelector('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+
+            if (toggleBtn && sidebar && backdrop) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                    backdrop.classList.toggle('show');
+                });
+
+                backdrop.addEventListener('click', function() {
+                    sidebar.classList.remove('show');
+                    backdrop.classList.remove('show');
+                });
+            }
+        });
+        </script>
 <?php endif; ?>
