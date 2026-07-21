@@ -1,8 +1,10 @@
 <?php
 session_start();
+require_once __DIR__ . '/../libs/db.php';
 $env = parse_ini_file(__DIR__ . '/../.env');
 $site_name = $env['SITE_NAME'] ?? 'SAPG';
 $ref = $_GET['ref'] ?? '';
+$site_url = getSiteUrl();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -122,7 +124,7 @@ $ref = $_GET['ref'] ?? '';
             </div>
             
             <script>
-                const apiURL = "<?php echo rtrim($env['SITE_URL'] ?? 'http://localhost/autopool', '/'); ?>/UserPanel/api/register.php";
+                const apiURL = "<?php echo $site_url; ?>/UserPanel/api/register.php";
 
                 document.addEventListener('DOMContentLoaded', function() {
                     const sponsorId = document.getElementById('sponsor_id').value;
@@ -163,7 +165,7 @@ $ref = $_GET['ref'] ?? '';
                             document.getElementById('newUserId').innerText = data.user_id;
                             document.getElementById('newUserPass').innerText = pass;
                             
-                            const siteUrl = "<?php echo rtrim($env['SITE_URL'] ?? 'http://localhost', '/'); ?>/login.php";
+                            const siteUrl = "<?php echo $site_url; ?>/login.php";
                             const msg = `Welcome to <?php echo htmlspecialchars($site_name); ?>! Your User ID is ${data.user_id} and Password is ${pass}. Login at ${siteUrl}`;
                             
                             document.getElementById('actionBtnsContainer').innerHTML = `

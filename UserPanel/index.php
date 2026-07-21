@@ -5,7 +5,7 @@ requireLogin();
 
 $user_id = $_SESSION['user_id'] ?? '';
 $env = parse_ini_file(__DIR__ . '/../.env');
-$site_url = rtrim($env['SITE_URL'] ?? 'http://localhost', '/');
+$site_url = getSiteUrl();
 
 // Fetch user data
 $stmt = $pdo->prepare("SELECT name, status FROM users WHERE user_id = ?");
@@ -307,7 +307,7 @@ function openDirectRegisterModal() {
                 if (data.success) {
                     const newId = data.user_id || (data.data ? data.data.user_id : '');
                     const pass = result.value.password;
-                    const siteUrl = "<?php echo rtrim($env['SITE_URL'] ?? 'http://localhost', '/'); ?>/login.php";
+                    const siteUrl = "<?php echo $site_url; ?>/login.php";
                     const msg = `Welcome to <?php echo htmlspecialchars($env['SITE_NAME'] ?? 'SAPG'); ?>! Your User ID is ${newId} and Password is ${pass}. Login at ${siteUrl}`;
 
                     Swal.fire({
