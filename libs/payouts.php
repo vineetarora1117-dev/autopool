@@ -165,46 +165,25 @@ function processPackagePayout($pdo, $buyerUserId, $packageType, $fundedByUserId 
         // d) Place in matrix
         $pos = placeInMatrix($pdo, $buyerUserId, $packageType);
         
-        // Check if the upline just completed a pair (downlines count became 2)
-        $uplineId = $pos['upline_id'];
-        $stmtSlots = $pdo->prepare("SELECT COUNT(*) FROM package_matrices WHERE upline_id = ? AND package_type = ?");
-        $stmtSlots->execute([$uplineId, $packageType]);
-        $childrenCount = (int)$stmtSlots->fetchColumn();
-        
-        if ($childrenCount === 2) {
-            // Release pending transactions blocked by this upline for this package type matrix
-            releaseBlockedTransactions($pdo, $uplineId, $packageType, $config['wallet']);
-        }
-        
-        // e) Autopool Income Distribution
-        $matrixUplines = getMatrixUplines($pdo, $buyerUserId, $packageType, $config['autopool_levels']);
-        $current_blocker = null;
-        foreach ($matrixUplines as $levelIdx => $upline) {
-            $uplineLevel = $levelIdx + 1; // Level 1 to 8 in matrix above buyer
-            $amt = ($uplineLevel <= 4) ? $config['autopool_l1_4'] : $config['autopool_l5_8'];
-            $narration = "Autopool income $$amt from $buyerUserId entering $$cost Matrix (Position: L{$pos['level']}-{$pos['slot']}, Upline L$uplineLevel)";
-            if ($upline === 'SA000001') {
-                sweepToCompany($pdo, $amt, 'autopool_income', $narration, $buyerUserId);
-            } else {
-                // Check if this upline has < 2 children in this package matrix (blocker logic)
-                $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM package_matrices WHERE upline_id = ? AND package_type = ?");
-                $stmtCheck->execute([$upline, $packageType]);
-                $uplineChildren = (int)$stmtCheck->fetchColumn();
+        // e) Autopool Income Distribution (Payable on Pair Completion, i.e. when position slot is 2)
+        if ((int)$pos['slot'] === 2) {
+            $matrixUplines = getMatrixUplines($pdo, $buyerUserId, $packageType, $config['autopool_levels']);
+            foreach ($matrixUplines as $levelIdx => $upline) {
+                $uplineLevel = $levelIdx + 1; // Level 1 to 8 in matrix above buyer
+                $perMemberRate = ($uplineLevel <= 4) ? $config['autopool_l1_4'] : $config['autopool_l5_8'];
+                $pairAmount = 2 * $perMemberRate; // Full pair completion amount
+                $narration = "Autopool pair completion income $$pairAmount from pair in $$cost Matrix (Upline L$uplineLevel)";
                 
-                if ($uplineChildren < 2) {
-                    $current_blocker = $upline;
-                }
-                
-                if ($current_blocker !== null) {
-                    // Blocked: Insert as Pending with blocker
-                    insertTransaction($pdo, $upline, 'autopool_income', $amt, $config['wallet'], 'Pending', $narration, $buyerUserId, $current_blocker);
+                if ($upline === 'SA000001') {
+                    sweepToCompany($pdo, $pairAmount, 'autopool_income', $narration, $buyerUserId);
                 } else {
-                    // Completed: Update wallet and ledger
                     $stmt = $pdo->prepare("UPDATE user_financial_summary SET {$config['wallet']} = {$config['wallet']} + ?, total_global_autopool_income = total_global_autopool_income + ? WHERE user_id = ?");
-                    $stmt->execute([$amt, $amt, $upline]);
+                    $stmt->execute([$pairAmount, $pairAmount, $upline]);
+                    
                     $stmtLiab = $pdo->prepare("UPDATE company_ledger SET total_payout_liability_main = total_payout_liability_main + ? WHERE id = 1");
-                    $stmtLiab->execute([$amt]);
-                    insertTransaction($pdo, $upline, 'autopool_income', $amt, $config['wallet'], 'Completed', $narration, $buyerUserId);
+                    $stmtLiab->execute([$pairAmount]);
+                    
+                    insertTransaction($pdo, $upline, 'autopool_income', $pairAmount, $config['wallet'], 'Completed', $narration, $buyerUserId);
                 }
             }
         }
