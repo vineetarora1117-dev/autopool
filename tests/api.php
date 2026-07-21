@@ -9,7 +9,7 @@ if (!file_exists($envPath)) {
 
 $env = parse_ini_file($envPath);
 $host = $env['DB_HOST'] ?? '127.0.0.1';
-$db   = $env['DB_NAME'] ?? 'autopool_db';
+$db   = $env['DB_NAME'] ?? 'SAPG';
 $user = $env['DB_USER'] ?? 'root';
 $pass = $env['DB_PASS'] ?? '';
 

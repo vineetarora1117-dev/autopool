@@ -1,6 +1,6 @@
 -- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
 --
--- Host: 127.0.0.1    Database: autopool_db
+-- Host: 127.0.0.1    Database: SAPG
 -- ------------------------------------------------------
 -- Server version	10.4.32-MariaDB
 
@@ -16,83 +16,243 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `company_wallet`
+-- Table structure for table `admins`
 --
 
-DROP TABLE IF EXISTS `company_wallet`;
+DROP TABLE IF EXISTS `admins`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `company_wallet` (
+CREATE TABLE `admins` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `from_user_id` int(11) NOT NULL,
-  `amount` decimal(10,4) NOT NULL,
-  `type` enum('level','reward','other') NOT NULL,
-  `level` int(11) DEFAULT 0,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL COMMENT 'Bcrypt hashed',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `from_user_id` (`from_user_id`),
-  CONSTRAINT `company_wallet_ibfk_1` FOREIGN KEY (`from_user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=281 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `company_wallet`
+-- Dumping data for table `admins`
 --
 
-LOCK TABLES `company_wallet` WRITE;
-/*!40000 ALTER TABLE `company_wallet` DISABLE KEYS */;
-INSERT INTO `company_wallet` VALUES (1,2,0.1000,'level',1,'2026-07-17 06:35:31'),(2,2,0.1000,'level',2,'2026-07-17 06:35:31'),(3,2,0.1000,'level',3,'2026-07-17 06:35:31'),(4,2,0.1000,'level',4,'2026-07-17 06:35:31'),(5,2,0.1000,'level',5,'2026-07-17 06:35:31'),(6,2,0.1000,'level',6,'2026-07-17 06:35:31'),(7,2,0.1000,'level',7,'2026-07-17 06:35:31'),(8,2,0.1000,'level',8,'2026-07-17 06:35:31'),(9,2,0.1000,'level',9,'2026-07-17 06:35:31'),(10,2,0.1000,'level',10,'2026-07-17 06:35:31'),(11,3,0.1000,'level',2,'2026-07-17 06:35:32'),(12,3,0.1000,'level',3,'2026-07-17 06:35:32'),(13,3,0.1000,'level',4,'2026-07-17 06:35:32'),(14,3,0.1000,'level',5,'2026-07-17 06:35:32'),(15,3,0.1000,'level',6,'2026-07-17 06:35:32'),(16,3,0.1000,'level',7,'2026-07-17 06:35:32'),(17,3,0.1000,'level',8,'2026-07-17 06:35:32'),(18,3,0.1000,'level',9,'2026-07-17 06:35:32'),(19,3,0.1000,'level',10,'2026-07-17 06:35:32'),(20,4,0.1000,'level',2,'2026-07-17 06:40:13'),(21,4,0.1000,'level',3,'2026-07-17 06:40:13'),(22,4,0.1000,'level',4,'2026-07-17 06:40:13'),(23,4,0.1000,'level',5,'2026-07-17 06:40:13'),(24,4,0.1000,'level',6,'2026-07-17 06:40:13'),(25,4,0.1000,'level',7,'2026-07-17 06:40:13'),(26,4,0.1000,'level',8,'2026-07-17 06:40:13'),(27,4,0.1000,'level',9,'2026-07-17 06:40:13'),(28,4,0.1000,'level',10,'2026-07-17 06:40:13'),(29,5,0.1000,'level',2,'2026-07-17 06:40:14'),(30,5,0.1000,'level',3,'2026-07-17 06:40:14'),(31,5,0.1000,'level',4,'2026-07-17 06:40:14'),(32,5,0.1000,'level',5,'2026-07-17 06:40:14'),(33,5,0.1000,'level',6,'2026-07-17 06:40:14'),(34,5,0.1000,'level',7,'2026-07-17 06:40:14'),(35,5,0.1000,'level',8,'2026-07-17 06:40:14'),(36,5,0.1000,'level',9,'2026-07-17 06:40:14'),(37,5,0.1000,'level',10,'2026-07-17 06:40:14'),(38,6,0.1000,'level',2,'2026-07-17 06:40:14'),(39,6,0.1000,'level',3,'2026-07-17 06:40:14'),(40,6,0.1000,'level',4,'2026-07-17 06:40:14'),(41,6,0.1000,'level',5,'2026-07-17 06:40:14'),(42,6,0.1000,'level',6,'2026-07-17 06:40:14'),(43,6,0.1000,'level',7,'2026-07-17 06:40:14'),(44,6,0.1000,'level',8,'2026-07-17 06:40:14'),(45,6,0.1000,'level',9,'2026-07-17 06:40:14'),(46,6,0.1000,'level',10,'2026-07-17 06:40:14'),(47,7,0.1000,'level',2,'2026-07-17 06:40:15'),(48,7,0.1000,'level',3,'2026-07-17 06:40:15'),(49,7,0.1000,'level',4,'2026-07-17 06:40:15'),(50,7,0.1000,'level',5,'2026-07-17 06:40:15'),(51,7,0.1000,'level',6,'2026-07-17 06:40:15'),(52,7,0.1000,'level',7,'2026-07-17 06:40:15'),(53,7,0.1000,'level',8,'2026-07-17 06:40:15'),(54,7,0.1000,'level',9,'2026-07-17 06:40:15'),(55,7,0.1000,'level',10,'2026-07-17 06:40:15'),(56,8,0.1000,'level',2,'2026-07-17 06:40:15'),(57,8,0.1000,'level',3,'2026-07-17 06:40:15'),(58,8,0.1000,'level',4,'2026-07-17 06:40:15'),(59,8,0.1000,'level',5,'2026-07-17 06:40:15'),(60,8,0.1000,'level',6,'2026-07-17 06:40:15'),(61,8,0.1000,'level',7,'2026-07-17 06:40:15'),(62,8,0.1000,'level',8,'2026-07-17 06:40:15'),(63,8,0.1000,'level',9,'2026-07-17 06:40:15'),(64,8,0.1000,'level',10,'2026-07-17 06:40:15'),(65,9,0.1000,'level',2,'2026-07-17 06:40:15'),(66,9,0.1000,'level',3,'2026-07-17 06:40:15'),(67,9,0.1000,'level',4,'2026-07-17 06:40:15'),(68,9,0.1000,'level',5,'2026-07-17 06:40:15'),(69,9,0.1000,'level',6,'2026-07-17 06:40:15'),(70,9,0.1000,'level',7,'2026-07-17 06:40:15'),(71,9,0.1000,'level',8,'2026-07-17 06:40:15'),(72,9,0.1000,'level',9,'2026-07-17 06:40:15'),(73,9,0.1000,'level',10,'2026-07-17 06:40:15'),(74,10,0.1000,'level',2,'2026-07-17 06:40:16'),(75,10,0.1000,'level',3,'2026-07-17 06:40:16'),(76,10,0.1000,'level',4,'2026-07-17 06:40:16'),(77,10,0.1000,'level',5,'2026-07-17 06:40:16'),(78,10,0.1000,'level',6,'2026-07-17 06:40:16'),(79,10,0.1000,'level',7,'2026-07-17 06:40:16'),(80,10,0.1000,'level',8,'2026-07-17 06:40:16'),(81,10,0.1000,'level',9,'2026-07-17 06:40:16'),(82,10,0.1000,'level',10,'2026-07-17 06:40:16'),(83,11,0.1000,'level',2,'2026-07-17 06:40:16'),(84,11,0.1000,'level',3,'2026-07-17 06:40:16'),(85,11,0.1000,'level',4,'2026-07-17 06:40:16'),(86,11,0.1000,'level',5,'2026-07-17 06:40:16'),(87,11,0.1000,'level',6,'2026-07-17 06:40:16'),(88,11,0.1000,'level',7,'2026-07-17 06:40:16'),(89,11,0.1000,'level',8,'2026-07-17 06:40:16'),(90,11,0.1000,'level',9,'2026-07-17 06:40:16'),(91,11,0.1000,'level',10,'2026-07-17 06:40:16'),(92,12,0.1000,'level',2,'2026-07-17 06:40:16'),(93,12,0.1000,'level',3,'2026-07-17 06:40:16'),(94,12,0.1000,'level',4,'2026-07-17 06:40:16'),(95,12,0.1000,'level',5,'2026-07-17 06:40:16'),(96,12,0.1000,'level',6,'2026-07-17 06:40:16'),(97,12,0.1000,'level',7,'2026-07-17 06:40:16'),(98,12,0.1000,'level',8,'2026-07-17 06:40:16'),(99,12,0.1000,'level',9,'2026-07-17 06:40:16'),(100,12,0.1000,'level',10,'2026-07-17 06:40:16'),(101,13,0.1000,'level',1,'2026-07-17 06:47:19'),(102,13,0.1000,'level',3,'2026-07-17 06:47:19'),(103,13,0.1000,'level',4,'2026-07-17 06:47:19'),(104,13,0.1000,'level',5,'2026-07-17 06:47:19'),(105,13,0.1000,'level',6,'2026-07-17 06:47:19'),(106,13,0.1000,'level',7,'2026-07-17 06:47:19'),(107,13,0.1000,'level',8,'2026-07-17 06:47:19'),(108,13,0.1000,'level',9,'2026-07-17 06:47:19'),(109,13,0.1000,'level',10,'2026-07-17 06:47:19'),(110,14,0.1000,'level',1,'2026-07-17 06:47:42'),(111,14,0.1000,'level',2,'2026-07-17 06:47:42'),(112,14,0.1000,'level',4,'2026-07-17 06:47:42'),(113,14,0.1000,'level',5,'2026-07-17 06:47:42'),(114,14,0.1000,'level',6,'2026-07-17 06:47:42'),(115,14,0.1000,'level',7,'2026-07-17 06:47:42'),(116,14,0.1000,'level',8,'2026-07-17 06:47:42'),(117,14,0.1000,'level',9,'2026-07-17 06:47:42'),(118,14,0.1000,'level',10,'2026-07-17 06:47:42'),(119,15,0.1000,'level',2,'2026-07-17 06:47:43'),(120,15,0.1000,'level',4,'2026-07-17 06:47:43'),(121,15,0.1000,'level',5,'2026-07-17 06:47:43'),(122,15,0.1000,'level',6,'2026-07-17 06:47:43'),(123,15,0.1000,'level',7,'2026-07-17 06:47:43'),(124,15,0.1000,'level',8,'2026-07-17 06:47:43'),(125,15,0.1000,'level',9,'2026-07-17 06:47:43'),(126,15,0.1000,'level',10,'2026-07-17 06:47:43'),(127,16,0.1000,'level',2,'2026-07-17 06:47:44'),(128,16,0.1000,'level',4,'2026-07-17 06:47:44'),(129,16,0.1000,'level',5,'2026-07-17 06:47:44'),(130,16,0.1000,'level',6,'2026-07-17 06:47:44'),(131,16,0.1000,'level',7,'2026-07-17 06:47:44'),(132,16,0.1000,'level',8,'2026-07-17 06:47:44'),(133,16,0.1000,'level',9,'2026-07-17 06:47:44'),(134,16,0.1000,'level',10,'2026-07-17 06:47:44'),(135,17,0.1000,'level',2,'2026-07-17 06:47:45'),(136,17,0.1000,'level',4,'2026-07-17 06:47:45'),(137,17,0.1000,'level',5,'2026-07-17 06:47:45'),(138,17,0.1000,'level',6,'2026-07-17 06:47:45'),(139,17,0.1000,'level',7,'2026-07-17 06:47:45'),(140,17,0.1000,'level',8,'2026-07-17 06:47:45'),(141,17,0.1000,'level',9,'2026-07-17 06:47:45'),(142,17,0.1000,'level',10,'2026-07-17 06:47:45'),(143,18,0.1000,'level',2,'2026-07-17 06:47:45'),(144,18,0.1000,'level',4,'2026-07-17 06:47:45'),(145,18,0.1000,'level',5,'2026-07-17 06:47:45'),(146,18,0.1000,'level',6,'2026-07-17 06:47:45'),(147,18,0.1000,'level',7,'2026-07-17 06:47:45'),(148,18,0.1000,'level',8,'2026-07-17 06:47:45'),(149,18,0.1000,'level',9,'2026-07-17 06:47:45'),(150,18,0.1000,'level',10,'2026-07-17 06:47:45'),(151,19,0.1000,'level',2,'2026-07-17 06:47:46'),(152,19,0.1000,'level',4,'2026-07-17 06:47:46'),(153,19,0.1000,'level',5,'2026-07-17 06:47:46'),(154,19,0.1000,'level',6,'2026-07-17 06:47:46'),(155,19,0.1000,'level',7,'2026-07-17 06:47:46'),(156,19,0.1000,'level',8,'2026-07-17 06:47:46'),(157,19,0.1000,'level',9,'2026-07-17 06:47:46'),(158,19,0.1000,'level',10,'2026-07-17 06:47:46'),(159,20,0.1000,'level',2,'2026-07-17 06:47:47'),(160,20,0.1000,'level',4,'2026-07-17 06:47:47'),(161,20,0.1000,'level',5,'2026-07-17 06:47:47'),(162,20,0.1000,'level',6,'2026-07-17 06:47:47'),(163,20,0.1000,'level',7,'2026-07-17 06:47:47'),(164,20,0.1000,'level',8,'2026-07-17 06:47:47'),(165,20,0.1000,'level',9,'2026-07-17 06:47:47'),(166,20,0.1000,'level',10,'2026-07-17 06:47:47'),(167,21,0.1000,'level',2,'2026-07-17 06:47:47'),(168,21,0.1000,'level',4,'2026-07-17 06:47:47'),(169,21,0.1000,'level',5,'2026-07-17 06:47:47'),(170,21,0.1000,'level',6,'2026-07-17 06:47:47'),(171,21,0.1000,'level',7,'2026-07-17 06:47:47'),(172,21,0.1000,'level',8,'2026-07-17 06:47:47'),(173,21,0.1000,'level',9,'2026-07-17 06:47:47'),(174,21,0.1000,'level',10,'2026-07-17 06:47:47'),(175,22,0.1000,'level',2,'2026-07-17 06:47:48'),(176,22,0.1000,'level',4,'2026-07-17 06:47:48'),(177,22,0.1000,'level',5,'2026-07-17 06:47:48'),(178,22,0.1000,'level',6,'2026-07-17 06:47:48'),(179,22,0.1000,'level',7,'2026-07-17 06:47:48'),(180,22,0.1000,'level',8,'2026-07-17 06:47:48'),(181,22,0.1000,'level',9,'2026-07-17 06:47:48'),(182,22,0.1000,'level',10,'2026-07-17 06:47:48'),(183,23,0.1000,'level',2,'2026-07-17 06:47:48'),(184,23,0.1000,'level',4,'2026-07-17 06:47:48'),(185,23,0.1000,'level',5,'2026-07-17 06:47:48'),(186,23,0.1000,'level',6,'2026-07-17 06:47:48'),(187,23,0.1000,'level',7,'2026-07-17 06:47:48'),(188,23,0.1000,'level',8,'2026-07-17 06:47:48'),(189,23,0.1000,'level',9,'2026-07-17 06:47:48'),(190,23,0.1000,'level',10,'2026-07-17 06:47:48'),(191,24,0.1000,'level',2,'2026-07-17 06:47:49'),(192,24,0.1000,'level',4,'2026-07-17 06:47:49'),(193,24,0.1000,'level',5,'2026-07-17 06:47:49'),(194,24,0.1000,'level',6,'2026-07-17 06:47:49'),(195,24,0.1000,'level',7,'2026-07-17 06:47:49'),(196,24,0.1000,'level',8,'2026-07-17 06:47:49'),(197,24,0.1000,'level',9,'2026-07-17 06:47:49'),(198,24,0.1000,'level',10,'2026-07-17 06:47:49'),(199,25,0.1000,'level',2,'2026-07-17 06:47:50'),(200,25,0.1000,'level',4,'2026-07-17 06:47:50'),(201,25,0.1000,'level',5,'2026-07-17 06:47:50'),(202,25,0.1000,'level',6,'2026-07-17 06:47:50'),(203,25,0.1000,'level',7,'2026-07-17 06:47:50'),(204,25,0.1000,'level',8,'2026-07-17 06:47:50'),(205,25,0.1000,'level',9,'2026-07-17 06:47:50'),(206,25,0.1000,'level',10,'2026-07-17 06:47:50'),(207,26,0.1000,'level',2,'2026-07-17 06:47:50'),(208,26,0.1000,'level',4,'2026-07-17 06:47:50'),(209,26,0.1000,'level',5,'2026-07-17 06:47:50'),(210,26,0.1000,'level',6,'2026-07-17 06:47:50'),(211,26,0.1000,'level',7,'2026-07-17 06:47:50'),(212,26,0.1000,'level',8,'2026-07-17 06:47:50'),(213,26,0.1000,'level',9,'2026-07-17 06:47:50'),(214,26,0.1000,'level',10,'2026-07-17 06:47:50'),(215,27,0.1000,'level',2,'2026-07-17 06:47:51'),(216,27,0.1000,'level',4,'2026-07-17 06:47:51'),(217,27,0.1000,'level',5,'2026-07-17 06:47:51'),(218,27,0.1000,'level',6,'2026-07-17 06:47:51'),(219,27,0.1000,'level',7,'2026-07-17 06:47:51'),(220,27,0.1000,'level',8,'2026-07-17 06:47:51'),(221,27,0.1000,'level',9,'2026-07-17 06:47:51'),(222,27,0.1000,'level',10,'2026-07-17 06:47:51'),(223,28,0.1000,'level',2,'2026-07-17 06:47:52'),(224,28,0.1000,'level',4,'2026-07-17 06:47:52'),(225,28,0.1000,'level',5,'2026-07-17 06:47:52'),(226,28,0.1000,'level',6,'2026-07-17 06:47:52'),(227,28,0.1000,'level',7,'2026-07-17 06:47:52'),(228,28,0.1000,'level',8,'2026-07-17 06:47:52'),(229,28,0.1000,'level',9,'2026-07-17 06:47:52'),(230,28,0.1000,'level',10,'2026-07-17 06:47:52'),(231,29,0.1000,'level',2,'2026-07-17 06:47:52'),(232,29,0.1000,'level',4,'2026-07-17 06:47:52'),(233,29,0.1000,'level',5,'2026-07-17 06:47:52'),(234,29,0.1000,'level',6,'2026-07-17 06:47:52'),(235,29,0.1000,'level',7,'2026-07-17 06:47:52'),(236,29,0.1000,'level',8,'2026-07-17 06:47:52'),(237,29,0.1000,'level',9,'2026-07-17 06:47:52'),(238,29,0.1000,'level',10,'2026-07-17 06:47:52'),(239,30,0.1000,'level',1,'2026-07-17 06:48:50'),(240,30,0.1000,'level',3,'2026-07-17 06:48:50'),(241,30,0.1000,'level',4,'2026-07-17 06:48:50'),(242,30,0.1000,'level',5,'2026-07-17 06:48:50'),(243,30,0.1000,'level',6,'2026-07-17 06:48:50'),(244,30,0.1000,'level',7,'2026-07-17 06:48:50'),(245,30,0.1000,'level',8,'2026-07-17 06:48:50'),(246,30,0.1000,'level',9,'2026-07-17 06:48:50'),(247,30,0.1000,'level',10,'2026-07-17 06:48:50'),(248,31,0.1000,'level',3,'2026-07-17 06:48:50'),(249,31,0.1000,'level',4,'2026-07-17 06:48:50'),(250,31,0.1000,'level',5,'2026-07-17 06:48:50'),(251,31,0.1000,'level',6,'2026-07-17 06:48:50'),(252,31,0.1000,'level',7,'2026-07-17 06:48:50'),(253,31,0.1000,'level',8,'2026-07-17 06:48:50'),(254,31,0.1000,'level',9,'2026-07-17 06:48:50'),(255,31,0.1000,'level',10,'2026-07-17 06:48:50'),(256,32,0.1000,'level',3,'2026-07-17 06:48:51'),(257,32,0.1000,'level',4,'2026-07-17 06:48:51'),(258,32,0.1000,'level',5,'2026-07-17 06:48:51'),(259,32,0.1000,'level',6,'2026-07-17 06:48:51'),(260,32,0.1000,'level',7,'2026-07-17 06:48:51'),(261,32,0.1000,'level',8,'2026-07-17 06:48:51'),(262,32,0.1000,'level',9,'2026-07-17 06:48:51'),(263,32,0.1000,'level',10,'2026-07-17 06:48:51'),(264,33,0.1000,'level',3,'2026-07-17 06:48:52'),(265,33,0.1000,'level',4,'2026-07-17 06:48:52'),(266,33,0.1000,'level',5,'2026-07-17 06:48:52'),(267,33,0.1000,'level',6,'2026-07-17 06:48:52'),(268,33,0.1000,'level',7,'2026-07-17 06:48:52'),(269,33,0.1000,'level',8,'2026-07-17 06:48:52'),(270,33,0.1000,'level',9,'2026-07-17 06:48:52'),(271,33,0.1000,'level',10,'2026-07-17 06:48:52'),(272,34,0.1000,'level',1,'2026-07-17 06:49:09'),(273,34,0.1000,'level',3,'2026-07-17 06:49:09'),(274,34,0.1000,'level',4,'2026-07-17 06:49:09'),(275,34,0.1000,'level',5,'2026-07-17 06:49:09'),(276,34,0.1000,'level',6,'2026-07-17 06:49:09'),(277,34,0.1000,'level',7,'2026-07-17 06:49:09'),(278,34,0.1000,'level',8,'2026-07-17 06:49:09'),(279,34,0.1000,'level',9,'2026-07-17 06:49:09'),(280,34,0.1000,'level',10,'2026-07-17 06:49:09');
-/*!40000 ALTER TABLE `company_wallet` ENABLE KEYS */;
+LOCK TABLES `admins` WRITE;
+/*!40000 ALTER TABLE `admins` DISABLE KEYS */;
+INSERT INTO `admins` VALUES (1,'admin','$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy','2026-07-19 11:26:03');
+/*!40000 ALTER TABLE `admins` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `db_auth`
+-- Table structure for table `announcements`
 --
 
-DROP TABLE IF EXISTS `db_auth`;
+DROP TABLE IF EXISTS `announcements`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `db_auth` (
+CREATE TABLE `announcements` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `passcode` varchar(50) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `db_auth`
+-- Dumping data for table `announcements`
 --
 
-LOCK TABLES `db_auth` WRITE;
-/*!40000 ALTER TABLE `db_auth` DISABLE KEYS */;
-INSERT INTO `db_auth` VALUES (1,'000');
-/*!40000 ALTER TABLE `db_auth` ENABLE KEYS */;
+LOCK TABLES `announcements` WRITE;
+/*!40000 ALTER TABLE `announcements` DISABLE KEYS */;
+/*!40000 ALTER TABLE `announcements` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `reward_targets`
+-- Table structure for table `booster_matrices`
 --
 
-DROP TABLE IF EXISTS `reward_targets`;
+DROP TABLE IF EXISTS `booster_matrices`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `reward_targets` (
-  `level` int(11) NOT NULL,
-  `strong_leg_target` int(11) NOT NULL,
-  `other_legs_target` int(11) NOT NULL,
-  `reward_amount` decimal(10,4) NOT NULL,
-  PRIMARY KEY (`level`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `booster_matrices` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(8) NOT NULL,
+  `booster_type` enum('booster_10','booster_20','booster_40','booster_80','booster_160','booster_320') NOT NULL,
+  `upline_id` varchar(8) DEFAULT NULL COMMENT 'Direct upline in this booster matrix',
+  `position_slot` tinyint(1) NOT NULL COMMENT '1-4 positions per level',
+  `matrix_level` tinyint(1) NOT NULL COMMENT '1=Level 1 (4 slots), 2=Level 2 (16 slots)',
+  `board_id` int(11) DEFAULT NULL COMMENT 'Groups nodes into individual 20-person boards',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`),
+  KEY `idx_upline` (`upline_id`,`booster_type`),
+  KEY `idx_booster` (`booster_type`),
+  KEY `idx_board` (`board_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `reward_targets`
+-- Dumping data for table `booster_matrices`
 --
 
-LOCK TABLES `reward_targets` WRITE;
-/*!40000 ALTER TABLE `reward_targets` DISABLE KEYS */;
-INSERT INTO `reward_targets` VALUES (1,15,15,15.0000),(2,18,18,3.0000),(3,24,24,6.0000),(4,36,36,12.0000),(5,60,60,24.0000),(6,108,108,48.0000),(7,204,204,96.0000),(8,396,396,192.0000),(9,780,780,384.0000),(10,1548,1548,768.0000);
-/*!40000 ALTER TABLE `reward_targets` ENABLE KEYS */;
+LOCK TABLES `booster_matrices` WRITE;
+/*!40000 ALTER TABLE `booster_matrices` DISABLE KEYS */;
+/*!40000 ALTER TABLE `booster_matrices` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `company_ledger`
+--
+
+DROP TABLE IF EXISTS `company_ledger`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `company_ledger` (
+  `id` int(11) NOT NULL DEFAULT 1,
+  `total_funds_received` decimal(15,2) DEFAULT 0.00 COMMENT 'Cumulative USDT deposited into system',
+  `unutilized_funds` decimal(15,2) DEFAULT 0.00 COMMENT 'Total in all users main wallets (not spent)',
+  `invested_funds` decimal(15,2) DEFAULT 0.00 COMMENT 'Total spent on packages/boosters',
+  `total_usdt_paid_out` decimal(15,2) DEFAULT 0.00 COMMENT 'Total USDT that left system via withdrawals',
+  `company_wallet_balance` decimal(15,2) DEFAULT 0.00 COMMENT 'Company earnings (fees + revenue + SA000001 sweep)',
+  `total_payout_liability_main` decimal(15,2) DEFAULT 0.00 COMMENT 'Total sitting in all users package earning wallets',
+  `total_payout_liability_booster` decimal(15,2) DEFAULT 0.00 COMMENT 'Total sitting in all users booster earning wallets',
+  `total_held_sponsor_income` decimal(15,2) DEFAULT 0.00 COMMENT 'Total sponsor income held pending sponsor upgrade',
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `company_ledger`
+--
+
+LOCK TABLES `company_ledger` WRITE;
+/*!40000 ALTER TABLE `company_ledger` DISABLE KEYS */;
+INSERT INTO `company_ledger` VALUES (1,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,'2026-07-21 07:40:22');
+/*!40000 ALTER TABLE `company_ledger` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `deposit_requests`
+--
+
+DROP TABLE IF EXISTS `deposit_requests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `deposit_requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(8) NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `tx_hash` varchar(255) DEFAULT NULL COMMENT 'Blockchain transaction hash',
+  `proof_image` varchar(255) DEFAULT NULL COMMENT 'Path to uploaded proof screenshot',
+  `status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
+  `admin_remarks` text DEFAULT NULL COMMENT 'Reason for rejection if applicable',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`),
+  KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `deposit_requests`
+--
+
+LOCK TABLES `deposit_requests` WRITE;
+/*!40000 ALTER TABLE `deposit_requests` DISABLE KEYS */;
+/*!40000 ALTER TABLE `deposit_requests` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `package_matrices`
+--
+
+DROP TABLE IF EXISTS `package_matrices`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `package_matrices` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(8) NOT NULL,
+  `package_type` enum('main_11','main_30','main_60','main_120','main_240','main_480') NOT NULL,
+  `upline_id` varchar(8) DEFAULT NULL COMMENT 'Direct upline in this specific matrix',
+  `position_slot` tinyint(1) NOT NULL COMMENT '1=Left, 2=Right',
+  `matrix_level` int(11) DEFAULT 1 COMMENT 'Depth level in the matrix',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`),
+  KEY `idx_upline` (`upline_id`,`package_type`),
+  KEY `idx_package` (`package_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `package_matrices`
+--
+
+LOCK TABLES `package_matrices` WRITE;
+/*!40000 ALTER TABLE `package_matrices` DISABLE KEYS */;
+/*!40000 ALTER TABLE `package_matrices` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `settings`
+--
+
+DROP TABLE IF EXISTS `settings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `setting_key` varchar(100) NOT NULL,
+  `setting_value` text DEFAULT NULL,
+  `setting_label` varchar(100) DEFAULT NULL COMMENT 'Human-readable label for admin UI',
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `setting_key` (`setting_key`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `settings`
+--
+
+LOCK TABLES `settings` WRITE;
+/*!40000 ALTER TABLE `settings` DISABLE KEYS */;
+INSERT INTO `settings` VALUES (1,'company_usdt_address','sdaasdasdasdassaddsadsa','Company USDT Wallet Address (TRC20)','2026-07-20 18:22:52'),(2,'company_qr_code_path','assets/company_qr.jpg','Company QR Code Image Path','2026-07-20 18:28:18'),(3,'min_withdrawal_amount','10','Minimum Withdrawal Amount ($)','2026-07-19 11:26:03'),(4,'max_withdrawal_amount','500','Maximum Withdrawal Amount ($)','2026-07-20 18:24:08'),(5,'withdrawal_enabled','1','Enable/Disable Withdrawals','2026-07-19 11:26:03'),(6,'registration_enabled','1','Enable/Disable New Registrations','2026-07-19 11:26:03');
+/*!40000 ALTER TABLE `settings` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `support_tickets`
+--
+
+DROP TABLE IF EXISTS `support_tickets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `support_tickets` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(8) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `status` enum('Open','In Progress','Closed') DEFAULT 'Open',
+  `admin_reply` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`),
+  KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `support_tickets`
+--
+
+LOCK TABLES `support_tickets` WRITE;
+/*!40000 ALTER TABLE `support_tickets` DISABLE KEYS */;
+/*!40000 ALTER TABLE `support_tickets` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -104,20 +264,24 @@ DROP TABLE IF EXISTS `transactions`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `transactions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `from_user_id` int(11) NOT NULL,
-  `amount` decimal(10,4) NOT NULL,
-  `type` enum('sponsor','autopool','level','reward') NOT NULL,
-  `level` int(11) DEFAULT 0,
+  `user_id` varchar(8) NOT NULL COMMENT 'The user this transaction belongs to',
+  `transaction_type` enum('deposit','withdrawal','package_purchase','booster_purchase','autopool_income','sponsor_income','level_income','booster_income','reward_income','sponsor_income_held','sponsor_income_released','internal_transfer','admin_charge','company_revenue','company_sweep') NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `wallet_type` varchar(20) DEFAULT NULL COMMENT 'e.g. main_deposit, earnings_11, booster_10',
+  `status` enum('Pending','Approved','Rejected','Held','Released','Completed') DEFAULT 'Completed',
+  `narration` text NOT NULL COMMENT 'Human-readable description of the transaction',
+  `related_user_id` varchar(8) DEFAULT NULL COMMENT 'The other party involved (sponsor, buyer, etc.)',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` enum('completed','pending') DEFAULT 'completed',
-  `blocked_by_user_id` int(11) DEFAULT NULL,
+  `blocked_by_user_id` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `from_user_id` (`from_user_id`),
-  CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `transactions_ibfk_2` FOREIGN KEY (`from_user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `idx_user` (`user_id`),
+  KEY `idx_type` (`transaction_type`),
+  KEY `idx_status` (`status`),
+  KEY `idx_created` (`created_at`),
+  KEY `idx_wallet` (`wallet_type`),
+  KEY `idx_user_type` (`user_id`,`transaction_type`),
+  KEY `idx_blocked_by` (`blocked_by_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,37 +290,88 @@ CREATE TABLE `transactions` (
 
 LOCK TABLES `transactions` WRITE;
 /*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
-INSERT INTO `transactions` VALUES (1,1,2,5.0000,'sponsor',0,'2026-07-17 06:35:31','completed',NULL),(2,1,2,0.1250,'autopool',1,'2026-07-17 06:35:31','completed',1),(3,1,3,5.0000,'sponsor',0,'2026-07-17 06:35:32','completed',NULL),(4,1,3,0.1250,'autopool',1,'2026-07-17 06:35:32','completed',NULL),(5,1,3,0.1000,'level',1,'2026-07-17 06:35:32','completed',NULL),(6,1,4,5.0000,'sponsor',0,'2026-07-17 06:40:13','completed',NULL),(7,2,4,0.1250,'autopool',1,'2026-07-17 06:40:13','completed',2),(8,1,4,0.1250,'autopool',2,'2026-07-17 06:40:13','completed',2),(9,1,4,0.1000,'level',1,'2026-07-17 06:40:13','completed',NULL),(10,1,5,5.0000,'sponsor',0,'2026-07-17 06:40:14','completed',NULL),(11,2,5,0.1250,'autopool',1,'2026-07-17 06:40:14','completed',NULL),(12,1,5,0.1250,'autopool',2,'2026-07-17 06:40:14','completed',NULL),(13,1,5,0.1000,'level',1,'2026-07-17 06:40:14','completed',NULL),(14,1,6,5.0000,'sponsor',0,'2026-07-17 06:40:14','completed',NULL),(15,3,6,0.1250,'autopool',1,'2026-07-17 06:40:14','completed',3),(16,1,6,0.1250,'autopool',2,'2026-07-17 06:40:14','completed',3),(17,1,6,0.1000,'level',1,'2026-07-17 06:40:14','completed',NULL),(18,1,7,5.0000,'sponsor',0,'2026-07-17 06:40:15','completed',NULL),(19,3,7,0.1250,'autopool',1,'2026-07-17 06:40:15','completed',NULL),(20,1,7,0.1250,'autopool',2,'2026-07-17 06:40:15','completed',NULL),(21,1,7,0.1000,'level',1,'2026-07-17 06:40:15','completed',NULL),(22,1,8,5.0000,'sponsor',0,'2026-07-17 06:40:15','completed',NULL),(23,4,8,0.1250,'autopool',1,'2026-07-17 06:40:15','completed',4),(24,2,8,0.1250,'autopool',2,'2026-07-17 06:40:15','completed',4),(25,1,8,0.1250,'autopool',3,'2026-07-17 06:40:15','completed',4),(26,1,8,0.1000,'level',1,'2026-07-17 06:40:15','completed',NULL),(27,1,9,5.0000,'sponsor',0,'2026-07-17 06:40:15','completed',NULL),(28,4,9,0.1250,'autopool',1,'2026-07-17 06:40:15','completed',NULL),(29,2,9,0.1250,'autopool',2,'2026-07-17 06:40:15','completed',NULL),(30,1,9,0.1250,'autopool',3,'2026-07-17 06:40:15','completed',NULL),(31,1,9,0.1000,'level',1,'2026-07-17 06:40:15','completed',NULL),(32,1,10,5.0000,'sponsor',0,'2026-07-17 06:40:16','completed',NULL),(33,5,10,0.1250,'autopool',1,'2026-07-17 06:40:16','completed',5),(34,2,10,0.1250,'autopool',2,'2026-07-17 06:40:16','completed',5),(35,1,10,0.1250,'autopool',3,'2026-07-17 06:40:16','completed',5),(36,1,10,0.1000,'level',1,'2026-07-17 06:40:16','completed',NULL),(37,1,11,5.0000,'sponsor',0,'2026-07-17 06:40:16','completed',NULL),(38,5,11,0.1250,'autopool',1,'2026-07-17 06:40:16','completed',NULL),(39,2,11,0.1250,'autopool',2,'2026-07-17 06:40:16','completed',NULL),(40,1,11,0.1250,'autopool',3,'2026-07-17 06:40:16','completed',NULL),(41,1,11,0.1000,'level',1,'2026-07-17 06:40:16','completed',NULL),(42,1,12,5.0000,'sponsor',0,'2026-07-17 06:40:16','completed',NULL),(43,6,12,0.1250,'autopool',1,'2026-07-17 06:40:16','completed',6),(44,3,12,0.1250,'autopool',2,'2026-07-17 06:40:16','completed',6),(45,1,12,0.1250,'autopool',3,'2026-07-17 06:40:16','completed',6),(46,1,12,0.1000,'level',1,'2026-07-17 06:40:16','completed',NULL),(47,5,13,5.0000,'sponsor',0,'2026-07-17 06:47:19','completed',NULL),(48,6,13,0.1250,'autopool',1,'2026-07-17 06:47:19','completed',NULL),(49,3,13,0.1250,'autopool',2,'2026-07-17 06:47:19','completed',NULL),(50,1,13,0.1250,'autopool',3,'2026-07-17 06:47:19','completed',NULL),(51,1,13,0.1000,'level',2,'2026-07-17 06:47:19','completed',NULL),(52,13,14,5.0000,'sponsor',0,'2026-07-17 06:47:42','completed',NULL),(53,7,14,0.1250,'autopool',1,'2026-07-17 06:47:42','completed',7),(54,3,14,0.1250,'autopool',2,'2026-07-17 06:47:42','completed',7),(55,1,14,0.1250,'autopool',3,'2026-07-17 06:47:42','completed',7),(56,1,14,0.1000,'level',3,'2026-07-17 06:47:42','completed',13),(57,13,15,5.0000,'sponsor',0,'2026-07-17 06:47:43','completed',NULL),(58,7,15,0.1250,'autopool',1,'2026-07-17 06:47:43','completed',NULL),(59,3,15,0.1250,'autopool',2,'2026-07-17 06:47:43','completed',NULL),(60,1,15,0.1250,'autopool',3,'2026-07-17 06:47:43','completed',NULL),(61,13,15,0.1000,'level',1,'2026-07-17 06:47:43','completed',13),(62,1,15,0.1000,'level',3,'2026-07-17 06:47:43','completed',13),(63,13,16,5.0000,'sponsor',0,'2026-07-17 06:47:44','completed',NULL),(64,8,16,0.1250,'autopool',1,'2026-07-17 06:47:44','completed',8),(65,4,16,0.1250,'autopool',2,'2026-07-17 06:47:44','completed',8),(66,2,16,0.1250,'autopool',3,'2026-07-17 06:47:44','completed',8),(67,1,16,0.1250,'autopool',4,'2026-07-17 06:47:44','completed',8),(68,13,16,0.1000,'level',1,'2026-07-17 06:47:44','completed',13),(69,1,16,0.1000,'level',3,'2026-07-17 06:47:44','completed',13),(70,13,17,5.0000,'sponsor',0,'2026-07-17 06:47:45','completed',NULL),(71,8,17,0.1250,'autopool',1,'2026-07-17 06:47:45','completed',NULL),(72,4,17,0.1250,'autopool',2,'2026-07-17 06:47:45','completed',NULL),(73,2,17,0.1250,'autopool',3,'2026-07-17 06:47:45','completed',NULL),(74,1,17,0.1250,'autopool',4,'2026-07-17 06:47:45','completed',NULL),(75,13,17,0.1000,'level',1,'2026-07-17 06:47:45','completed',13),(76,1,17,0.1000,'level',3,'2026-07-17 06:47:45','completed',13),(77,13,18,5.0000,'sponsor',0,'2026-07-17 06:47:45','completed',NULL),(78,9,18,0.1250,'autopool',1,'2026-07-17 06:47:45','completed',9),(79,4,18,0.1250,'autopool',2,'2026-07-17 06:47:45','completed',9),(80,2,18,0.1250,'autopool',3,'2026-07-17 06:47:45','completed',9),(81,1,18,0.1250,'autopool',4,'2026-07-17 06:47:45','completed',9),(82,13,18,0.1000,'level',1,'2026-07-17 06:47:45','completed',13),(83,1,18,0.1000,'level',3,'2026-07-17 06:47:45','completed',13),(84,13,19,5.0000,'sponsor',0,'2026-07-17 06:47:46','completed',NULL),(85,9,19,0.1250,'autopool',1,'2026-07-17 06:47:46','completed',NULL),(86,4,19,0.1250,'autopool',2,'2026-07-17 06:47:46','completed',NULL),(87,2,19,0.1250,'autopool',3,'2026-07-17 06:47:46','completed',NULL),(88,1,19,0.1250,'autopool',4,'2026-07-17 06:47:46','completed',NULL),(89,13,19,0.1000,'level',1,'2026-07-17 06:47:46','completed',13),(90,1,19,0.1000,'level',3,'2026-07-17 06:47:46','completed',13),(91,13,20,5.0000,'sponsor',0,'2026-07-17 06:47:47','completed',NULL),(92,10,20,0.1250,'autopool',1,'2026-07-17 06:47:47','completed',10),(93,5,20,0.1250,'autopool',2,'2026-07-17 06:47:47','completed',10),(94,2,20,0.1250,'autopool',3,'2026-07-17 06:47:47','completed',10),(95,1,20,0.1250,'autopool',4,'2026-07-17 06:47:47','completed',10),(96,13,20,0.1000,'level',1,'2026-07-17 06:47:47','completed',13),(97,1,20,0.1000,'level',3,'2026-07-17 06:47:47','completed',13),(98,13,21,5.0000,'sponsor',0,'2026-07-17 06:47:47','completed',NULL),(99,10,21,0.1250,'autopool',1,'2026-07-17 06:47:47','completed',NULL),(100,5,21,0.1250,'autopool',2,'2026-07-17 06:47:47','completed',NULL),(101,2,21,0.1250,'autopool',3,'2026-07-17 06:47:47','completed',NULL),(102,1,21,0.1250,'autopool',4,'2026-07-17 06:47:47','completed',NULL),(103,13,21,0.1000,'level',1,'2026-07-17 06:47:47','completed',13),(104,1,21,0.1000,'level',3,'2026-07-17 06:47:47','completed',13),(105,13,22,5.0000,'sponsor',0,'2026-07-17 06:47:48','completed',NULL),(106,11,22,0.1250,'autopool',1,'2026-07-17 06:47:48','completed',11),(107,5,22,0.1250,'autopool',2,'2026-07-17 06:47:48','completed',11),(108,2,22,0.1250,'autopool',3,'2026-07-17 06:47:48','completed',11),(109,1,22,0.1250,'autopool',4,'2026-07-17 06:47:48','completed',11),(110,13,22,0.1000,'level',1,'2026-07-17 06:47:48','completed',13),(111,1,22,0.1000,'level',3,'2026-07-17 06:47:48','completed',13),(112,13,23,5.0000,'sponsor',0,'2026-07-17 06:47:48','completed',NULL),(113,11,23,0.1250,'autopool',1,'2026-07-17 06:47:48','completed',NULL),(114,5,23,0.1250,'autopool',2,'2026-07-17 06:47:48','completed',NULL),(115,2,23,0.1250,'autopool',3,'2026-07-17 06:47:48','completed',NULL),(116,1,23,0.1250,'autopool',4,'2026-07-17 06:47:48','completed',NULL),(117,13,23,0.1000,'level',1,'2026-07-17 06:47:48','completed',13),(118,1,23,0.1000,'level',3,'2026-07-17 06:47:48','completed',13),(119,13,24,5.0000,'sponsor',0,'2026-07-17 06:47:49','completed',NULL),(120,12,24,0.1250,'autopool',1,'2026-07-17 06:47:49','completed',12),(121,6,24,0.1250,'autopool',2,'2026-07-17 06:47:49','completed',12),(122,3,24,0.1250,'autopool',3,'2026-07-17 06:47:49','completed',12),(123,1,24,0.1250,'autopool',4,'2026-07-17 06:47:49','completed',12),(124,13,24,0.1000,'level',1,'2026-07-17 06:47:49','completed',13),(125,1,24,0.1000,'level',3,'2026-07-17 06:47:49','completed',13),(126,13,25,5.0000,'sponsor',0,'2026-07-17 06:47:50','completed',NULL),(127,12,25,0.1250,'autopool',1,'2026-07-17 06:47:50','completed',NULL),(128,6,25,0.1250,'autopool',2,'2026-07-17 06:47:50','completed',NULL),(129,3,25,0.1250,'autopool',3,'2026-07-17 06:47:50','completed',NULL),(130,1,25,0.1250,'autopool',4,'2026-07-17 06:47:50','completed',NULL),(131,13,25,0.1000,'level',1,'2026-07-17 06:47:50','completed',13),(132,1,25,0.1000,'level',3,'2026-07-17 06:47:50','completed',13),(133,13,26,5.0000,'sponsor',0,'2026-07-17 06:47:50','completed',NULL),(134,13,26,0.1250,'autopool',1,'2026-07-17 06:47:50','completed',13),(135,6,26,0.1250,'autopool',2,'2026-07-17 06:47:50','completed',13),(136,3,26,0.1250,'autopool',3,'2026-07-17 06:47:50','completed',13),(137,1,26,0.1250,'autopool',4,'2026-07-17 06:47:50','completed',13),(138,13,26,0.1000,'level',1,'2026-07-17 06:47:50','completed',13),(139,1,26,0.1000,'level',3,'2026-07-17 06:47:50','completed',13),(140,13,27,5.0000,'sponsor',0,'2026-07-17 06:47:51','completed',NULL),(141,13,27,0.1250,'autopool',1,'2026-07-17 06:47:51','completed',NULL),(142,6,27,0.1250,'autopool',2,'2026-07-17 06:47:51','completed',NULL),(143,3,27,0.1250,'autopool',3,'2026-07-17 06:47:51','completed',NULL),(144,1,27,0.1250,'autopool',4,'2026-07-17 06:47:51','completed',NULL),(145,13,27,0.1000,'level',1,'2026-07-17 06:47:51','completed',NULL),(146,1,27,0.1000,'level',3,'2026-07-17 06:47:51','completed',NULL),(147,13,28,5.0000,'sponsor',0,'2026-07-17 06:47:52','completed',NULL),(148,14,28,0.1250,'autopool',1,'2026-07-17 06:47:52','completed',14),(149,7,28,0.1250,'autopool',2,'2026-07-17 06:47:52','completed',14),(150,3,28,0.1250,'autopool',3,'2026-07-17 06:47:52','completed',14),(151,1,28,0.1250,'autopool',4,'2026-07-17 06:47:52','completed',14),(152,13,28,0.1000,'level',1,'2026-07-17 06:47:52','completed',NULL),(153,1,28,0.1000,'level',3,'2026-07-17 06:47:52','completed',NULL),(154,13,29,5.0000,'sponsor',0,'2026-07-17 06:47:52','completed',NULL),(155,14,29,0.1250,'autopool',1,'2026-07-17 06:47:52','completed',NULL),(156,7,29,0.1250,'autopool',2,'2026-07-17 06:47:52','completed',NULL),(157,3,29,0.1250,'autopool',3,'2026-07-17 06:47:52','completed',NULL),(158,1,29,0.1250,'autopool',4,'2026-07-17 06:47:52','completed',NULL),(159,13,29,0.1000,'level',1,'2026-07-17 06:47:52','completed',NULL),(160,1,29,0.1000,'level',3,'2026-07-17 06:47:52','completed',NULL),(161,2,30,5.0000,'sponsor',0,'2026-07-17 06:48:50','completed',NULL),(162,15,30,0.1250,'autopool',1,'2026-07-17 06:48:50','completed',15),(163,7,30,0.1250,'autopool',2,'2026-07-17 06:48:50','completed',15),(164,3,30,0.1250,'autopool',3,'2026-07-17 06:48:50','completed',15),(165,1,30,0.1250,'autopool',4,'2026-07-17 06:48:50','completed',15),(166,1,30,0.1000,'level',2,'2026-07-17 06:48:50','completed',NULL),(167,2,31,5.0000,'sponsor',0,'2026-07-17 06:48:50','completed',NULL),(168,15,31,0.1250,'autopool',1,'2026-07-17 06:48:50','completed',NULL),(169,7,31,0.1250,'autopool',2,'2026-07-17 06:48:50','completed',NULL),(170,3,31,0.1250,'autopool',3,'2026-07-17 06:48:50','completed',NULL),(171,1,31,0.1250,'autopool',4,'2026-07-17 06:48:50','completed',NULL),(172,2,31,0.1000,'level',1,'2026-07-17 06:48:50','completed',NULL),(173,1,31,0.1000,'level',2,'2026-07-17 06:48:50','completed',NULL),(174,2,32,5.0000,'sponsor',0,'2026-07-17 06:48:51','completed',NULL),(175,16,32,0.1250,'autopool',1,'2026-07-17 06:48:51','completed',16),(176,8,32,0.1250,'autopool',2,'2026-07-17 06:48:51','completed',16),(177,4,32,0.1250,'autopool',3,'2026-07-17 06:48:51','completed',16),(178,2,32,0.1250,'autopool',4,'2026-07-17 06:48:51','completed',16),(179,1,32,0.8750,'autopool',5,'2026-07-17 06:48:51','completed',16),(180,2,32,0.1000,'level',1,'2026-07-17 06:48:51','completed',NULL),(181,1,32,0.1000,'level',2,'2026-07-17 06:48:51','completed',NULL),(182,2,33,5.0000,'sponsor',0,'2026-07-17 06:48:52','completed',NULL),(183,16,33,0.1250,'autopool',1,'2026-07-17 06:48:52','completed',NULL),(184,8,33,0.1250,'autopool',2,'2026-07-17 06:48:52','completed',NULL),(185,4,33,0.1250,'autopool',3,'2026-07-17 06:48:52','completed',NULL),(186,2,33,0.1250,'autopool',4,'2026-07-17 06:48:52','completed',NULL),(187,1,33,0.8750,'autopool',5,'2026-07-17 06:48:52','completed',NULL),(188,2,33,0.1000,'level',1,'2026-07-17 06:48:52','completed',NULL),(189,1,33,0.1000,'level',2,'2026-07-17 06:48:52','completed',NULL),(190,3,34,5.0000,'sponsor',0,'2026-07-17 06:49:09','completed',NULL),(191,1,34,15.0000,'reward',1,'2026-07-17 06:49:09','completed',NULL),(192,17,34,0.1250,'autopool',1,'2026-07-17 06:49:09','pending',17),(193,8,34,0.1250,'autopool',2,'2026-07-17 06:49:09','pending',17),(194,4,34,0.1250,'autopool',3,'2026-07-17 06:49:09','pending',17),(195,2,34,0.1250,'autopool',4,'2026-07-17 06:49:09','pending',17),(196,1,34,0.8750,'autopool',5,'2026-07-17 06:49:09','pending',17),(197,1,34,0.1000,'level',2,'2026-07-17 06:49:09','completed',NULL);
 /*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `user_rewards`
+-- Table structure for table `user_financial_summary`
 --
 
-DROP TABLE IF EXISTS `user_rewards`;
+DROP TABLE IF EXISTS `user_financial_summary`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_rewards` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `level` int(11) NOT NULL,
-  `amount` decimal(10,4) NOT NULL,
-  `achieved_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_user_level` (`user_id`,`level`),
-  CONSTRAINT `user_rewards_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `user_financial_summary` (
+  `user_id` varchar(8) NOT NULL,
+  `my_package` decimal(10,2) DEFAULT 0.00 COMMENT 'Highest active package amount',
+  `direct_team_count` int(11) DEFAULT 0 COMMENT 'Number of direct referrals',
+  `total_active_team_count` int(11) DEFAULT 0 COMMENT 'All downlines with at least $11 package',
+  `total_inactive_team_count` int(11) DEFAULT 0 COMMENT 'All downlines with no package',
+  `strong_leg_count` int(11) DEFAULT 0 COMMENT 'Size of largest single leg',
+  `other_legs_count` int(11) DEFAULT 0 COMMENT 'Sum of all other legs',
+  `main_deposit_balance` decimal(15,2) DEFAULT 0.00,
+  `earnings_11_wallet` decimal(15,2) DEFAULT 0.00,
+  `earnings_30_wallet` decimal(15,2) DEFAULT 0.00,
+  `earnings_60_wallet` decimal(15,2) DEFAULT 0.00,
+  `earnings_120_wallet` decimal(15,2) DEFAULT 0.00,
+  `earnings_240_wallet` decimal(15,2) DEFAULT 0.00,
+  `earnings_480_wallet` decimal(15,2) DEFAULT 0.00,
+  `booster_10_wallet` decimal(15,2) DEFAULT 0.00,
+  `booster_20_wallet` decimal(15,2) DEFAULT 0.00,
+  `booster_40_wallet` decimal(15,2) DEFAULT 0.00,
+  `booster_80_wallet` decimal(15,2) DEFAULT 0.00,
+  `booster_160_wallet` decimal(15,2) DEFAULT 0.00,
+  `booster_320_wallet` decimal(15,2) DEFAULT 0.00,
+  `total_direct_referral_income` decimal(15,2) DEFAULT 0.00,
+  `total_team_level_income` decimal(15,2) DEFAULT 0.00,
+  `total_global_autopool_income` decimal(15,2) DEFAULT 0.00,
+  `total_booster_income` decimal(15,2) DEFAULT 0.00,
+  `total_reward_income` decimal(15,2) DEFAULT 0.00,
+  `total_withdrawal_amount` decimal(15,2) DEFAULT 0.00,
+  `net_income` decimal(15,2) DEFAULT 0.00 COMMENT 'Total earned minus total withdrawn',
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `user_financial_summary_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `user_rewards`
+-- Dumping data for table `user_financial_summary`
 --
 
-LOCK TABLES `user_rewards` WRITE;
-/*!40000 ALTER TABLE `user_rewards` DISABLE KEYS */;
-INSERT INTO `user_rewards` VALUES (1,1,1,15.0000,'2026-07-17 06:49:09');
-/*!40000 ALTER TABLE `user_rewards` ENABLE KEYS */;
+LOCK TABLES `user_financial_summary` WRITE;
+/*!40000 ALTER TABLE `user_financial_summary` DISABLE KEYS */;
+INSERT INTO `user_financial_summary` VALUES ('SA000001',0.00,0,0,0,0,0,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,'2026-07-21 07:40:22');
+/*!40000 ALTER TABLE `user_financial_summary` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_packages`
+--
+
+DROP TABLE IF EXISTS `user_packages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_packages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(8) NOT NULL,
+  `package_type` enum('main_11','main_30','main_60','main_120','main_240','main_480','booster_10','booster_20','booster_40','booster_80','booster_160','booster_320') NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `activated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `funded_by` varchar(8) DEFAULT NULL COMMENT 'user_id of the person who paid for this package',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_package` (`user_id`,`package_type`),
+  KEY `idx_user` (`user_id`),
+  KEY `idx_type` (`package_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_packages`
+--
+
+LOCK TABLES `user_packages` WRITE;
+/*!40000 ALTER TABLE `user_packages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_packages` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -168,16 +383,22 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(8) NOT NULL COMMENT 'Alphanumeric ID: SA followed by 6 digits',
+  `sponsor_id` varchar(8) DEFAULT NULL COMMENT 'References parent user_id in sponsor tree',
   `name` varchar(100) NOT NULL,
-  `sponsor_id` int(11) DEFAULT NULL,
-  `upline_id` int(11) DEFAULT NULL,
-  `position` enum('left','right') DEFAULT NULL,
-  `total_earnings` decimal(10,4) DEFAULT 0.0000,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `password` varchar(255) NOT NULL COMMENT 'Bcrypt hashed',
+  `status` enum('Active','Inactive','Blocked') DEFAULT 'Inactive' COMMENT 'Inactive = registered but no package',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `reward_level` int(11) DEFAULT 0,
-  `sponsor_team_size` int(11) DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `wallet_address` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`),
+  KEY `idx_sponsor` (`sponsor_id`),
+  KEY `idx_status` (`status`),
+  KEY `idx_email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,8 +407,71 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Mahi Kohli',NULL,NULL,NULL,78.7000,'2026-07-17 06:35:29',5,33),(2,'Arjun Naidu',1,1,'left',22.3000,'2026-07-17 06:35:31',2,4),(3,'Diya Babu',1,1,'right',6.7500,'2026-07-17 06:35:32',0,1),(4,'Vijay Swaminathan',1,2,'left',1.0000,'2026-07-17 06:40:13',0,0),(5,'Richa Pai',1,2,'right',5.7500,'2026-07-17 06:40:14',0,17),(6,'Kunal Garg',1,3,'left',0.7500,'2026-07-17 06:40:14',0,0),(7,'Riya Mittal',1,3,'right',0.7500,'2026-07-17 06:40:15',0,0),(8,'Ravi Das',1,4,'left',0.5000,'2026-07-17 06:40:15',0,0),(9,'Rohan Garg',1,4,'right',0.2500,'2026-07-17 06:40:15',0,0),(10,'Raj Shetty',1,5,'left',0.2500,'2026-07-17 06:40:16',0,0),(11,'Jyoti Chowdary',1,5,'right',0.2500,'2026-07-17 06:40:16',0,0),(12,'Dinesh Thakur',1,6,'left',0.2500,'2026-07-17 06:40:16',0,0),(13,'Vanya Bhasin',5,6,'right',81.7500,'2026-07-17 06:47:19',8,16),(14,'Mohit Arora',13,7,'left',0.2500,'2026-07-17 06:47:42',0,0),(15,'Ramesh Gowda',13,7,'right',0.2500,'2026-07-17 06:47:43',0,0),(16,'Rachna Gowda',13,8,'left',0.2500,'2026-07-17 06:47:44',0,0),(17,'Krishna Khatri',13,8,'right',0.0000,'2026-07-17 06:47:45',0,0),(18,'Navya Pillai',13,9,'left',0.0000,'2026-07-17 06:47:45',0,0),(19,'Ananya Shukla',13,9,'right',0.0000,'2026-07-17 06:47:46',0,0),(20,'Aditya Nair',13,10,'left',0.0000,'2026-07-17 06:47:47',0,0),(21,'Ritvik Das',13,10,'right',0.0000,'2026-07-17 06:47:47',0,0),(22,'Amit Gill',13,11,'left',0.0000,'2026-07-17 06:47:48',0,0),(23,'Tanya Shetty',13,11,'right',0.0000,'2026-07-17 06:47:48',0,0),(24,'Pooja Agarwal',13,12,'left',0.0000,'2026-07-17 06:47:49',0,0),(25,'Kabir Bansal',13,12,'right',0.0000,'2026-07-17 06:47:50',0,0),(26,'Dhruv Pai',13,13,'left',0.0000,'2026-07-17 06:47:50',0,0),(27,'Rachna Mehta',13,13,'right',0.0000,'2026-07-17 06:47:51',0,0),(28,'Ansh Kumar',13,14,'left',0.0000,'2026-07-17 06:47:52',0,0),(29,'Richa Gowda',13,14,'right',0.0000,'2026-07-17 06:47:52',0,0),(30,'Megha Kini',2,15,'left',0.0000,'2026-07-17 06:48:50',0,0),(31,'Raj Shetty',2,15,'right',0.0000,'2026-07-17 06:48:50',0,0),(32,'Deepak Bansal',2,16,'left',0.0000,'2026-07-17 06:48:51',0,0),(33,'Aanya Naidu',2,16,'right',0.0000,'2026-07-17 06:48:52',0,0),(34,'Advik Bhasin',3,17,'left',0.0000,'2026-07-17 06:49:09',0,0);
+INSERT INTO `users` VALUES (1,'SA000001',NULL,'SAPG','admin@sapg.com','0000000000','$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy','Active','2026-07-19 11:26:03','2026-07-21 07:40:22','ggjhghjgjg');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `wallet_configurations`
+--
+
+DROP TABLE IF EXISTS `wallet_configurations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `wallet_configurations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `wallet_type` varchar(20) NOT NULL,
+  `wallet_label` varchar(50) NOT NULL COMMENT 'Human-readable label',
+  `internal_transfer_fee_percent` decimal(5,2) DEFAULT 5.00,
+  `external_withdrawal_fee_percent` decimal(5,2) DEFAULT 5.00,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `wallet_type` (`wallet_type`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `wallet_configurations`
+--
+
+LOCK TABLES `wallet_configurations` WRITE;
+/*!40000 ALTER TABLE `wallet_configurations` DISABLE KEYS */;
+INSERT INTO `wallet_configurations` VALUES (1,'earnings_11','$11 Package Wallet',5.00,5.00,'2026-07-19 11:26:03'),(2,'earnings_30','$30 Package Wallet',5.00,5.00,'2026-07-19 11:26:03'),(3,'earnings_60','$60 Package Wallet',5.00,5.00,'2026-07-19 11:26:03'),(4,'earnings_120','$120 Package Wallet',5.00,5.00,'2026-07-19 11:26:03'),(5,'earnings_240','$240 Package Wallet',5.00,5.00,'2026-07-19 11:26:03'),(6,'earnings_480','$480 Package Wallet',5.00,5.00,'2026-07-19 11:26:03'),(7,'booster_10','$10 Booster Wallet',5.00,5.00,'2026-07-19 11:26:03'),(8,'booster_20','$20 Booster Wallet',5.00,5.00,'2026-07-19 11:26:03'),(9,'booster_40','$40 Booster Wallet',5.00,5.00,'2026-07-19 11:26:03'),(10,'booster_80','$80 Booster Wallet',5.00,5.00,'2026-07-19 11:26:03'),(11,'booster_160','$160 Booster Wallet',5.00,5.00,'2026-07-19 11:26:03'),(12,'booster_320','$320 Booster Wallet',5.00,5.00,'2026-07-19 11:26:03');
+/*!40000 ALTER TABLE `wallet_configurations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `withdrawal_requests`
+--
+
+DROP TABLE IF EXISTS `withdrawal_requests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `withdrawal_requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(8) NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `wallet_type` varchar(20) NOT NULL COMMENT 'Which earning wallet this is from',
+  `fee_amount` decimal(15,2) DEFAULT 0.00,
+  `net_amount` decimal(15,2) DEFAULT 0.00 COMMENT 'Amount after fee deduction',
+  `destination_address` varchar(255) NOT NULL COMMENT 'External USDT wallet address',
+  `status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
+  `admin_remarks` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`),
+  KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `withdrawal_requests`
+--
+
+LOCK TABLES `withdrawal_requests` WRITE;
+/*!40000 ALTER TABLE `withdrawal_requests` DISABLE KEYS */;
+/*!40000 ALTER TABLE `withdrawal_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -199,4 +483,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-19 19:33:43
+-- Dump completed on 2026-07-21 13:12:45

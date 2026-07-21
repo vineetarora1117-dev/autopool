@@ -236,27 +236,28 @@ function openDirectRegisterModal() {
     
     Swal.fire({
         title: 'Direct User Registration',
+        width: 'min(440px, 92vw)',
         html: `
-            <div style="text-align: left; max-width: 400px; margin: 0 auto;">
-                <div style="margin-bottom: 12px;">
-                    <label style="color: #a0aec0; font-size: 13px; display: block; margin-bottom: 4px;">Sponsor ID</label>
-                    <input type="text" value="${sponsorId} (${sponsorName})" readonly style="width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.1); border: 1px solid #ffb703; color: #ffb703; border-radius: 4px; font-weight: bold;">
+            <div style="text-align: left; width: 100%; box-sizing: border-box;">
+                <div style="margin-bottom: 10px;">
+                    <label style="color: #a0aec0; font-size: 12px; display: block; margin-bottom: 4px; font-weight: 500;">Sponsor ID</label>
+                    <input type="text" value="${sponsorId} (${sponsorName})" readonly style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: rgba(255,255,255,0.08); border: 1px solid #ffb703; color: #ffb703; border-radius: 6px; font-weight: bold; font-size: 13px;">
                 </div>
-                <div style="margin-bottom: 12px;">
-                    <label style="color: #a0aec0; font-size: 13px; display: block; margin-bottom: 4px;">Full Name *</label>
-                    <input type="text" id="regName" class="swal2-input" placeholder="Enter Full Name" style="width: 100%; margin: 0; padding: 8px 12px; background: #061121; color: #fff; border: 1px solid #ffb703; border-radius: 4px;">
+                <div style="margin-bottom: 10px;">
+                    <label style="color: #a0aec0; font-size: 12px; display: block; margin-bottom: 4px; font-weight: 500;">Full Name *</label>
+                    <input type="text" id="regName" placeholder="Enter Full Name" style="width: 100%; box-sizing: border-box; margin: 0; padding: 10px 12px; background: #061121; color: #fff; border: 1px solid #ffb703; border-radius: 6px; font-size: 14px; outline: none;">
                 </div>
-                <div style="margin-bottom: 12px;">
-                    <label style="color: #a0aec0; font-size: 13px; display: block; margin-bottom: 4px;">Email Address *</label>
-                    <input type="email" id="regEmail" class="swal2-input" placeholder="Enter Email Address" style="width: 100%; margin: 0; padding: 8px 12px; background: #061121; color: #fff; border: 1px solid #ffb703; border-radius: 4px;">
+                <div style="margin-bottom: 10px;">
+                    <label style="color: #a0aec0; font-size: 12px; display: block; margin-bottom: 4px; font-weight: 500;">Email Address *</label>
+                    <input type="email" id="regEmail" placeholder="Enter Email Address" style="width: 100%; box-sizing: border-box; margin: 0; padding: 10px 12px; background: #061121; color: #fff; border: 1px solid #ffb703; border-radius: 6px; font-size: 14px; outline: none;">
                 </div>
-                <div style="margin-bottom: 12px;">
-                    <label style="color: #a0aec0; font-size: 13px; display: block; margin-bottom: 4px;">Phone Number *</label>
-                    <input type="tel" id="regPhone" class="swal2-input" placeholder="Enter Phone Number" style="width: 100%; margin: 0; padding: 8px 12px; background: #061121; color: #fff; border: 1px solid #ffb703; border-radius: 4px;">
+                <div style="margin-bottom: 10px;">
+                    <label style="color: #a0aec0; font-size: 12px; display: block; margin-bottom: 4px; font-weight: 500;">Phone Number *</label>
+                    <input type="tel" id="regPhone" placeholder="Enter Phone Number" style="width: 100%; box-sizing: border-box; margin: 0; padding: 10px 12px; background: #061121; color: #fff; border: 1px solid #ffb703; border-radius: 6px; font-size: 14px; outline: none;">
                 </div>
-                <div style="margin-bottom: 12px;">
-                    <label style="color: #a0aec0; font-size: 13px; display: block; margin-bottom: 4px;">Password *</label>
-                    <input type="password" id="regPassword" class="swal2-input" placeholder="Create Password" style="width: 100%; margin: 0; padding: 8px 12px; background: #061121; color: #fff; border: 1px solid #ffb703; border-radius: 4px;">
+                <div style="margin-bottom: 10px;">
+                    <label style="color: #a0aec0; font-size: 12px; display: block; margin-bottom: 4px; font-weight: 500;">Password *</label>
+                    <input type="password" id="regPassword" placeholder="Create Password" style="width: 100%; box-sizing: border-box; margin: 0; padding: 10px 12px; background: #061121; color: #fff; border: 1px solid #ffb703; border-radius: 6px; font-size: 14px; outline: none;">
                 </div>
             </div>
         `,
@@ -288,6 +289,7 @@ function openDirectRegisterModal() {
                 allowOutsideClick: false,
                 background: '#1a1a2e',
                 color: '#fff',
+                width: 'min(380px, 90vw)',
                 didOpen: () => { Swal.showLoading(); }
             });
 
@@ -313,14 +315,15 @@ function openDirectRegisterModal() {
                     Swal.fire({
                         icon: 'success',
                         title: 'Registration Successful!',
+                        width: 'min(440px, 92vw)',
                         html: `
-                            <div style="font-size: 16px; margin-bottom: 15px;">
+                            <div style="font-size: 15px; margin-bottom: 15px; width: 100%; box-sizing: border-box; word-break: break-word;">
                                 User ID: <strong style="color: #ffb703;">${newId}</strong><br>
                                 Password: <strong style="color: #ffb703;">${pass}</strong>
                             </div>
-                            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                                <button class="btn btn-gold" style="padding: 6px 12px; font-size: 12px; border:none; cursor:pointer;" onclick="navigator.clipboard.writeText('User ID: ${newId} | Password: ${pass}'); Swal.fire({icon:'success', title:'Copied', text:'Credentials copied to clipboard!', timer:1500, showConfirmButton:false, background:'#1a1a2e', color:'#fff'});"><i class="fa-solid fa-copy"></i> Copy Credentials</button>
-                                <a href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" class="btn btn-success" style="padding: 6px 12px; font-size: 12px; text-decoration: none; color:#fff; background:#25D366; border-radius:4px; font-weight:bold;"><i class="fa-brands fa-whatsapp"></i> Share WhatsApp</a>
+                            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; width: 100%;">
+                                <button class="btn btn-gold" style="padding: 8px 14px; font-size: 13px; border:none; cursor:pointer; border-radius:6px; font-weight:600;" onclick="navigator.clipboard.writeText('User ID: ${newId} | Password: ${pass}'); Swal.fire({icon:'success', title:'Copied', text:'Credentials copied to clipboard!', timer:1500, showConfirmButton:false, background:'#1a1a2e', color:'#fff', width:'min(320px, 85vw)'});"><i class="fa-solid fa-copy"></i> Copy Credentials</button>
+                                <a href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" class="btn btn-success" style="padding: 8px 14px; font-size: 13px; text-decoration: none; color:#fff; background:#25D366; border-radius:6px; font-weight:600; display:inline-flex; align-items:center; gap:6px;"><i class="fa-brands fa-whatsapp"></i> Share WhatsApp</a>
                             </div>
                         `,
                         background: '#1a1a2e',
@@ -336,7 +339,8 @@ function openDirectRegisterModal() {
                         title: 'Registration Failed',
                         text: data.message || 'An error occurred during registration',
                         background: '#1a1a2e',
-                        color: '#fff'
+                        color: '#fff',
+                        width: 'min(380px, 90vw)'
                     });
                 }
             })
@@ -346,7 +350,8 @@ function openDirectRegisterModal() {
                     title: 'Error',
                     text: 'An error occurred while connecting to the server',
                     background: '#1a1a2e',
-                    color: '#fff'
+                    color: '#fff',
+                    width: 'min(380px, 90vw)'
                 });
             });
         }

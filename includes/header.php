@@ -1225,6 +1225,61 @@
         .others-btn:hover {
             background: rgba(255, 255, 255, 0.15);
         }
+
+        /* --- SweetAlert2 Global Mobile & Responsive Optimization --- */
+        .swal2-container {
+            padding: 10px !important;
+        }
+
+        .swal2-popup {
+            max-width: min(450px, 92vw) !important;
+            width: 92vw !important;
+            border-radius: 14px !important;
+            box-sizing: border-box !important;
+            padding: 1.25rem 1rem !important;
+        }
+
+        @media (max-width: 576px) {
+            .swal2-popup {
+                padding: 1.1rem 0.75rem !important;
+                width: 94vw !important;
+                margin: auto !important;
+            }
+            .swal2-title {
+                font-size: 1.25rem !important;
+                margin-bottom: 0.5rem !important;
+                padding: 0 0.25rem !important;
+                line-height: 1.3 !important;
+            }
+            .swal2-html-container {
+                margin: 0.5rem 0 !important;
+                padding: 0 0.2rem !important;
+                max-height: 65vh !important;
+                overflow-y: auto !important;
+                font-size: 13px !important;
+            }
+            .swal2-actions {
+                flex-direction: column-reverse !important;
+                gap: 8px !important;
+                width: 100% !important;
+                margin-top: 1rem !important;
+            }
+            .swal2-actions button {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px 16px !important;
+                font-size: 14px !important;
+                border-radius: 6px !important;
+            }
+            .swal2-validation-message {
+                margin: 0.5rem 0 0 0 !important;
+                font-size: 13px !important;
+                padding: 8px 12px !important;
+                background: #e53e3e !important;
+                color: #fff !important;
+                border-radius: 6px !important;
+            }
+        }
     </style>
     <!-- THREE.JS Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
