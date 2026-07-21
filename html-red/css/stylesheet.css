@@ -1,0 +1,15 @@
+@font-face {
+    font-family: "Inter", sans-serif;
+    src: url('../fonts/Inter-VariableFont_opsz\,wght.ttf') format('ttf');
+    font-weight: 400, 500, 600, 700, 800, 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Roboto", sans-serif;
+    src: url('../fonts/Roboto-VariableFont_wdth\,wght.ttf') format('ttf');
+    font-weight: 400, 500, 600, 700, 800, 900;
+    font-style: italic;
+    font-display: swap;
+}
