@@ -179,9 +179,10 @@ function processPackagePayout($pdo, $buyerUserId, $packageType, $fundedByUserId 
         // e) Autopool Income Distribution
         $matrixUplines = getMatrixUplines($pdo, $buyerUserId, $packageType, $config['autopool_levels']);
         $current_blocker = null;
-        foreach ($matrixUplines as $upline) {
-            $amt = $config['autopool_amount'];
-            $narration = "Autopool income $$amt from $buyerUserId entering $$cost Matrix (Position: L{$pos['level']}-{$pos['slot']})";
+        foreach ($matrixUplines as $levelIdx => $upline) {
+            $uplineLevel = $levelIdx + 1; // Level 1 to 8 in matrix above buyer
+            $amt = ($uplineLevel <= 4) ? $config['autopool_l1_4'] : $config['autopool_l5_8'];
+            $narration = "Autopool income $$amt from $buyerUserId entering $$cost Matrix (Position: L{$pos['level']}-{$pos['slot']}, Upline L$uplineLevel)";
             if ($upline === 'SA000001') {
                 sweepToCompany($pdo, $amt, 'autopool_income', $narration, $buyerUserId);
             } else {
