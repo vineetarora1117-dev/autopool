@@ -11,6 +11,7 @@ if ($action === 'update_general') {
     $usdt = $_POST['company_usdt_address'] ?? '';
     $min_withdraw = floatval($_POST['min_withdrawal_amount'] ?? 0);
     $max_withdraw = floatval($_POST['max_withdrawal_amount'] ?? 0);
+    $transfer_fee = floatval($_POST['fund_transfer_fee_percent'] ?? 10.00);
     $reg_enabled = isset($_POST['registration_enabled']) ? intval($_POST['registration_enabled']) : 0;
     $with_enabled = isset($_POST['withdrawal_enabled']) ? intval($_POST['withdrawal_enabled']) : 0;
     
@@ -25,6 +26,9 @@ if ($action === 'update_general') {
         
         $stmt = $pdo->prepare("UPDATE settings SET setting_value = ? WHERE setting_key = 'max_withdrawal_amount'");
         $stmt->execute([$max_withdraw]);
+
+        $stmt = $pdo->prepare("UPDATE settings SET setting_value = ? WHERE setting_key = 'fund_transfer_fee_percent'");
+        $stmt->execute([$transfer_fee]);
         
         $stmt = $pdo->prepare("UPDATE settings SET setting_value = ? WHERE setting_key = 'registration_enabled'");
         $stmt->execute([$reg_enabled]);

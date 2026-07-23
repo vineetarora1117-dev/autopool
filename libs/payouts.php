@@ -31,7 +31,8 @@ function checkPackageEligibility($pdo, $userId, $packageType) {
         }
     }
     
-    // Check active direct downlines (status='Active' and package >= 11)
+    // Check active direct downlines (status='Active' and package >= 11) - Dropped for buying packages
+    /*
     if ($config['req_downlines'] > 0) {
         $stmt = $pdo->prepare("
             SELECT COUNT(*) 
@@ -46,6 +47,7 @@ function checkPackageEligibility($pdo, $userId, $packageType) {
             return ['eligible' => false, 'reason' => "You need at least {$config['req_downlines']} active direct downlines (with active package >= $11). You have {$activeDirectCount}."];
         }
     }
+    */
     
     return ['eligible' => true, 'reason' => ''];
 }

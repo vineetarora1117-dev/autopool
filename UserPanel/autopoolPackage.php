@@ -174,16 +174,12 @@ include '../includes/header.php';
         <?php foreach ($packages as $index => $pkg): 
             $is_activated = ($current_package >= $pkg['price']);
             
-            // To unlock a package, user might need previous package activated and required directs
-            // For simplicity, we just check required directs here. 
-            $is_locked = !$is_activated && ($active_direct_team_count < $pkg['req_direct'] || ($index > 0 && $current_package < $packages[$index-1]['price']));
+            // To unlock a package, user only needs the previous package activated (directs are not required for purchase)
+            $is_locked = !$is_activated && ($index > 0 && $current_package < $packages[$index-1]['price']);
             $lock_reason = "";
             if ($is_locked) {
                 if ($index > 0 && $current_package < $packages[$index-1]['price']) {
                     $lock_reason = "Unlock previous package first";
-                } elseif ($active_direct_team_count < $pkg['req_direct']) {
-                    $needed = $pkg['req_direct'] - $active_direct_team_count;
-                    $lock_reason = "Need $needed more active direct referral(s)";
                 }
             }
         ?>

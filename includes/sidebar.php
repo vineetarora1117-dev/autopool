@@ -18,6 +18,7 @@
                 <div class="submenu-container" id="fundsSubmenu">
                     <a class="submenu-item" href="deposit"><i class="fa-regular fa-square"></i> Deposit</a>
                     <a class="submenu-item" href="depositHistory"><i class="fa-regular fa-square"></i> Deposit History</a>
+                    <a class="submenu-item" href="fundTransfer"><i class="fa-regular fa-square"></i> Transfer</a>
                 </div>
 
                 <!-- Profile Menu -->

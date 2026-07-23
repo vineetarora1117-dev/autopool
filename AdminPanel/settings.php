@@ -42,6 +42,10 @@ require_once 'includes/header.php';
             <label>Max Withdrawal Amount ($)</label>
             <input type="number" step="0.01" name="max_withdrawal_amount" value="<?php echo htmlspecialchars($settings['max_withdrawal_amount'] ?? '0.00'); ?>" required style="padding: 8px; background: #061121; color: #fff; border: 1px solid #ffb703; width: 100%;">
         </div>
+        <div class="form-group">
+            <label>Fund Transfer Fee (%)</label>
+            <input type="number" step="0.01" name="fund_transfer_fee_percent" value="<?php echo htmlspecialchars($settings['fund_transfer_fee_percent'] ?? '10.00'); ?>" required style="padding: 8px; background: #061121; color: #fff; border: 1px solid #ffb703; width: 100%;">
+        </div>
         <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
             <label style="margin: 0;">Registration Enabled</label>
             <input type="checkbox" name="registration_enabled" value="1" <?php if (($settings['registration_enabled'] ?? '0') == '1') echo 'checked'; ?> style="width: auto;">
