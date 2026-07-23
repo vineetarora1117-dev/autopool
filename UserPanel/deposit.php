@@ -53,7 +53,7 @@ $qr_code_path = $db_settings['company_qr_code_path'] ?? '';
     </div>
     
     <div class="qr-container">
-        <h3>Company USDT (TRC20) Address</h3>
+        <h3>Company USDT (BEP20) Address</h3>
         <div class="wallet-address" id="companyWallet"><?php echo htmlspecialchars($usdt_address); ?></div>
         <button class="btn-submit-gold" style="padding: 5px 15px; margin-top: 10px; font-size: 12px;" onclick="navigator.clipboard.writeText(document.getElementById('companyWallet').innerText); Swal.fire({icon:'success', title:'Copied!', text:'Wallet Address Copied', timer:1500, showConfirmButton:false, background:'#1a1a2e', color:'#fff'});">Copy Address</button>
         <div style="margin-top: 20px;">

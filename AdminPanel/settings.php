@@ -22,8 +22,8 @@ require_once 'includes/header.php';
     <h3 class="card-title">General Settings</h3>
     <form id="generalSettingsForm" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
         <div class="form-group">
-            <label>Company USDT Address</label>
-            <input type="text" name="company_usdt_address" value="<?php echo htmlspecialchars($settings['company_usdt_address'] ?? ''); ?>" placeholder="TRC20 Address" required style="padding: 8px; background: #061121; color: #fff; border: 1px solid #ffb703; width: 100%;">
+            <label>Company USDT (BEP20) Address</label>
+            <input type="text" name="company_usdt_address" value="<?php echo htmlspecialchars($settings['company_usdt_address'] ?? ''); ?>" placeholder="BEP20 Address" required style="padding: 8px; background: #061121; color: #fff; border: 1px solid #ffb703; width: 100%;">
         </div>
         <div class="form-group">
             <label>QR Code</label>

@@ -73,7 +73,7 @@ require_once 'includes/header.php';
                 </div>
                 <div>
                     <label style="color: #718096; font-size: 13px; display: block; margin-bottom: 5px;">Payment Method Route</label>
-                    <div style="color: #e2e8f0; font-size: 15px; font-weight: bold;">TRC20 (USDT)</div>
+                    <div style="color: #e2e8f0; font-size: 15px; font-weight: bold;">BEP20 (USDT)</div>
                 </div>
             </div>
 
