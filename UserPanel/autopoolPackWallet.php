@@ -162,7 +162,6 @@ include '../includes/header.php';
             <div class="wallet-balance">$<?php echo number_format($balance, 2); ?></div>
             <div class="wallet-actions" style="flex-wrap: wrap;">
                 <a href="newWithdrawal.php" class="btn-wallet-action btn-gold-fill"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</a>
-                <button onclick="triggerTransferMain()" class="btn-wallet-action btn-outline" style="border: 1px solid #ffb703; cursor: pointer;"><i class="fa-solid fa-arrow-right-arrow-left"></i> Transfer to Main Wallet</button>
             </div>
         </div>
     </div>
