@@ -1,0 +1,106 @@
+[
+    {
+        "id": 1,
+        "user_id": "SA176865",
+        "package_type": "main_11",
+        "is_active": 1,
+        "activated_at": "2026-08-04 21:49:54",
+        "funded_by": "SA176865"
+    },
+    {
+        "id": 2,
+        "user_id": "SA176865",
+        "package_type": "booster_10",
+        "is_active": 1,
+        "activated_at": "2026-08-04 21:54:52",
+        "funded_by": "SA176865"
+    },
+    {
+        "id": 3,
+        "user_id": "SA000001",
+        "package_type": "booster_10",
+        "is_active": 1,
+        "activated_at": "2026-08-04 21:57:06",
+        "funded_by": "SA000001"
+    },
+    {
+        "id": 4,
+        "user_id": "SA559719",
+        "package_type": "main_11",
+        "is_active": 1,
+        "activated_at": "2026-08-04 22:08:27",
+        "funded_by": "SA559719"
+    },
+    {
+        "id": 5,
+        "user_id": "SA559719",
+        "package_type": "booster_10",
+        "is_active": 1,
+        "activated_at": "2026-08-04 22:08:49",
+        "funded_by": "SA559719"
+    },
+    {
+        "id": 6,
+        "user_id": "SA135056",
+        "package_type": "main_11",
+        "is_active": 1,
+        "activated_at": "2026-08-05 21:54:39",
+        "funded_by": "SA135056"
+    },
+    {
+        "id": 7,
+        "user_id": "SA000001",
+        "package_type": "main_11",
+        "is_active": 1,
+        "activated_at": "2026-08-05 22:34:59",
+        "funded_by": "SA000001"
+    },
+    {
+        "id": 8,
+        "user_id": "SA176865",
+        "package_type": "main_30",
+        "is_active": 1,
+        "activated_at": "2026-08-05 23:17:57",
+        "funded_by": "SA176865"
+    },
+    {
+        "id": 9,
+        "user_id": "SA016914",
+        "package_type": "main_11",
+        "is_active": 1,
+        "activated_at": "2026-08-06 13:06:02",
+        "funded_by": "SA016914"
+    },
+    {
+        "id": 10,
+        "user_id": "SA000001",
+        "package_type": "main_30",
+        "is_active": 1,
+        "activated_at": "2026-08-06 13:33:28",
+        "funded_by": "SA000001"
+    },
+    {
+        "id": 11,
+        "user_id": "SA000001",
+        "package_type": "main_60",
+        "is_active": 1,
+        "activated_at": "2026-08-06 13:33:33",
+        "funded_by": "SA000001"
+    },
+    {
+        "id": 12,
+        "user_id": "SA285964",
+        "package_type": "main_11",
+        "is_active": 1,
+        "activated_at": "2026-08-06 19:57:15",
+        "funded_by": "SA285964"
+    },
+    {
+        "id": 13,
+        "user_id": "SA514171",
+        "package_type": "main_11",
+        "is_active": 1,
+        "activated_at": "2026-08-06 20:29:36",
+        "funded_by": "SA514171"
+    }
+]

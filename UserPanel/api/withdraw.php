@@ -21,6 +21,7 @@ if (empty($sourceWallet) || empty($destinationAddress) || $amount <= 0) {
 
 // Map allowed earning wallets
 $allowedWallets = [
+    'main_deposit_balance' => 'main_deposit',
     'earnings_11_wallet'  => 'earnings_11',
     'earnings_30_wallet'  => 'earnings_30',
     'earnings_60_wallet'  => 'earnings_60',

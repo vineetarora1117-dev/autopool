@@ -38,7 +38,7 @@ if ($action === 'update_status') {
             $pdo->prepare("UPDATE company_ledger SET total_usdt_paid_out = total_usdt_paid_out + ?")->execute([$request['net_amount']]);
             
             // Insert transaction
-            $pdo->prepare("INSERT INTO transactions (user_id, amount, transaction_type, wallet_type, status, narration) VALUES (?, ?, 'withdrawal', ?, 'Completed', ?)")->execute([$request['user_id'], $request['amount'], $request['wallet_type'], "Withdrawal approved"]);
+            $pdo->prepare("INSERT INTO transactions (user_id, amount, type, wallet_type, status, narration) VALUES (?, ?, 'withdrawal', ?, 'success', ?)")->execute([$request['user_id'], $request['amount'], $request['wallet_type'], "Withdrawal approved"]);
         } else {
             // Refund to user wallet
             $walletField = $request['wallet_type'];
@@ -48,7 +48,7 @@ if ($action === 'update_status') {
                 $pdo->prepare("UPDATE user_financial_summary SET $walletField = $walletField + ? WHERE user_id = ?")->execute([$request['amount'], $request['user_id']]);
             }
              // Insert transaction
-             $pdo->prepare("INSERT INTO transactions (user_id, amount, transaction_type, wallet_type, status, narration) VALUES (?, ?, 'withdrawal', ?, 'Rejected', ?)")->execute([$request['user_id'], $request['amount'], $request['wallet_type'], "Withdrawal rejected & refunded"]);
+             $pdo->prepare("INSERT INTO transactions (user_id, amount, type, wallet_type, status, narration) VALUES (?, ?, 'withdrawal', ?, 'failed', ?)")->execute([$request['user_id'], $request['amount'], $request['wallet_type'], "Withdrawal rejected & refunded"]);
         }
 
         $pdo->commit();

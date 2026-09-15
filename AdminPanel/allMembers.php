@@ -5,12 +5,43 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 20;
 $offset = ($page - 1) * $limit;
 
-$stmt = $pdo->query("SELECT COUNT(*) FROM users");
+$search_id = isset($_GET['search_id']) ? trim($_GET['search_id']) : '';
+$search_name = isset($_GET['search_name']) ? trim($_GET['search_name']) : '';
+
+$where_clauses = [];
+$params = [];
+
+if ($search_id !== '') {
+    $where_clauses[] = "u.user_id LIKE ?";
+    $params[] = "%$search_id%";
+}
+if ($search_name !== '') {
+    $where_clauses[] = "u.name LIKE ?";
+    $params[] = "%$search_name%";
+}
+
+$where_sql = '';
+if (!empty($where_clauses)) {
+    $where_sql = 'WHERE ' . implode(' AND ', $where_clauses);
+}
+
+// Get total matching rows
+$count_sql = "SELECT COUNT(*) FROM users u $where_sql";
+if (!empty($params)) {
+    $stmt = $pdo->prepare($count_sql);
+    $stmt->execute($params);
+} else {
+    $stmt = $pdo->query($count_sql);
+}
 $total_rows = $stmt->fetchColumn();
 $total_pages = ceil($total_rows / $limit);
+if ($total_pages < 1) $total_pages = 1;
 
-$stmt = $pdo->prepare("SELECT u.*, f.my_package, f.direct_team_count FROM users u LEFT JOIN user_financial_summary f ON u.user_id = f.user_id ORDER BY u.created_at DESC LIMIT ? OFFSET ?");
-$stmt->execute([$limit, $offset]);
+// Fetch filtered rows
+$sql = "SELECT u.*, f.my_package, f.direct_team_count FROM users u LEFT JOIN user_financial_summary f ON u.user_id = f.user_id $where_sql ORDER BY u.created_at DESC LIMIT ? OFFSET ?";
+$stmt = $pdo->prepare($sql);
+$execute_params = array_merge($params, [$limit, $offset]);
+$stmt->execute($execute_params);
 $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 require_once 'includes/header.php'; 
@@ -21,6 +52,27 @@ require_once 'includes/header.php';
 
 <div class="card">
     <h3 class="card-title">All Members</h3>
+    
+    <!-- Search Form -->
+    <div style="margin-bottom: 20px;">
+        <form method="GET" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 5px; color: #ffb703; font-size: 14px;">User ID</label>
+                <input type="text" name="search_id" placeholder="Search by User ID" value="<?php echo htmlspecialchars($search_id); ?>" style="width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.5); border: 1px solid #ffb703; color: #fff; border-radius: 4px;">
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 5px; color: #ffb703; font-size: 14px;">Name</label>
+                <input type="text" name="search_name" placeholder="Search by Name" value="<?php echo htmlspecialchars($search_name); ?>" style="width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.5); border: 1px solid #ffb703; color: #fff; border-radius: 4px;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-gold" style="padding: 9px 20px;">Search</button>
+                <?php if ($search_id !== '' || $search_name !== ''): ?>
+                    <a href="allMembers.php" class="btn" style="padding: 9px 20px; background: #555; color: #fff; text-decoration: none; border-radius: 4px; display: inline-block;">Clear</a>
+                <?php endif; ?>
+            </div>
+        </form>
+    </div>
+
     <div class="table-responsive">
         <table>
             <thead>
@@ -72,8 +124,8 @@ require_once 'includes/header.php';
         </table>
     </div>
     <div class="pagination" style="margin-top:15px; display:flex; gap:10px; justify-content:flex-end;">
-        <a href="?page=<?php echo max(1, $page - 1); ?>" class="btn btn-gold" <?php if($page <= 1) echo 'style="pointer-events: none; opacity: 0.5;"'; ?>>Prev</a>
-        <a href="?page=<?php echo min($total_pages, $page + 1); ?>" class="btn btn-gold" <?php if($page >= $total_pages) echo 'style="pointer-events: none; opacity: 0.5;"'; ?>>Next</a>
+        <a href="?page=<?php echo max(1, $page - 1); ?>&search_id=<?php echo urlencode($search_id); ?>&search_name=<?php echo urlencode($search_name); ?>" class="btn btn-gold" <?php if($page <= 1) echo 'style="pointer-events: none; opacity: 0.5;"'; ?>>Prev</a>
+        <a href="?page=<?php echo min($total_pages, $page + 1); ?>&search_id=<?php echo urlencode($search_id); ?>&search_name=<?php echo urlencode($search_name); ?>" class="btn btn-gold" <?php if($page >= $total_pages) echo 'style="pointer-events: none; opacity: 0.5;"'; ?>>Next</a>
     </div>
 </div>
 

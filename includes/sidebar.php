@@ -71,6 +71,7 @@
                 <div class="submenu-container" id="buyPackageSubmenu">
                     <a class="submenu-item" href="#" onclick="openBuyPackageFlow('autopool'); return false;"><i class="fa-regular fa-square"></i> Autopool Package</a>
                     <a class="submenu-item" href="#" onclick="openBuyPackageFlow('infinity'); return false;"><i class="fa-regular fa-square"></i> Infinity Package</a>
+                    <a class="submenu-item" href="buyBooster"><i class="fa-regular fa-square"></i> Buy Booster</a>
                 </div>
 
 
@@ -82,6 +83,16 @@
                 <div class="submenu-container" id="moreSubmenu">
                     <a class="submenu-item" href="ticketSubmit"><i class="fa-regular fa-square"></i> Ticket Submit</a>
                     <a class="submenu-item" href="ticketReport"><i class="fa-regular fa-square"></i> View Ticket</a>
+                </div>
+
+                <!-- Booster Menu -->
+                <div class="nav-item sidebar-toggle" data-target="boosterSubmenu">
+                    <div class="nav-item-content"><i class="fa-solid fa-bolt" style="color:#ffb703;"></i><span>Booster</span></div>
+                    <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                </div>
+                <div class="submenu-container" id="boosterSubmenu">
+                    <a class="submenu-item" href="boosterIncome"><i class="fa-regular fa-square"></i> Booster Income</a>
+                    <a class="submenu-item" href="boosterWallet"><i class="fa-regular fa-square"></i> Booster Wallet</a>
                 </div>
 
                 <?php for ($i = 1; $i <= 6; $i++): ?>
@@ -115,8 +126,50 @@
                 </div>
                 <?php endfor; ?>
 
-                <div class="nav-item" style="margin-top: 20px;" onclick="window.location.href='login.html'">
+                <div class="nav-item" style="margin-top: 20px;" onclick="logoutUser()">
                     <div class="nav-item-content"><i class="fa-solid fa-power-off" style="color:#ff4d4d;"></i><span>Logout</span></div>
                 </div>
             </div>
+
+<script>
+function logoutUser() {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Logout?',
+            text: 'Are you sure you want to logout?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ffb703',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, logout',
+            background: '#1a1a2e',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                performLogout();
+            }
+        });
+    } else {
+        if (confirm('Are you sure you want to logout?')) {
+            performLogout();
+        }
+    }
+}
+
+function performLogout() {
+    const formData = new FormData();
+    formData.append('action', 'logout');
+
+    fetch('api/auth.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(() => {
+        window.location.href = 'login.php';
+    })
+    .catch(() => {
+        window.location.href = 'login.php';
+    });
+}
+</script>
         

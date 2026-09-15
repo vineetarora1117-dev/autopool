@@ -17,10 +17,26 @@ function placeInMatrix($pdo, $userId, $packageType) {
     // Check if SA000001 is already in this matrix
     $stmt = $pdo->prepare("SELECT id FROM package_matrices WHERE user_id = 'SA000001' AND package_type = ?");
     $stmt->execute([$packageType]);
-    if (!$stmt->fetch()) {
+    $existingRoot = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$existingRoot) {
         // If not, insert SA000001 as root
-        $stmtInsertRoot = $pdo->prepare("INSERT INTO package_matrices (user_id, package_type, upline_id, position_slot, matrix_level) VALUES ('SA000001', ?, NULL, 1, 1)");
+        $stmtInsertRoot = $pdo->prepare("INSERT INTO package_matrices (user_id, package_type, upline_id, upline_node_id, position_slot, matrix_level) VALUES ('SA000001', ?, NULL, NULL, 1, 1)");
         $stmtInsertRoot->execute([$packageType]);
+        $rootId = $pdo->lastInsertId();
+    } else {
+        $rootId = $existingRoot['id'];
+    }
+
+    // Guard: If the purchasing user is the root user (SA000001) itself, stop here.
+    // They are now established as the root node and must not be inserted as a child.
+    if ($userId === 'SA000001') {
+        return [
+            'id' => $rootId,
+            'upline_id' => null,
+            'slot' => 1,
+            'level' => 1
+        ];
     }
 
     // Now, find the first available slot using BFS.
@@ -29,9 +45,9 @@ function placeInMatrix($pdo, $userId, $packageType) {
     
     // In SQL, we can find the node with less than 2 children by sorting by id ascending (level order).
     $query = "
-        SELECT pm.user_id, pm.matrix_level
+        SELECT pm.id, pm.user_id, pm.matrix_level
         FROM package_matrices pm
-        LEFT JOIN package_matrices child ON child.upline_id = pm.user_id AND child.package_type = pm.package_type
+        LEFT JOIN package_matrices child ON child.upline_node_id = pm.id
         WHERE pm.package_type = ?
         GROUP BY pm.id, pm.user_id, pm.matrix_level
         HAVING COUNT(child.id) < 2
@@ -45,15 +61,23 @@ function placeInMatrix($pdo, $userId, $packageType) {
     
     if (!$targetNode) {
         // Fallback to SA000001 if something is weird
-        $targetNode = ['user_id' => 'SA000001', 'matrix_level' => 1];
+        $stmtRoot = $pdo->prepare("SELECT id, matrix_level FROM package_matrices WHERE user_id = 'SA000001' AND package_type = ? LIMIT 1");
+        $stmtRoot->execute([$packageType]);
+        $rootNode = $stmtRoot->fetch(PDO::FETCH_ASSOC);
+        $targetNode = [
+            'id' => $rootNode['id'] ?? 1,
+            'user_id' => 'SA000001',
+            'matrix_level' => $rootNode['matrix_level'] ?? 1
+        ];
     }
     
     $uplineId = $targetNode['user_id'];
+    $uplineNodeId = $targetNode['id'];
     $matrixLevel = $targetNode['matrix_level'] + 1;
     
     // Check which slot is available
-    $stmtSlot = $pdo->prepare("SELECT position_slot FROM package_matrices WHERE upline_id = ? AND package_type = ?");
-    $stmtSlot->execute([$uplineId, $packageType]);
+    $stmtSlot = $pdo->prepare("SELECT position_slot FROM package_matrices WHERE upline_node_id = ?");
+    $stmtSlot->execute([$uplineNodeId]);
     $existingSlots = $stmtSlot->fetchAll(PDO::FETCH_COLUMN);
     
     $positionSlot = 1; // Left
@@ -62,12 +86,14 @@ function placeInMatrix($pdo, $userId, $packageType) {
     }
     
     $stmtInsert = $pdo->prepare("
-        INSERT INTO package_matrices (user_id, package_type, upline_id, position_slot, matrix_level) 
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO package_matrices (user_id, package_type, upline_id, upline_node_id, position_slot, matrix_level) 
+        VALUES (?, ?, ?, ?, ?, ?)
     ");
-    $stmtInsert->execute([$userId, $packageType, $uplineId, $positionSlot, $matrixLevel]);
+    $stmtInsert->execute([$userId, $packageType, $uplineId, $uplineNodeId, $positionSlot, $matrixLevel]);
+    $newId = $pdo->lastInsertId();
     
     return [
+        'id' => $newId,
         'upline_id' => $uplineId,
         'slot' => $positionSlot,
         'level' => $matrixLevel
@@ -75,27 +101,27 @@ function placeInMatrix($pdo, $userId, $packageType) {
 }
 
 /**
- * Walks UP the matrix tree from a given user position, returning an array of upline user_ids up to N levels.
+ * Walks UP the matrix tree from a given user position ID, returning an array of upline user_ids up to N levels.
  * 
  * @param PDO $pdo
- * @param string $userId
+ * @param int $matrixNodeId Unique ID of the starting position
  * @param string $packageType
  * @param int $levels Number of levels to traverse up
  * @return array Array of user_ids of the uplines
  */
-function getMatrixUplines($pdo, $userId, $packageType, $levels = 8) {
+function getMatrixUplines($pdo, $matrixNodeId, $packageType, $levels = 8) {
     $uplines = [];
-    $currentUserId = $userId;
+    $currentNodeId = $matrixNodeId;
     
-    $stmt = $pdo->prepare("SELECT upline_id FROM package_matrices WHERE user_id = ? AND package_type = ?");
+    $stmt = $pdo->prepare("SELECT upline_node_id, upline_id FROM package_matrices WHERE id = ?");
     
     for ($i = 0; $i < $levels; $i++) {
-        $stmt->execute([$currentUserId, $packageType]);
+        $stmt->execute([$currentNodeId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        if ($result && $result['upline_id']) {
+        if ($result && $result['upline_node_id']) {
             $uplines[] = $result['upline_id'];
-            $currentUserId = $result['upline_id'];
+            $currentNodeId = $result['upline_node_id'];
         } else {
             break;
         }

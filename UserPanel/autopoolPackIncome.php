@@ -38,7 +38,6 @@ $incomes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <thead>
                 <tr style="border-bottom: 2px solid rgba(255,183,3,0.3); color:#ffb703; height:45px;">
                     <th>#</th>
-                    <th>Trigger Member</th>
                     <th>Amount</th>
                     <th>Narration</th>
                     <th>Status</th>
@@ -48,19 +47,38 @@ $incomes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tbody>
                 <?php if (empty($incomes)): ?>
                     <tr style="height: 50px; border-bottom: 1px solid rgba(255,255,255,0.05); color:#a0aec0;">
-                        <td colspan="6" style="text-align: center;">No autopool income payouts recorded for this pack yet.</td>
+                        <td colspan="5" style="text-align: center;">No autopool income payouts recorded for this pack yet.</td>
                     </tr>
                 <?php else: ?>
                     <?php 
                     $idx = 1;
                     foreach ($incomes as $inc): 
                         $formattedDate = date('d M Y H:i', strtotime($inc['created_at']));
+                        $displayNarration = str_ireplace('Upline L', 'Level ', $inc['narration']);
+                        
+                        // Parse level number (e.g. Level 1, Level 2)
+                        $levelNum = 0;
+                        if (preg_match('/Level\s+(\d+)/i', $displayNarration, $matches)) {
+                            $levelNum = (int)$matches[1];
+                        }
+                        
+                        // Map levels to bright, vibrant colors
+                        $colors = [
+                            1 => '#00ffff', // Cyan
+                            2 => '#ffb700', // Bright Amber/Orange
+                            3 => '#ff33ff', // Bright Magenta/Pink
+                            4 => '#33ff33', // Bright Green
+                            5 => '#ffff33', // Bright Yellow
+                            6 => '#00bfff', // Deep Sky Blue
+                            7 => '#cc66ff', // Bright Violet
+                            8 => '#ff4500'  // Bright Orange Red
+                        ];
+                        $levelColor = $colors[$levelNum] ?? '#cbd5e0';
                     ?>
                         <tr style="height: 50px; border-bottom: 1px solid rgba(255,255,255,0.05);">
                             <td><?php echo $idx++; ?></td>
-                            <td style="font-weight: bold; color: #ffb703;"><?php echo htmlspecialchars($inc['related_user_id'] ?? 'System/Root'); ?></td>
                             <td style="font-weight: 600; color: #2ecc71;">$<?php echo number_format($inc['amount'], 2); ?></td>
-                            <td style="color:#cbd5e0;"><?php echo htmlspecialchars($inc['narration']); ?></td>
+                            <td style="font-weight: 500; color: <?php echo $levelColor; ?>;"><?php echo htmlspecialchars($displayNarration); ?></td>
                             <td>
                                 <span class="badge <?php echo $inc['status'] === 'Completed' ? 'badge-active' : 'badge-inactive'; ?>">
                                     <?php echo htmlspecialchars($inc['status']); ?>

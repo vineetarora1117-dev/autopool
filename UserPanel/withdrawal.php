@@ -95,6 +95,7 @@ include '../includes/header.php';
                     <label style="display:block; margin-bottom:8px; font-size:14px; color:#a0aec0;">Select Source Earning Wallet</label>
                     <select name="source_wallet" id="source_wallet" class="form-control" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,183,3,0.3); color:#fff; padding:10px; border-radius:6px; outline:none;" required>
                         <option value="">Select source wallet...</option>
+                        <option value="main_deposit_balance" data-fee="<?php echo $feesList['main_deposit'] ?? 10; ?>">Main Wallet ($<?php echo number_format($summary['main_deposit_balance'] ?? 0, 2); ?>)</option>
                         <option value="earnings_11_wallet" data-fee="<?php echo $feesList['earnings_11'] ?? 10; ?>">$11 Package Wallet ($<?php echo number_format($summary['earnings_11_wallet'] ?? 0, 2); ?>)</option>
                         <option value="earnings_30_wallet" data-fee="<?php echo $feesList['earnings_30'] ?? 10; ?>">$30 Package Wallet ($<?php echo number_format($summary['earnings_30_wallet'] ?? 0, 2); ?>)</option>
                         <option value="earnings_60_wallet" data-fee="<?php echo $feesList['earnings_60'] ?? 10; ?>">$60 Package Wallet ($<?php echo number_format($summary['earnings_60_wallet'] ?? 0, 2); ?>)</option>

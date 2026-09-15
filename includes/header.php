@@ -1319,10 +1319,10 @@
                 </div>
 
                 <div class="profile-dropdown" id="profileDropdownMenu">
-                    <a class="dropdown-item" onclick="switchView('profileViewSection', this)"><i class="fa-regular fa-user"></i> Profile</a>
-                    <a class="dropdown-item" onclick="switchView('changePasswordSection', this)"><i class="fa-solid fa-gear"></i> Change Password</a>
-                    <a class="dropdown-item" onclick="switchView('ticketSubmitSection', this)"><i class="fa-regular fa-envelope"></i> Help Ticket</a>
-                    <a class="dropdown-item" style="border-top: 1px solid #eee;" onclick="window.location.href='login.html'"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</a>
+                    <a class="dropdown-item" href="profileView"><i class="fa-regular fa-user"></i> Profile</a>
+                    <a class="dropdown-item" href="changePassword"><i class="fa-solid fa-gear"></i> Change Password</a>
+                    <a class="dropdown-item" href="ticketSubmit"><i class="fa-regular fa-envelope"></i> Help Ticket</a>
+                    <a class="dropdown-item" style="border-top: 1px solid #eee;" href="#" onclick="logoutUser(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</a>
                 </div>
             </div>
         </div>

@@ -80,6 +80,9 @@ if (isset($_SESSION['user_id'])) {
             </div>
             <button type="submit" class="btn-login">Login</button>
         </form>
+        <div style="margin-top: 15px; font-size: 14px;">
+            <a href="forgotPassword.php" style="color: #ffb703; text-decoration: none;">Forgot Password?</a>
+        </div>
         <div class="register-link">
             Don't have an account? <a href="register.php">Register here</a>
         </div>

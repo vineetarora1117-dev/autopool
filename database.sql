@@ -186,12 +186,14 @@ CREATE TABLE `package_matrices` (
     `user_id` VARCHAR(8) NOT NULL,
     `package_type` ENUM('main_11', 'main_30', 'main_60', 'main_120', 'main_240', 'main_480') NOT NULL,
     `upline_id` VARCHAR(8) DEFAULT NULL COMMENT 'Direct upline in this specific matrix',
+    `upline_node_id` INT DEFAULT NULL COMMENT 'Unique parent position record ID',
     `position_slot` TINYINT(1) NOT NULL COMMENT '1=Left, 2=Right',
     `matrix_level` INT DEFAULT 1 COMMENT 'Depth level in the matrix',
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX `idx_user` (`user_id`),
     INDEX `idx_upline` (`upline_id`, `package_type`),
-    INDEX `idx_package` (`package_type`)
+    INDEX `idx_package` (`package_type`),
+    FOREIGN KEY (`upline_node_id`) REFERENCES `package_matrices`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 -- =====================================================
@@ -202,6 +204,7 @@ CREATE TABLE `booster_matrices` (
     `user_id` VARCHAR(8) NOT NULL,
     `booster_type` ENUM('booster_10', 'booster_20', 'booster_40', 'booster_80', 'booster_160', 'booster_320') NOT NULL,
     `upline_id` VARCHAR(8) DEFAULT NULL COMMENT 'Direct upline in this booster matrix',
+    `upline_node_id` INT DEFAULT NULL COMMENT 'Unique parent position record ID',
     `position_slot` TINYINT(1) NOT NULL COMMENT '1-4 positions per level',
     `matrix_level` TINYINT(1) NOT NULL COMMENT '1=Level 1 (4 slots), 2=Level 2 (16 slots)',
     `board_id` INT DEFAULT NULL COMMENT 'Groups nodes into individual 20-person boards',
@@ -209,7 +212,8 @@ CREATE TABLE `booster_matrices` (
     INDEX `idx_user` (`user_id`),
     INDEX `idx_upline` (`upline_id`, `booster_type`),
     INDEX `idx_booster` (`booster_type`),
-    INDEX `idx_board` (`board_id`)
+    INDEX `idx_board` (`board_id`),
+    FOREIGN KEY (`upline_node_id`) REFERENCES `booster_matrices`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 -- =====================================================
