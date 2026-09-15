@@ -32,7 +32,7 @@ include '../includes/header.php';
     </div>
 
     <!-- Wallet Summary & Actions Grid -->
-    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px;">
         <div class="db-gold-card">
             <div class="db-card-label">Available Booster Wallet Balance</div>
             <div class="db-card-value" style="font-size: 32px;">$<?php echo number_format($boosterWallet, 2); ?></div>
@@ -43,13 +43,6 @@ include '../includes/header.php';
             <div class="db-action-btn" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;">
                 <i class="fa-solid fa-money-bill-transfer fa-2x"></i>
                 <span>Withdraw USDT</span>
-            </div>
-        </a>
-
-        <a href="internalTransfer" style="text-decoration: none;">
-            <div class="db-action-btn" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; border-color: #3498db; color: #3498db;">
-                <i class="fa-solid fa-arrow-right-arrow-left fa-2x"></i>
-                <span>Transfer to Main</span>
             </div>
         </a>
     </div>

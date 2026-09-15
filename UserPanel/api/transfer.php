@@ -10,6 +10,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+echo json_encode([
+    'success' => false, 
+    'message' => 'Internal transfer of funds from earning/other wallets to the Main Wallet is currently disabled.'
+]);
+exit;
+
 $userId = $_SESSION['user_id'];
 $sourceWallet = $_POST['source_wallet'] ?? '';
 $amount = floatval($_POST['amount'] ?? 0);

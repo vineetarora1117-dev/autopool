@@ -59,10 +59,16 @@ include '../includes/header.php';
             <i class="fa-solid fa-arrow-right-arrow-left"></i> Transfer Earning Wallet to Main Wallet
         </div>
         
+        <div style="background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.5); color: #e74c3c; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; text-align: center;">
+            <i class="fa-solid fa-ban" style="font-size: 20px; margin-bottom: 8px; display: block;"></i>
+            <strong>Transfer Disabled</strong><br>
+            Internal fund transfers from earning/other wallets to the Main Wallet have been disabled.
+        </div>
+
         <form id="transferForm">
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom:8px; font-size:14px; color:#a0aec0; font-weight: 500;">Select Source Earning Wallet</label>
-                <select name="source_wallet" id="source_wallet" class="form-control" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,183,3,0.3); color:#fff; padding:12px; border-radius:6px; outline:none; font-size: 14px;" required>
+                <select name="source_wallet" id="source_wallet" class="form-control" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,183,3,0.3); color:#fff; padding:12px; border-radius:6px; outline:none; font-size: 14px;" disabled required>
                     <option value="">Choose wallet...</option>
                     <option value="earnings_11_wallet" data-fee="<?php echo $feesList['earnings_11'] ?? 5; ?>">$11 Package Wallet ($<?php echo number_format($summary['earnings_11_wallet'] ?? 0, 2); ?>)</option>
                     <option value="earnings_30_wallet" data-fee="<?php echo $feesList['earnings_30'] ?? 5; ?>">$30 Package Wallet ($<?php echo number_format($summary['earnings_30_wallet'] ?? 0, 2); ?>)</option>
@@ -76,12 +82,12 @@ include '../includes/header.php';
             
             <div class="form-group" style="margin-bottom: 25px;">
                 <label style="display:block; margin-bottom:8px; font-size:14px; color:#a0aec0; font-weight: 500;">Transfer Amount ($)</label>
-                <input type="number" name="amount" id="transfer_amount" step="0.01" min="1" class="form-control" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,183,3,0.3); color:#fff; padding:12px; border-radius:6px; outline:none; font-size: 14px;" required placeholder="0.00">
-                <div class="fee-note" id="feeNote">Select a wallet to view the admin fee.</div>
+                <input type="number" name="amount" id="transfer_amount" step="0.01" min="1" class="form-control" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,183,3,0.3); color:#fff; padding:12px; border-radius:6px; outline:none; font-size: 14px;" disabled required placeholder="0.00">
+                <div class="fee-note" id="feeNote">Internal transfers are currently disabled.</div>
             </div>
             
-            <button type="submit" class="btn-submit-gold" style="width:100%; padding:14px; font-size: 15px; font-weight:bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                <i class="fa-solid fa-rotate"></i> Process Transfer
+            <button type="submit" class="btn-submit-gold" disabled style="width:100%; padding:14px; font-size: 15px; font-weight:bold; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0.5; cursor: not-allowed;">
+                <i class="fa-solid fa-ban"></i> Transfer Disabled
             </button>
         </form>
     </div>

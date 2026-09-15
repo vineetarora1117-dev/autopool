@@ -143,7 +143,6 @@ include '../includes/header.php';
                 <a href="deposit.php" class="btn-wallet-action btn-gold-fill"><i class="fa-solid fa-plus"></i> Deposit</a>
                 <a href="newWithdrawal.php" class="btn-wallet-action btn-outline"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</a>
                 <a href="autopoolPackage.php" class="btn-wallet-action btn-outline"><i class="fa-solid fa-cart-shopping"></i> Buy Package</a>
-                <a href="internalTransfer.php" class="btn-wallet-action btn-outline" style="flex-basis: 100%; margin-top: 8px; font-weight: bold;"><i class="fa-solid fa-rotate"></i> Transfer Funds to this Wallet</a>
             </div>
         </div>
     </div>
