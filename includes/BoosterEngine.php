@@ -211,6 +211,9 @@ if (!function_exists('processBoosterPlacementQueue')) {
                         // 2. Credit $10.00 to Company Wallet
                         $stmtCreditCompany = $pdo->prepare("UPDATE company_ledger SET company_wallet_balance = company_wallet_balance + 10.00 WHERE id = 1");
                         $stmtCreditCompany->execute();
+                        if ($stmtCreditCompany->rowCount() === 0) {
+                            $pdo->exec("INSERT INTO company_ledger (id, company_wallet_balance) VALUES (1, 10.00) ON DUPLICATE KEY UPDATE company_wallet_balance = company_wallet_balance + 10.00");
+                        }
 
                         // Log in master transactions for Company (SA000001)
                         $stmtMasterComp = $pdo->prepare("INSERT INTO transactions (user_id, transaction_type, amount, wallet_type, status, narration) VALUES ('SA000001', 'company_revenue', 10.00, 'company_wallet', 'Completed', ?)");

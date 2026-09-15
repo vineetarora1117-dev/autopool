@@ -70,6 +70,7 @@ include '../includes/header.php';
                     <option value="earnings_120_wallet" data-fee="<?php echo $feesList['earnings_120'] ?? 5; ?>">$120 Package Wallet ($<?php echo number_format($summary['earnings_120_wallet'] ?? 0, 2); ?>)</option>
                     <option value="earnings_240_wallet" data-fee="<?php echo $feesList['earnings_240'] ?? 5; ?>">$240 Package Wallet ($<?php echo number_format($summary['earnings_240_wallet'] ?? 0, 2); ?>)</option>
                     <option value="earnings_480_wallet" data-fee="<?php echo $feesList['earnings_480'] ?? 5; ?>">$480 Package Wallet ($<?php echo number_format($summary['earnings_480_wallet'] ?? 0, 2); ?>)</option>
+                    <option value="booster_wallet" data-fee="<?php echo $feesList['booster_wallet'] ?? 5; ?>">Booster Wallet ($<?php echo number_format($summary['booster_wallet'] ?? 0, 2); ?>)</option>
                 </select>
             </div>
             

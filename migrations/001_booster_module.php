@@ -65,13 +65,35 @@ try {
     $pdo->exec($sql2);
     echo "[SUCCESS] Table 'booster_transactions' created or verified.<br>";
 
-    // 3. Alter user_financial_summary to add booster_wallet if missing
+    // 3. Alter user_financial_summary to add booster_wallet & total_booster_income if missing
     try {
         $pdo->exec("ALTER TABLE `user_financial_summary` ADD COLUMN `booster_wallet` DECIMAL(15,4) DEFAULT 0.0000;");
         echo "[SUCCESS] Column 'booster_wallet' added to 'user_financial_summary'.<br>";
     } catch (PDOException $e) {
-        // Column may already exist
         echo "[INFO] Column 'booster_wallet' already present in 'user_financial_summary'.<br>";
+    }
+
+    try {
+        $pdo->exec("ALTER TABLE `user_financial_summary` ADD COLUMN `total_booster_income` DECIMAL(15,4) DEFAULT 0.0000;");
+        echo "[SUCCESS] Column 'total_booster_income' added to 'user_financial_summary'.<br>";
+    } catch (PDOException $e) {
+        echo "[INFO] Column 'total_booster_income' already present in 'user_financial_summary'.<br>";
+    }
+
+    // 4. Seed wallet_configurations for booster_wallet
+    try {
+        $pdo->exec("INSERT INTO `wallet_configurations` (`wallet_type`, `external_withdrawal_fee_percent`, `internal_transfer_fee_percent`) VALUES ('booster_wallet', 10.00, 5.00) ON DUPLICATE KEY UPDATE `wallet_type`='booster_wallet';");
+        echo "[SUCCESS] Wallet configuration for 'booster_wallet' seeded.<br>";
+    } catch (PDOException $e) {
+        echo "[INFO] Wallet configuration step skipped: " . htmlspecialchars($e->getMessage()) . "<br>";
+    }
+
+    // 5. Ensure company_ledger row id=1 exists
+    try {
+        $pdo->exec("INSERT INTO `company_ledger` (`id`, `company_wallet_balance`) VALUES (1, 0.0000) ON DUPLICATE KEY UPDATE `id`=`id`;");
+        echo "[SUCCESS] Company ledger initialized.<br>";
+    } catch (PDOException $e) {
+        echo "[INFO] Company ledger setup step skipped.<br>";
     }
 
     echo "<br><h3 style='color: #00ff66;'>✨ Migration Completed Successfully!</h3>";
