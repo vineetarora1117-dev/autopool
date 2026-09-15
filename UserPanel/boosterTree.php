@@ -6,187 +6,188 @@ require_once '../libs/config.php';
 requireLogin();
 $user_id = $_SESSION['user_id'];
 
-// Always start from Global Root (booster with upline_booster_id IS NULL or lowest ID)
-// Allow optional ?id= to view a specific sub-tree root
-$requestedId = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$globalRoot = null;
+// Fetch all boosters in the global matrix ordered by ID
+$stmt = $pdo->query("SELECT id, user_id, upline_booster_id, downline_count, status FROM user_boosters ORDER BY id ASC");
+$allBoosters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if ($requestedId > 0) {
-    $stmtReq = $pdo->prepare("SELECT * FROM user_boosters WHERE id = ?");
-    $stmtReq->execute([$requestedId]);
-    $globalRoot = $stmtReq->fetch(PDO::FETCH_ASSOC);
-}
+// Index boosters by ID and by upline_booster_id
+$boostersById = [];
+$childrenByUpline = [];
+$globalRootId = null;
 
-if (empty($globalRoot)) {
-    // Fetch global root node (topmost booster in the system)
-    $stmtRoot = $pdo->query("SELECT * FROM user_boosters WHERE upline_booster_id IS NULL ORDER BY id ASC LIMIT 1");
-    $globalRoot = $stmtRoot->fetch(PDO::FETCH_ASSOC);
-
-    // Fallback if upline_booster_id IS NULL isn't set
-    if (empty($globalRoot)) {
-        $stmtRootFallback = $pdo->query("SELECT * FROM user_boosters ORDER BY id ASC LIMIT 1");
-        $globalRoot = $stmtRootFallback->fetch(PDO::FETCH_ASSOC);
+foreach ($allBoosters as $b) {
+    $bId = intval($b['id']);
+    $uId = $b['upline_booster_id'] ? intval($b['upline_booster_id']) : null;
+    $boostersById[$bId] = $b;
+    
+    if ($uId === null && $globalRootId === null) {
+        $globalRootId = $bId;
+    }
+    if ($uId !== null) {
+        if (!isset($childrenByUpline[$uId])) {
+            $childrenByUpline[$uId] = [];
+        }
+        $childrenByUpline[$uId][] = $b;
     }
 }
 
-// Fetch Level 1 downlines (3 spots under root)
-$level1Nodes = [];
-$level2Nodes = []; // Keyed by Level 1 booster ID
-
-if ($globalRoot) {
-    $stmtL1 = $pdo->prepare("SELECT * FROM user_boosters WHERE upline_booster_id = ? ORDER BY id ASC LIMIT 3");
-    $stmtL1->execute([$globalRoot['id']]);
-    $level1Nodes = $stmtL1->fetchAll(PDO::FETCH_ASSOC);
-
-    foreach ($level1Nodes as $l1) {
-        $stmtL2 = $pdo->prepare("SELECT * FROM user_boosters WHERE upline_booster_id = ? ORDER BY id ASC LIMIT 3");
-        $stmtL2->execute([$l1['id']]);
-        $level2Nodes[$l1['id']] = $stmtL2->fetchAll(PDO::FETCH_ASSOC);
+// Function to recursively render a 1x3 tree node
+function renderTreeNode($boosterId, $currentUserId, &$boostersById, &$childrenByUpline, $maxDepth = 10, $currentDepth = 1) {
+    if (!$boosterId || $currentDepth > $maxDepth) {
+        return;
     }
+
+    $booster = isset($boostersById[$boosterId]) ? $boostersById[$boosterId] : null;
+    if (!$booster) {
+        return;
+    }
+
+    $isUser = ($booster['user_id'] === $currentUserId);
+    $nodeColorClass = $isUser ? 'dot-user' : 'dot-other';
+    $children = isset($childrenByUpline[$boosterId]) ? $childrenByUpline[$boosterId] : [];
+    $numChildren = count($children);
+    $hasChildren = ($numChildren > 0) || ($booster['status'] === 'active');
+
+    echo '<div class="tree-branch-container">';
+    // Node Dot
+    echo '<div class="dot-node ' . $nodeColorClass . '"></div>';
+
+    // Render Children if active/has downlines
+    if ($hasChildren && $currentDepth < $maxDepth) {
+        echo '<div class="line-down"></div>';
+        echo '<div class="children-row">';
+        for ($i = 0; $i < 3; $i++) {
+            echo '<div class="child-col">';
+            echo '<div class="line-to-child"></div>';
+            if (isset($children[$i])) {
+                renderTreeNode($children[$i]['id'], $currentUserId, $boostersById, $childrenByUpline, $maxDepth, $currentDepth + 1);
+            } else {
+                // Empty Slot
+                echo '<div class="dot-node dot-empty"></div>';
+            }
+            echo '</div>';
+        }
+        echo '</div>';
+    }
+    echo '</div>';
 }
 
 include '../includes/header.php';
 ?>
 
 <style>
-.tree-card {
-    background: rgba(6, 17, 33, 0.85);
+/* Scrollable Container (Horizontal & Vertical) */
+.global-tree-viewport {
+    background: rgba(6, 17, 33, 0.9);
     border: 1px solid #ffb703;
     border-radius: 14px;
     padding: 30px 20px;
     margin-top: 20px;
-    overflow-x: auto;
+    overflow: auto;
+    max-height: 75vh;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
 }
 
-.tree-wrapper {
+.global-tree-canvas {
+    display: inline-flex;
+    justify-content: center;
+    min-width: 100%;
+    padding: 20px 40px;
+}
+
+/* Dots Styling */
+.dot-node {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    position: relative;
+    z-index: 2;
+}
+
+/* Green Dot = User's Position */
+.dot-user {
+    background: #2ecc71;
+    border: 2px solid #27ae60;
+    box-shadow: 0 0 12px rgba(46, 204, 113, 0.6);
+}
+
+/* Blue Dot = Other Members */
+.dot-other {
+    background: #3498db;
+    border: 2px solid #2980b9;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+/* Grey Dot = Empty Spot */
+.dot-empty {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px dashed #718096;
+}
+
+/* Tree Connector Lines */
+.tree-branch-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 800px;
-    padding: 20px 0;
 }
 
-/* Color Coded Tree Badges */
-.badge-node {
-    border-radius: 10px;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    display: inline-block;
-    min-width: 150px;
-    text-decoration: none;
-    transition: transform 0.2s;
-}
-.badge-node:hover {
-    transform: translateY(-2px);
-}
-
-/* User's Position -> GREEN */
-.node-user {
-    background: #2ecc71;
-    color: #000;
-    border: 2px solid #27ae60;
-}
-
-/* Other's Position -> BLUE */
-.node-other {
-    background: #3498db;
-    color: #fff;
-    border: 2px solid #2980b9;
-}
-
-/* Empty Position -> GREY */
-.node-empty {
-    background: rgba(255, 255, 255, 0.05);
-    color: #718096;
-    border: 2px dashed #4a5568;
-    cursor: default;
-}
-.node-empty:hover {
-    transform: none;
-}
-
-/* Level 2 Sub-badges */
-.subnode {
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 11px;
-    font-weight: bold;
-    min-width: 70px;
-    text-align: center;
-    display: inline-block;
-    text-decoration: none;
-}
-.subnode-user {
-    background: #2ecc71;
-    color: #000;
-}
-.subnode-other {
-    background: #3498db;
-    color: #fff;
-}
-.subnode-empty {
-    background: rgba(255, 255, 255, 0.03);
-    color: #718096;
-    border: 1px dashed #4a5568;
-}
-
-/* Tree Connectors */
-.tree-line-v {
+.line-down {
     width: 2px;
-    height: 25px;
+    height: 20px;
     background: #ffb703;
 }
-.tree-line-v-sub {
-    width: 2px;
-    height: 18px;
-    background: rgba(255, 183, 3, 0.5);
-}
 
-.tree-level1-row {
+.children-row {
     display: flex;
     justify-content: space-around;
-    width: 100%;
+    gap: 12px;
+    position: relative;
 }
 
-.tree-branch-col {
+.children-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 16px;
+    right: 16px;
+    height: 2px;
+    background: #ffb703;
+}
+
+.child-col {
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex: 1;
 }
 
-.tree-level2-row {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 6px;
+.line-to-child {
+    width: 2px;
+    height: 16px;
+    background: #ffb703;
 }
 
+/* Legend Styling */
 .legend-bar {
     display: flex;
     justify-content: center;
     gap: 30px;
     flex-wrap: wrap;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 12px 20px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 183, 3, 0.2);
-    margin-top: 15px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 14px 24px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 183, 3, 0.3);
 }
 .legend-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 13px;
+    gap: 10px;
+    font-size: 14px;
     font-weight: bold;
-}
-.legend-box {
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
 }
 </style>
 
@@ -202,127 +203,46 @@ include '../includes/header.php';
         </div>
     </div>
 
-    <!-- Header Controls & Color Legend -->
+    <!-- Header Info & Legend -->
     <div style="background: rgba(6, 17, 33, 0.75); border: 1px solid rgba(255, 183, 3, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-            <div style="font-size: 15px; color: #fff; font-weight: bold;">
-                <i class="fa-solid fa-globe" style="color: #ffb703;"></i> Global Booster Network Matrix
+            <div style="font-size: 16px; color: #fff; font-weight: bold;">
+                <i class="fa-solid fa-globe" style="color: #ffb703;"></i> Global Booster Matrix Network
             </div>
 
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <?php if ($requestedId > 0 && $globalRoot && $globalRoot['upline_booster_id']): ?>
-                    <a href="boosterTree.php?id=<?php echo $globalRoot['upline_booster_id']; ?>" style="color: #ffb703; text-decoration: none; font-size: 13px; font-weight: bold; padding: 6px 12px; background: rgba(255, 183, 3, 0.15); border: 1px solid #ffb703; border-radius: 6px;">
-                        <i class="fa-solid fa-arrow-up"></i> Up One Level
-                    </a>
-                <?php endif; ?>
-                
-                <a href="boosterTree.php" style="color: #3498db; text-decoration: none; font-size: 13px; font-weight: bold; padding: 6px 12px; background: rgba(52, 152, 219, 0.15); border: 1px solid #3498db; border-radius: 6px;">
-                    <i class="fa-solid fa-tree"></i> Global Top Root
-                </a>
-
-                <a href="boosterIncome.php" style="background: rgba(255, 183, 3, 0.15); color: #ffb703; border: 1px solid #ffb703; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px;">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Log
+            <div>
+                <a href="boosterIncome.php" style="background: rgba(255, 183, 3, 0.15); color: #ffb703; border: 1px solid #ffb703; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Booster Log
                 </a>
             </div>
         </div>
 
-        <!-- Clean Color Legend -->
-        <div class="legend-bar">
+        <!-- Color Legend -->
+        <div class="legend-bar" style="margin-top: 15px;">
             <div class="legend-item">
-                <div class="legend-box" style="background: #2ecc71;"></div>
-                <span style="color: #2ecc71;">Your Position (Green)</span>
+                <div class="dot-node dot-user" style="width: 20px; height: 20px;"></div>
+                <span style="color: #2ecc71;">Your Positions</span>
             </div>
             <div class="legend-item">
-                <div class="legend-box" style="background: #3498db;"></div>
-                <span style="color: #3498db;">Other's Position (Blue)</span>
+                <div class="dot-node dot-other" style="width: 20px; height: 20px;"></div>
+                <span style="color: #3498db;">Other Members</span>
             </div>
             <div class="legend-item">
-                <div class="legend-box" style="background: rgba(255, 255, 255, 0.05); border: 1px dashed #718096;"></div>
-                <span style="color: #718096;">Empty (Grey)</span>
+                <div class="dot-node dot-empty" style="width: 20px; height: 20px;"></div>
+                <span style="color: #a0aec0;">Empty Spots</span>
             </div>
         </div>
     </div>
 
-    <!-- Global Tree Container -->
-    <div class="tree-card">
-        <?php if (!$globalRoot): ?>
+    <!-- Scrollable Global Tree Viewport -->
+    <div class="global-tree-viewport">
+        <?php if (!$globalRootId): ?>
             <div style="text-align: center; padding: 40px; color: #a0aec0;">
                 No boosters in global tree yet.
             </div>
         <?php else: ?>
-            <div class="tree-wrapper">
-                <!-- GLOBAL ROOT NODE (STARTS FROM SYSTEM ROOT) -->
-                <?php 
-                $isRootUser = ($globalRoot['user_id'] === $user_id);
-                $rootClass = $isRootUser ? 'node-user' : 'node-other';
-                $rootLabel = $isRootUser ? 'Your Position' : 'Filled';
-                ?>
-                <a href="boosterTree.php?id=<?php echo $globalRoot['id']; ?>" class="badge-node <?php echo $rootClass; ?>">
-                    <?php echo $rootLabel; ?>
-                </a>
-
-                <div class="tree-line-v"></div>
-
-                <!-- Horizontal Connector Line -->
-                <div style="width: 66%; height: 2px; background: #ffb703;"></div>
-
-                <!-- LEVEL 1 ROW (3 Downline Slots of Root) -->
-                <div class="tree-level1-row">
-                    <?php for ($i = 0; $i < 3; $i++): ?>
-                        <?php 
-                        $l1 = isset($level1Nodes[$i]) ? $level1Nodes[$i] : null;
-                        $isL1Filled = ($l1 !== null);
-                        $isL1User = ($isL1Filled && $l1['user_id'] === $user_id);
-                        ?>
-                        <div class="tree-branch-col">
-                            <div class="tree-line-v-sub"></div>
-
-                            <?php if ($isL1Filled): ?>
-                                <?php 
-                                $l1Class = $isL1User ? 'node-user' : 'node-other';
-                                $l1Label = $isL1User ? 'Your Position' : 'Filled';
-                                ?>
-                                <a href="boosterTree.php?id=<?php echo $l1['id']; ?>" class="badge-node <?php echo $l1Class; ?>" title="Click to expand branch">
-                                    <?php echo $l1Label; ?>
-                                </a>
-
-                                <div class="tree-line-v-sub"></div>
-
-                                <!-- LEVEL 2 SUB-NODES (3 Downlines under each Level 1 Node) -->
-                                <div class="tree-level2-row">
-                                    <?php 
-                                    $l2Children = isset($level2Nodes[$l1['id']]) ? $level2Nodes[$l1['id']] : [];
-                                    for ($j = 0; $j < 3; $j++):
-                                        $l2 = isset($l2Children[$j]) ? $l2Children[$j] : null;
-                                        $isL2Filled = ($l2 !== null);
-                                        $isL2User = ($isL2Filled && $l2['user_id'] === $user_id);
-                                    ?>
-                                        <?php if ($isL2User): ?>
-                                            <a href="boosterTree.php?id=<?php echo $l2['id']; ?>" class="subnode subnode-user" title="Click to expand">Your Position</a>
-                                        <?php elseif ($isL2Filled): ?>
-                                            <a href="boosterTree.php?id=<?php echo $l2['id']; ?>" class="subnode subnode-other" title="Click to expand">Filled</a>
-                                        <?php else: ?>
-                                            <span class="subnode subnode-empty">Empty</span>
-                                        <?php endif; ?>
-                                    <?php endfor; ?>
-                                </div>
-
-                            <?php else: ?>
-                                <div class="badge-node node-empty">
-                                    Empty
-                                </div>
-
-                                <div class="tree-line-v-sub"></div>
-
-                                <div class="tree-level2-row">
-                                    <span class="subnode subnode-empty">Empty</span>
-                                    <span class="subnode subnode-empty">Empty</span>
-                                    <span class="subnode subnode-empty">Empty</span>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    <?php endfor; ?>
-                </div>
+            <div class="global-tree-canvas">
+                <?php renderTreeNode($globalRootId, $user_id, $boostersById, $childrenByUpline, 10, 1); ?>
             </div>
         <?php endif; ?>
     </div>
