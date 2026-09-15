@@ -97,14 +97,14 @@ include '../includes/header.php';
     padding: 20px 40px;
 }
 
-/* Dots Styling */
+/* Dots Styling (Ultra Compact) */
 .dot-node {
-    width: 32px;
-    height: 32px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     display: inline-block;
     flex-shrink: 0;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     position: relative;
     z-index: 2;
 }
@@ -112,24 +112,24 @@ include '../includes/header.php';
 /* Green Dot = User's Position */
 .dot-user {
     background: #2ecc71;
-    border: 2px solid #27ae60;
-    box-shadow: 0 0 12px rgba(46, 204, 113, 0.6);
+    border: 1.5px solid #27ae60;
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.7);
 }
 
 /* Blue Dot = Other Members */
 .dot-other {
     background: #3498db;
-    border: 2px solid #2980b9;
-    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+    border: 1.5px solid #2980b9;
+    box-shadow: 0 0 6px rgba(52, 152, 219, 0.5);
 }
 
 /* Grey Dot = Empty Spot */
 .dot-empty {
     background: rgba(255, 255, 255, 0.08);
-    border: 2px dashed #718096;
+    border: 1.5px dashed #718096;
 }
 
-/* Tree Connector Lines */
+/* Tree Connector Lines (Ultra Compact) */
 .tree-branch-container {
     display: flex;
     flex-direction: column;
@@ -137,15 +137,15 @@ include '../includes/header.php';
 }
 
 .line-down {
-    width: 2px;
-    height: 20px;
+    width: 1.5px;
+    height: 8px;
     background: #ffb703;
 }
 
 .children-row {
     display: flex;
     justify-content: space-around;
-    gap: 12px;
+    gap: 4px;
     position: relative;
 }
 
@@ -153,9 +153,9 @@ include '../includes/header.php';
     content: '';
     position: absolute;
     top: 0;
-    left: 16px;
-    right: 16px;
-    height: 2px;
+    left: 7px;
+    right: 7px;
+    height: 1.5px;
     background: #ffb703;
 }
 
@@ -166,8 +166,8 @@ include '../includes/header.php';
 }
 
 .line-to-child {
-    width: 2px;
-    height: 16px;
+    width: 1.5px;
+    height: 8px;
     background: #ffb703;
 }
 
