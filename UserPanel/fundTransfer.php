@@ -76,8 +76,10 @@ include '../includes/header.php';
             <i class="fa-solid fa-paper-plane"></i> Send Funds to User Wallet
         </div>
         
-        <div style="margin-bottom: 20px; font-size: 15px; color: #fff;">
-            Your Main Wallet Balance: <strong style="color: #ffb703;">$<?php echo number_format($main_balance, 2); ?></strong>
+        <div style="background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.5); color: #e74c3c; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; text-align: center;">
+            <i class="fa-solid fa-ban" style="font-size: 20px; margin-bottom: 8px; display: block;"></i>
+            <strong>Transfer Disabled</strong><br>
+            Wallet-to-wallet transfers between users have been disabled. Only external withdrawal requests can be submitted via <a href="newWithdrawal.php" style="color: #ffb703; text-decoration: underline;">Withdrawal Request</a>.
         </div>
 
         <form id="transferForm">
@@ -85,29 +87,9 @@ include '../includes/header.php';
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom:8px; font-size:14px; color:#a0aec0; font-weight: 500;">Recipient User ID</label>
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" name="target_user_id" id="target_user_id" class="form-control" style="flex: 1; background:rgba(0,0,0,0.5); border:1px solid rgba(255,183,3,0.3); color:#fff; padding:12px; border-radius:6px; outline:none; font-size: 14px;" required placeholder="Enter User ID (e.g. SA000002)">
-                    <button type="button" id="btnVerify" class="btn-submit-gold" style="width: auto; padding: 0 20px; margin: 0;">Verify</button>
+                    <input type="text" name="target_user_id" id="target_user_id" class="form-control" disabled style="flex: 1; background:rgba(0,0,0,0.5); border:1px solid rgba(255,183,3,0.3); color:#fff; padding:12px; border-radius:6px; outline:none; font-size: 14px;" required placeholder="Enter User ID (e.g. SA000002)">
+                    <button type="button" id="btnVerify" class="btn-submit-gold" disabled style="width: auto; padding: 0 20px; margin: 0; opacity: 0.5; cursor: not-allowed;">Verify</button>
                 </div>
-            </div>
-
-            <!-- Verified Recipient Badge -->
-            <div id="verifiedRecipient" class="verify-badge">
-                <i class="fa-solid fa-circle-check"></i> Verified Recipient: <span id="recipientDetails" style="font-weight: bold;"></span>
-            </div>
-
-            <!-- Transfer Details (Shown only when verified) -->
-            <div class="transfer-fields" id="transferFields">
-                <div class="form-group" style="margin-bottom: 25px;">
-                    <label style="display:block; margin-bottom:8px; font-size:14px; color:#a0aec0; font-weight: 500;">Transfer Amount ($)</label>
-                    <input type="number" name="amount" id="transfer_amount" step="0.01" min="1" class="form-control" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,183,3,0.3); color:#fff; padding:12px; border-radius:6px; outline:none; font-size: 14px;" required placeholder="0.00">
-                    <div class="fee-note" id="feeNote">
-                        Admin Charge: <?php echo number_format($feePercent, 2); ?>%. Net transfer amount will be calculated below.
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn-submit-gold" style="width:100%; padding:14px; font-size: 15px; font-weight:bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <i class="fa-solid fa-paper-plane"></i> Send Funds Now
-                </button>
             </div>
         </form>
     </div>
