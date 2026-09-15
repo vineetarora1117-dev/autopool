@@ -162,14 +162,15 @@ $site_url = getSiteUrl();
                             document.getElementById('loginProceed').style.display = 'block';
                             
                             const pass = document.getElementById('reg_password').value;
-                            document.getElementById('newUserId').innerText = data.user_id;
+                            const userId = (data.data && data.data.user_id) ? data.data.user_id : (data.user_id || '');
+                            document.getElementById('newUserId').innerText = userId;
                             document.getElementById('newUserPass').innerText = pass;
                             
                             const siteUrl = "<?php echo $site_url; ?>/login.php";
-                            const msg = `Welcome to <?php echo htmlspecialchars($site_name); ?>! Your User ID is ${data.user_id} and Password is ${pass}. Login at ${siteUrl}`;
+                            const msg = `Welcome to <?php echo htmlspecialchars($site_name); ?>! Your User ID is ${userId} and Password is ${pass}. Login at ${siteUrl}`;
                             
                             document.getElementById('actionBtnsContainer').innerHTML = `
-                                <button class="btn-action btn-copy" onclick="navigator.clipboard.writeText('User ID: ${data.user_id} | Password: ${pass}'); Swal.fire({icon:'success', title:'Copied', text:'Credentials copied to clipboard!', timer:1500, showConfirmButton:false, background:'#1a1a2e', color:'#fff'});"><i class="fa-solid fa-copy"></i> Copy ID</button>
+                                <button class="btn-action btn-copy" onclick="navigator.clipboard.writeText('User ID: ${userId} | Password: ${pass}'); Swal.fire({icon:'success', title:'Copied', text:'Credentials copied to clipboard!', timer:1500, showConfirmButton:false, background:'#1a1a2e', color:'#fff'});"><i class="fa-solid fa-copy"></i> Copy ID</button>
                                 <a href="sms:?body=${encodeURIComponent(msg)}" class="btn-action btn-sms"><i class="fa-solid fa-comment-sms"></i> Share on SMS</a>
                                 <a href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" class="btn-action btn-wa"><i class="brands fa-whatsapp"></i> Share on WhatsApp</a>
                             `;
