@@ -6,40 +6,36 @@ require_once '../libs/config.php';
 requireLogin();
 $user_id = $_SESSION['user_id'];
 
-// Determine requested root booster to focus (default to user's first booster or global root #1)
+// Always start from Global Root (booster with upline_booster_id IS NULL or lowest ID)
+// Allow optional ?id= to view a specific sub-tree root
 $requestedId = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$focusBooster = null;
+$globalRoot = null;
 
 if ($requestedId > 0) {
-    $stmtFocus = $pdo->prepare("SELECT * FROM user_boosters WHERE id = ?");
-    $stmtFocus->execute([$requestedId]);
-    $focusBooster = $stmtFocus->fetch(PDO::FETCH_ASSOC);
+    $stmtReq = $pdo->prepare("SELECT * FROM user_boosters WHERE id = ?");
+    $stmtReq->execute([$requestedId]);
+    $globalRoot = $stmtReq->fetch(PDO::FETCH_ASSOC);
 }
 
-if (empty($focusBooster)) {
-    // Default to current user's first booster if available, else global root #1
-    $stmtMyFirst = $pdo->prepare("SELECT * FROM user_boosters WHERE user_id = ? ORDER BY id ASC LIMIT 1");
-    $stmtMyFirst->execute([$user_id]);
-    $focusBooster = $stmtMyFirst->fetch(PDO::FETCH_ASSOC);
+if (empty($globalRoot)) {
+    // Fetch global root node (topmost booster in the system)
+    $stmtRoot = $pdo->query("SELECT * FROM user_boosters WHERE upline_booster_id IS NULL ORDER BY id ASC LIMIT 1");
+    $globalRoot = $stmtRoot->fetch(PDO::FETCH_ASSOC);
 
-    if (empty($focusBooster)) {
-        $stmtGlobalRoot = $pdo->query("SELECT * FROM user_boosters ORDER BY id ASC LIMIT 1");
-        $focusBooster = $stmtGlobalRoot->fetch(PDO::FETCH_ASSOC);
+    // Fallback if upline_booster_id IS NULL isn't set
+    if (empty($globalRoot)) {
+        $stmtRootFallback = $pdo->query("SELECT * FROM user_boosters ORDER BY id ASC LIMIT 1");
+        $globalRoot = $stmtRootFallback->fetch(PDO::FETCH_ASSOC);
     }
 }
 
-// Fetch all user's boosters for selector dropdown
-$stmtMyBoosters = $pdo->prepare("SELECT id, status FROM user_boosters WHERE user_id = ? ORDER BY id ASC");
-$stmtMyBoosters->execute([$user_id]);
-$myBoosters = $stmtMyBoosters->fetchAll(PDO::FETCH_ASSOC);
-
-// Fetch Level 1 and Level 2 nodes for the global tree visual
+// Fetch Level 1 downlines (3 spots under root)
 $level1Nodes = [];
 $level2Nodes = []; // Keyed by Level 1 booster ID
 
-if ($focusBooster) {
+if ($globalRoot) {
     $stmtL1 = $pdo->prepare("SELECT * FROM user_boosters WHERE upline_booster_id = ? ORDER BY id ASC LIMIT 3");
-    $stmtL1->execute([$focusBooster['id']]);
+    $stmtL1->execute([$globalRoot['id']]);
     $level1Nodes = $stmtL1->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($level1Nodes as $l1) {
@@ -66,7 +62,7 @@ include '../includes/header.php';
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 750px;
+    min-width: 800px;
     padding: 20px 0;
 }
 
@@ -79,7 +75,7 @@ include '../includes/header.php';
     text-align: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     display: inline-block;
-    min-width: 140px;
+    min-width: 150px;
     text-decoration: none;
     transition: transform 0.2s;
 }
@@ -118,7 +114,7 @@ include '../includes/header.php';
     padding: 6px 12px;
     font-size: 11px;
     font-weight: bold;
-    min-width: 65px;
+    min-width: 70px;
     text-align: center;
     display: inline-block;
     text-decoration: none;
@@ -209,61 +205,59 @@ include '../includes/header.php';
     <!-- Header Controls & Color Legend -->
     <div style="background: rgba(6, 17, 33, 0.75); border: 1px solid rgba(255, 183, 3, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <?php if (!empty($myBoosters)): ?>
-                    <label for="boosterSelect" style="color: #ffb703; font-weight: bold; font-size: 14px;">Select Position:</label>
-                    <select id="boosterSelect" onchange="window.location.href='boosterTree.php?id='+this.value" style="background: #061121; color: #ffb703; border: 1px solid #ffb703; padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; outline: none;">
-                        <?php foreach ($myBoosters as $mb): ?>
-                            <option value="<?php echo $mb['id']; ?>" <?php echo ($focusBooster && intval($focusBooster['id']) === intval($mb['id'])) ? 'selected' : ''; ?>>
-                                My Position #<?php echo $mb['id']; ?> (<?php echo ucfirst($mb['status']); ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                <?php endif; ?>
-                <a href="boosterTree.php?id=1" style="color: #3498db; text-decoration: none; font-size: 13px; font-weight: bold; padding: 6px 12px; background: rgba(52, 152, 219, 0.15); border: 1px solid #3498db; border-radius: 6px;">
-                    <i class="fa-solid fa-tree"></i> Global Top Node
-                </a>
+            <div style="font-size: 15px; color: #fff; font-weight: bold;">
+                <i class="fa-solid fa-globe" style="color: #ffb703;"></i> Global Booster Network Matrix
             </div>
 
-            <div>
-                <a href="boosterIncome.php" style="background: rgba(255, 183, 3, 0.15); color: #ffb703; border: 1px solid #ffb703; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px;">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Booster Log
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <?php if ($requestedId > 0 && $globalRoot && $globalRoot['upline_booster_id']): ?>
+                    <a href="boosterTree.php?id=<?php echo $globalRoot['upline_booster_id']; ?>" style="color: #ffb703; text-decoration: none; font-size: 13px; font-weight: bold; padding: 6px 12px; background: rgba(255, 183, 3, 0.15); border: 1px solid #ffb703; border-radius: 6px;">
+                        <i class="fa-solid fa-arrow-up"></i> Up One Level
+                    </a>
+                <?php endif; ?>
+                
+                <a href="boosterTree.php" style="color: #3498db; text-decoration: none; font-size: 13px; font-weight: bold; padding: 6px 12px; background: rgba(52, 152, 219, 0.15); border: 1px solid #3498db; border-radius: 6px;">
+                    <i class="fa-solid fa-tree"></i> Global Top Root
+                </a>
+
+                <a href="boosterIncome.php" style="background: rgba(255, 183, 3, 0.15); color: #ffb703; border: 1px solid #ffb703; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Log
                 </a>
             </div>
         </div>
 
-        <!-- Clean Legend -->
+        <!-- Clean Color Legend -->
         <div class="legend-bar">
             <div class="legend-item">
                 <div class="legend-box" style="background: #2ecc71;"></div>
-                <span style="color: #2ecc71;">Your Position</span>
+                <span style="color: #2ecc71;">Your Position (Green)</span>
             </div>
             <div class="legend-item">
                 <div class="legend-box" style="background: #3498db;"></div>
-                <span style="color: #3498db;">Other's Position</span>
+                <span style="color: #3498db;">Other's Position (Blue)</span>
             </div>
             <div class="legend-item">
                 <div class="legend-box" style="background: rgba(255, 255, 255, 0.05); border: 1px dashed #718096;"></div>
-                <span style="color: #718096;">Empty</span>
+                <span style="color: #718096;">Empty (Grey)</span>
             </div>
         </div>
     </div>
 
-    <!-- Tree Card -->
+    <!-- Global Tree Container -->
     <div class="tree-card">
-        <?php if (!$focusBooster): ?>
+        <?php if (!$globalRoot): ?>
             <div style="text-align: center; padding: 40px; color: #a0aec0;">
                 No boosters in global tree yet.
             </div>
         <?php else: ?>
             <div class="tree-wrapper">
-                <!-- ROOT NODE -->
+                <!-- GLOBAL ROOT NODE (STARTS FROM SYSTEM ROOT) -->
                 <?php 
-                $isRootUser = ($focusBooster['user_id'] === $user_id);
+                $isRootUser = ($globalRoot['user_id'] === $user_id);
                 $rootClass = $isRootUser ? 'node-user' : 'node-other';
                 $rootLabel = $isRootUser ? 'Your Position' : 'Filled';
                 ?>
-                <a href="boosterTree.php?id=<?php echo $focusBooster['id']; ?>" class="badge-node <?php echo $rootClass; ?>">
+                <a href="boosterTree.php?id=<?php echo $globalRoot['id']; ?>" class="badge-node <?php echo $rootClass; ?>">
                     <?php echo $rootLabel; ?>
                 </a>
 
@@ -272,7 +266,7 @@ include '../includes/header.php';
                 <!-- Horizontal Connector Line -->
                 <div style="width: 66%; height: 2px; background: #ffb703;"></div>
 
-                <!-- LEVEL 1 ROW -->
+                <!-- LEVEL 1 ROW (3 Downline Slots of Root) -->
                 <div class="tree-level1-row">
                     <?php for ($i = 0; $i < 3; $i++): ?>
                         <?php 
@@ -288,13 +282,13 @@ include '../includes/header.php';
                                 $l1Class = $isL1User ? 'node-user' : 'node-other';
                                 $l1Label = $isL1User ? 'Your Position' : 'Filled';
                                 ?>
-                                <a href="boosterTree.php?id=<?php echo $l1['id']; ?>" class="badge-node <?php echo $l1Class; ?>" title="Click to view node">
+                                <a href="boosterTree.php?id=<?php echo $l1['id']; ?>" class="badge-node <?php echo $l1Class; ?>" title="Click to expand branch">
                                     <?php echo $l1Label; ?>
                                 </a>
 
                                 <div class="tree-line-v-sub"></div>
 
-                                <!-- LEVEL 2 SUB-NODES -->
+                                <!-- LEVEL 2 SUB-NODES (3 Downlines under each Level 1 Node) -->
                                 <div class="tree-level2-row">
                                     <?php 
                                     $l2Children = isset($level2Nodes[$l1['id']]) ? $level2Nodes[$l1['id']] : [];
@@ -304,9 +298,9 @@ include '../includes/header.php';
                                         $isL2User = ($isL2Filled && $l2['user_id'] === $user_id);
                                     ?>
                                         <?php if ($isL2User): ?>
-                                            <a href="boosterTree.php?id=<?php echo $l2['id']; ?>" class="subnode subnode-user">Your Position</a>
+                                            <a href="boosterTree.php?id=<?php echo $l2['id']; ?>" class="subnode subnode-user" title="Click to expand">Your Position</a>
                                         <?php elseif ($isL2Filled): ?>
-                                            <a href="boosterTree.php?id=<?php echo $l2['id']; ?>" class="subnode subnode-other">Filled</a>
+                                            <a href="boosterTree.php?id=<?php echo $l2['id']; ?>" class="subnode subnode-other" title="Click to expand">Filled</a>
                                         <?php else: ?>
                                             <span class="subnode subnode-empty">Empty</span>
                                         <?php endif; ?>
@@ -323,7 +317,7 @@ include '../includes/header.php';
                                 <div class="tree-level2-row">
                                     <span class="subnode subnode-empty">Empty</span>
                                     <span class="subnode subnode-empty">Empty</span>
-                                    <span class="subnode-empty subnode">Empty</span>
+                                    <span class="subnode subnode-empty">Empty</span>
                                 </div>
                             <?php endif; ?>
                         </div>
