@@ -153,7 +153,7 @@ $marquee_text = !empty($announcements) ? implode(' â˜… ', $announcements) . ' â˜
             <div class="db-card-value">$<?php echo number_format($autopool_income, 2); ?></div>
         </div>
         <div class="db-gold-card">
-            <div class="db-card-label">Booster Income</div>
+            <div class="db-card-label">Growth Engine Income</div>
             <div class="db-card-value">$<?php echo number_format($booster_income, 2); ?></div>
         </div>
         <div class="db-gold-card">

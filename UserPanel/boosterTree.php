@@ -194,12 +194,12 @@ include '../includes/header.php';
 <div class="content-section active-view" style="padding: 20px; max-width: 1100px; margin: 0 auto;">
     <div class="profile-header-bar">
         <div class="profile-header-title">
-            <i class="fa-solid fa-sitemap"></i> Global Booster Tree
+            <i class="fa-solid fa-sitemap"></i> Global Growth Engine Tree
         </div>
         <div class="profile-breadcrumb">
             <a href="index.php">Home</a> &raquo; 
-            <a href="boosterIncome.php">Booster</a> &raquo; 
-            Global Booster Tree
+            <a href="boosterIncome.php">Growth Engine</a> &raquo; 
+            Global Growth Engine Tree
         </div>
     </div>
 
@@ -207,12 +207,12 @@ include '../includes/header.php';
     <div style="background: rgba(6, 17, 33, 0.75); border: 1px solid rgba(255, 183, 3, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
             <div style="font-size: 16px; color: #fff; font-weight: bold;">
-                <i class="fa-solid fa-globe" style="color: #ffb703;"></i> Global Booster Matrix Network
+                <i class="fa-solid fa-globe" style="color: #ffb703;"></i> Global Growth Engine Matrix Network
             </div>
 
             <div>
                 <a href="boosterIncome.php" style="background: rgba(255, 183, 3, 0.15); color: #ffb703; border: 1px solid #ffb703; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px;">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Booster Log
+                    <i class="fa-solid fa-arrow-left"></i> Back to Growth Engine Log
                 </a>
             </div>
         </div>
@@ -238,7 +238,7 @@ include '../includes/header.php';
     <div class="global-tree-viewport">
         <?php if (!$globalRootId): ?>
             <div style="text-align: center; padding: 40px; color: #a0aec0;">
-                No boosters in global tree yet.
+                No Growth Engines in global tree yet.
             </div>
         <?php else: ?>
             <div class="global-tree-canvas">

@@ -63,13 +63,13 @@
                 <option value="main_240">Platinum Pool ($240)</option>
                 <option value="main_480">Diamond Pool ($480)</option>
             </optgroup>
-            <optgroup label="Booster Packages">
-                <option value="booster_10">10 Booster ($10)</option>
-                <option value="booster_20">20 Booster ($20)</option>
-                <option value="booster_40">40 Booster ($40)</option>
-                <option value="booster_80">80 Booster ($80)</option>
-                <option value="booster_160">160 Booster ($160)</option>
-                <option value="booster_320">320 Booster ($320)</option>
+            <optgroup label="Growth Engine Packages">
+                <option value="booster_10">10 Growth Engine ($10)</option>
+                <option value="booster_20">20 Growth Engine ($20)</option>
+                <option value="booster_40">40 Growth Engine ($40)</option>
+                <option value="booster_80">80 Growth Engine ($80)</option>
+                <option value="booster_160">160 Growth Engine ($160)</option>
+                <option value="booster_320">320 Growth Engine ($320)</option>
             </optgroup>
         </select>
         <button type="submit" class="btn btn-gold">Explore</button>

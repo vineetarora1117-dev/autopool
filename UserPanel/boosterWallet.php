@@ -24,17 +24,17 @@ include '../includes/header.php';
 <div class="content-section active-view" style="padding: 20px; max-width: 1100px; margin: 0 auto;">
     <div class="profile-header-bar">
         <div class="profile-header-title">
-            <i class="fa-solid fa-wallet"></i> Booster Wallet & Activity
+            <i class="fa-solid fa-wallet"></i> Growth Engine Wallet & Activity
         </div>
         <div class="profile-breadcrumb">
-            <a href="index.php">Home</a> &raquo; Booster &raquo; Booster Wallet
+            <a href="index.php">Home</a> &raquo; Growth Engine &raquo; Growth Engine Wallet
         </div>
     </div>
 
     <!-- Wallet Summary & Actions Grid -->
     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px;">
         <div class="db-gold-card">
-            <div class="db-card-label">Available Booster Wallet Balance</div>
+            <div class="db-card-label">Available Growth Engine Wallet Balance</div>
             <div class="db-card-value" style="font-size: 32px;">$<?php echo number_format($boosterWallet, 2); ?></div>
             <div class="db-card-watermark"><i class="fa-solid fa-bolt fa-2x"></i></div>
         </div>
@@ -47,10 +47,10 @@ include '../includes/header.php';
         </a>
     </div>
 
-    <!-- Complete Booster Activity Log (Purchases & Income Ledger) -->
+    <!-- Complete Growth Engine Activity Log (Purchases & Income Ledger) -->
     <div class="table-container" style="background: rgba(6, 17, 33, 0.75); border: 1px solid #ffb703; border-radius: 12px; padding: 25px;">
         <h3 style="color: #ffb703; margin-bottom: 15px; font-size: 18px; display: flex; align-items: center; gap: 10px;">
-            <i class="fa-solid fa-receipt"></i> Booster Activity Ledger (Purchases & Income)
+            <i class="fa-solid fa-receipt"></i> Growth Engine Activity Ledger (Purchases & Income)
         </h3>
 
         <div style="overflow-x: auto;">

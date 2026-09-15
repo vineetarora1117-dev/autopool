@@ -70,7 +70,7 @@
                 <div class="submenu-container" id="buyPackageSubmenu">
                     <a class="submenu-item" href="#" onclick="openBuyPackageFlow('autopool'); return false;"><i class="fa-regular fa-square"></i> Autopool Package</a>
                     <a class="submenu-item" href="#" onclick="openBuyPackageFlow('infinity'); return false;"><i class="fa-regular fa-square"></i> Infinity Package</a>
-                    <a class="submenu-item" href="buyBooster"><i class="fa-regular fa-square"></i> Buy Booster</a>
+                    <a class="submenu-item" href="buyBooster"><i class="fa-regular fa-square"></i> Buy Growth Engine</a>
                 </div>
 
 
@@ -84,15 +84,15 @@
                     <a class="submenu-item" href="ticketReport"><i class="fa-regular fa-square"></i> View Ticket</a>
                 </div>
 
-                <!-- Booster Menu -->
+                <!-- Growth Engine Menu -->
                 <div class="nav-item sidebar-toggle" data-target="boosterSubmenu">
-                    <div class="nav-item-content"><i class="fa-solid fa-bolt" style="color:#ffb703;"></i><span>Booster</span></div>
+                    <div class="nav-item-content"><i class="fa-solid fa-bolt" style="color:#ffb703;"></i><span>Growth Engine</span></div>
                     <i class="fa-solid fa-chevron-right arrow-icon"></i>
                 </div>
                 <div class="submenu-container" id="boosterSubmenu">
-                    <a class="submenu-item" href="boosterIncome"><i class="fa-regular fa-square"></i> Booster Income</a>
-                    <a class="submenu-item" href="boosterTree"><i class="fa-regular fa-square"></i> Global Booster Tree</a>
-                    <a class="submenu-item" href="boosterWallet"><i class="fa-regular fa-square"></i> Booster Wallet</a>
+                    <a class="submenu-item" href="boosterIncome"><i class="fa-regular fa-square"></i> Growth Engine Income</a>
+                    <a class="submenu-item" href="boosterTree"><i class="fa-regular fa-square"></i> Global Growth Engine Tree</a>
+                    <a class="submenu-item" href="boosterWallet"><i class="fa-regular fa-square"></i> Growth Engine Wallet</a>
                 </div>
 
                 <?php for ($i = 1; $i <= 6; $i++): ?>

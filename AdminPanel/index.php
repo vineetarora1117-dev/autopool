@@ -54,7 +54,7 @@ require_once 'includes/header.php';
         <div class="metric-value">$<?php echo number_format($ledger['total_payout_liability_main'], 2); ?></div>
     </div>
     <div class="metric-card">
-        <div>Payout Liability (Booster)</div>
+        <div>Payout Liability (Growth Engine)</div>
         <div class="metric-value">$<?php echo number_format($ledger['total_payout_liability_booster'], 2); ?></div>
     </div>
     <div class="metric-card">

@@ -74,11 +74,11 @@ require_once 'includes/header.php';
                     <option value="deposit" <?php echo $filter_type === 'deposit' ? 'selected' : ''; ?>>Deposit</option>
                     <option value="withdrawal" <?php echo $filter_type === 'withdrawal' ? 'selected' : ''; ?>>Withdrawal</option>
                     <option value="package_purchase" <?php echo $filter_type === 'package_purchase' ? 'selected' : ''; ?>>Package Purchase</option>
-                    <option value="booster_purchase" <?php echo $filter_type === 'booster_purchase' ? 'selected' : ''; ?>>Booster Purchase</option>
+                    <option value="booster_purchase" <?php echo $filter_type === 'booster_purchase' ? 'selected' : ''; ?>>Growth Engine Purchase</option>
                     <option value="autopool_income" <?php echo $filter_type === 'autopool_income' ? 'selected' : ''; ?>>Autopool Income</option>
                     <option value="sponsor_income" <?php echo $filter_type === 'sponsor_income' ? 'selected' : ''; ?>>Sponsor Income</option>
                     <option value="level_income" <?php echo $filter_type === 'level_income' ? 'selected' : ''; ?>>Level Income</option>
-                    <option value="booster_income" <?php echo $filter_type === 'booster_income' ? 'selected' : ''; ?>>Booster Income</option>
+                    <option value="booster_income" <?php echo $filter_type === 'booster_income' ? 'selected' : ''; ?>>Growth Engine Income</option>
                     <option value="reward_income" <?php echo $filter_type === 'reward_income' ? 'selected' : ''; ?>>Reward Income</option>
                     <option value="sponsor_income_held" <?php echo $filter_type === 'sponsor_income_held' ? 'selected' : ''; ?>>Sponsor Income (Held)</option>
                     <option value="sponsor_income_released" <?php echo $filter_type === 'sponsor_income_released' ? 'selected' : ''; ?>>Sponsor Income (Released)</option>

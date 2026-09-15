@@ -34,42 +34,42 @@ include '../includes/header.php';
 <div class="content-section active-view" style="padding: 20px; max-width: 1100px; margin: 0 auto;">
     <div class="profile-header-bar">
         <div class="profile-header-title">
-            <i class="fa-solid fa-bolt"></i> Booster Income & Matrix Progress
+            <i class="fa-solid fa-bolt"></i> Growth Engine Income & Matrix Progress
         </div>
         <div class="profile-breadcrumb">
-            <a href="index.php">Home</a> &raquo; Booster &raquo; Booster Income
+            <a href="index.php">Home</a> &raquo; Growth Engine &raquo; Growth Engine Income
         </div>
     </div>
 
-    <!-- Summary Metrics Grid: Total Boosters Owned | Active Boosters | Total Booster Income Earned -->
+    <!-- Summary Metrics Grid: Total Growth Engines Owned | Active Growth Engines | Total Growth Engine Income Earned -->
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 25px;">
         <div class="db-gold-card">
-            <div class="db-card-label">Total Boosters Owned</div>
+            <div class="db-card-label">Total Growth Engines Owned</div>
             <div class="db-card-value"><?php echo $totalOwned; ?></div>
             <div class="db-card-watermark"><i class="fa-solid fa-layer-group fa-2x"></i></div>
         </div>
 
         <div class="db-gold-card">
-            <div class="db-card-label">Active Boosters</div>
+            <div class="db-card-label">Active Growth Engines</div>
             <div class="db-card-value" style="color: #2ecc71;"><?php echo $activeCount; ?></div>
             <div class="db-card-watermark"><i class="fa-solid fa-spinner fa-2x"></i></div>
         </div>
 
         <div class="db-gold-card">
-            <div class="db-card-label">Total Booster Income Earned</div>
+            <div class="db-card-label">Total Growth Engine Income Earned</div>
             <div class="db-card-value">$<?php echo number_format($totalBoosterIncome, 2); ?></div>
             <div class="db-card-watermark"><i class="fa-solid fa-sack-dollar fa-2x"></i></div>
         </div>
     </div>
 
-    <!-- MERGED SINGLE TABLE: My Boosters Progress & Income Payouts -->
+    <!-- MERGED SINGLE TABLE: My Growth Engines Progress & Income Payouts -->
     <div class="table-container" style="background: rgba(6, 17, 33, 0.75); border: 1px solid #ffb703; border-radius: 12px; padding: 25px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
             <h3 style="color: #ffb703; margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px;">
-                <i class="fa-solid fa-list-check"></i> My Boosters & Income Payout Log
+                <i class="fa-solid fa-list-check"></i> My Growth Engines & Income Payout Log
             </h3>
             <a href="boosterTree.php" style="background: linear-gradient(135deg, #ffb703, #e6a100); color: #000; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(255, 183, 3, 0.3); transition: transform 0.2s;">
-                <i class="fa-solid fa-sitemap"></i> Global Booster Tree
+                <i class="fa-solid fa-sitemap"></i> Global Growth Engine Tree
             </a>
         </div>
 
@@ -77,7 +77,7 @@ include '../includes/header.php';
             <table class="custom-table" style="width: 100%; border-collapse: collapse; font-size: 14px;">
                 <thead>
                     <tr style="background: rgba(255, 183, 3, 0.15); color: #ffb703; height: 42px;">
-                        <th>Booster ID</th>
+                        <th>Growth Engine ID</th>
                         <th>Purchase Type</th>
                         <th>Downlines Filled</th>
                         <th>Progress</th>
@@ -90,7 +90,7 @@ include '../includes/header.php';
                 <tbody>
                     <?php if (empty($boosters)): ?>
                         <tr>
-                            <td colspan="8" class="empty-row-msg">No boosters purchased yet. <a href="buyBooster.php" style="color:#ffb703;">Buy your first booster now!</a></td>
+                            <td colspan="8" class="empty-row-msg">No Growth Engines purchased yet. <a href="buyBooster.php" style="color:#ffb703;">Buy your first Growth Engine now!</a></td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($boosters as $b): ?>
