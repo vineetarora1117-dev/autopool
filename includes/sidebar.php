@@ -92,6 +92,7 @@
                 </div>
                 <div class="submenu-container" id="boosterSubmenu">
                     <a class="submenu-item" href="boosterIncome"><i class="fa-regular fa-square"></i> Booster Income</a>
+                    <a class="submenu-item" href="boosterTree"><i class="fa-regular fa-square"></i> Global Booster Tree</a>
                     <a class="submenu-item" href="boosterWallet"><i class="fa-regular fa-square"></i> Booster Wallet</a>
                 </div>
 

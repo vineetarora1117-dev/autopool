@@ -64,9 +64,14 @@ include '../includes/header.php';
 
     <!-- MERGED SINGLE TABLE: My Boosters Progress & Income Payouts -->
     <div class="table-container" style="background: rgba(6, 17, 33, 0.75); border: 1px solid #ffb703; border-radius: 12px; padding: 25px;">
-        <h3 style="color: #ffb703; margin-bottom: 15px; font-size: 18px; display: flex; align-items: center; gap: 10px;">
-            <i class="fa-solid fa-list-check"></i> My Boosters & Income Payout Log
-        </h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+            <h3 style="color: #ffb703; margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-list-check"></i> My Boosters & Income Payout Log
+            </h3>
+            <a href="boosterTree.php" style="background: linear-gradient(135deg, #ffb703, #e6a100); color: #000; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(255, 183, 3, 0.3); transition: transform 0.2s;">
+                <i class="fa-solid fa-sitemap"></i> Global Booster Tree
+            </a>
+        </div>
 
         <div style="overflow-x: auto;">
             <table class="custom-table" style="width: 100%; border-collapse: collapse; font-size: 14px;">
@@ -79,12 +84,13 @@ include '../includes/header.php';
                         <th>Income Generated</th>
                         <th>Status</th>
                         <th>Created Date</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($boosters)): ?>
                         <tr>
-                            <td colspan="7" class="empty-row-msg">No boosters purchased yet. <a href="buyBooster.php" style="color:#ffb703;">Buy your first booster now!</a></td>
+                            <td colspan="8" class="empty-row-msg">No boosters purchased yet. <a href="buyBooster.php" style="color:#ffb703;">Buy your first booster now!</a></td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($boosters as $b): ?>
@@ -117,6 +123,11 @@ include '../includes/header.php';
                                 </td>
                                 <td><?php echo $statusBadge; ?></td>
                                 <td style="color: #a0aec0; font-size: 13px;"><?php echo date('d M Y, h:i A', strtotime($b['created_at'])); ?></td>
+                                <td>
+                                    <a href="boosterTree.php?id=<?php echo $b['id']; ?>" style="color: #ffb703; font-weight: bold; text-decoration: none; background: rgba(255,183,3,0.1); border: 1px solid #ffb703; padding: 4px 10px; border-radius: 6px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                                        <i class="fa-solid fa-sitemap"></i> Tree
+                                    </a>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
