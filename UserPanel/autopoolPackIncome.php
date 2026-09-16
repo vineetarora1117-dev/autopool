@@ -25,10 +25,10 @@ $incomes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div id="autopoolPack<?php echo $pack; ?>Income" class="content-section active-view">
     <div class="profile-header-bar">
-        <div class="profile-header-title">Autopool Pack <?php echo $pack; ?> - Autopool Income</div>
+        <div class="profile-header-title">Infinity Crypto Hub <?php echo $pack; ?> - Autopool Income</div>
         <div class="profile-breadcrumb">
             <a href="index.php">Home</a> &raquo; 
-            Autopool Pack <?php echo $pack; ?> &raquo; 
+            Infinity Crypto Hub <?php echo $pack; ?> &raquo; 
             Autopool Income
         </div>
     </div>

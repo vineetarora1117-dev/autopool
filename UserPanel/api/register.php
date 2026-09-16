@@ -59,13 +59,12 @@ try {
     }
 
     $userId = generateUserId($pdo);
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
     $stmt = $pdo->prepare("
         INSERT INTO users (user_id, sponsor_id, name, email, phone, password, status) 
         VALUES (?, ?, ?, ?, ?, ?, 'Inactive')
     ");
-    $stmt->execute([$userId, $sponsorId, $name, $email, $phone, $hashedPassword]);
+    $stmt->execute([$userId, $sponsorId, $name, $email, $phone, $password]);
 
     $stmt = $pdo->prepare("INSERT INTO user_financial_summary (user_id) VALUES (?)");
     $stmt->execute([$userId]);

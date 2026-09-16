@@ -47,7 +47,7 @@ $transfer_fee_percent = floatval($stmtFee->fetchColumn() ?: 5.00);
 // Fetch recent 10 transactions related to this booster wallet
 $stmtTx = $pdo->prepare("
     SELECT * FROM transactions 
-    WHERE user_id = ? AND wallet_type = ? 
+    WHERE user_id = ? AND wallet_type IN (?, 'booster_wallet') 
     ORDER BY id DESC LIMIT 10
 ");
 $stmtTx->execute([$user_id, $wallet_key]);

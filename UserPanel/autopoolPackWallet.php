@@ -146,10 +146,10 @@ include '../includes/header.php';
 
 <div id="autopoolPackWalletSection" class="content-section active-view">
     <div class="profile-header-bar">
-        <div class="profile-header-title">Autopool Pack <?php echo $pack; ?> Wallet Statement</div>
+        <div class="profile-header-title">Infinity Crypto Hub <?php echo $pack; ?> Wallet Statement</div>
         <div class="profile-breadcrumb">
             <a href="index.php">Home</a> &raquo; 
-            Autopool Pack <?php echo $pack; ?> &raquo; 
+            Infinity Crypto Hub <?php echo $pack; ?> &raquo; 
             Wallet Statement
         </div>
     </div>

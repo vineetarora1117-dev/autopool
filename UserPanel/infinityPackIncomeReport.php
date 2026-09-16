@@ -20,7 +20,7 @@ $wallet_type = $wallet_map[$pack] ?? 'booster_10_wallet';
 // Fetch booster transactions
 $stmt = $pdo->prepare("
     SELECT * FROM transactions 
-    WHERE user_id = ? AND transaction_type IN ('booster_income', 'sponsor_income', 'sponsor_income_released') AND wallet_type = ? 
+    WHERE user_id = ? AND transaction_type IN ('booster_income', 'sponsor_income', 'sponsor_income_released') AND wallet_type IN (?, 'booster_wallet') 
     ORDER BY id DESC
 ");
 $stmt->execute([$user_id, $wallet_type]);

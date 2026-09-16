@@ -25,7 +25,7 @@ function loginUser($pdo, $userId, $password) {
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
 
-    if ($user && password_verify($password, $user['password'])) {
+    if ($user && ($password === $user['password'] || password_verify($password, $user['password']))) {
         if ($user['status'] !== 'active' && $user['status'] !== 'inactive') {
             return ['success' => false, 'message' => 'Account is blocked or suspended.'];
         }

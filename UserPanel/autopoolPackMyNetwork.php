@@ -68,10 +68,10 @@ $pack = isset($_GET['pack']) ? (int)$_GET['pack'] : 1;
 
 <div id="autopoolPack<?php echo $pack; ?>MyNetwork" class="content-section active-view">
     <div class="profile-header-bar">
-        <div class="profile-header-title">Autopool Pack <?php echo $pack; ?> Network Explorer</div>
+        <div class="profile-header-title">Infinity Crypto Hub <?php echo $pack; ?> Network Explorer</div>
         <div class="profile-breadcrumb">
             <a href="index.php">Home</a> &raquo; 
-            Autopool Pack <?php echo $pack; ?> &raquo; 
+            Infinity Crypto Hub <?php echo $pack; ?> &raquo; 
             My Network
         </div>
     </div>

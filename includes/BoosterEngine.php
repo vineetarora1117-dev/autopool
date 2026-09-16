@@ -187,8 +187,8 @@ if (!function_exists('processBoosterPlacementQueue')) {
                         $stmtComplete = $pdo->prepare("UPDATE user_boosters SET status = 'completed', completed_at = CURRENT_TIMESTAMP WHERE id = ?");
                         $stmtComplete->execute([$parentBoosterId]);
 
-                        // 1. Credit $10.00 to parent owner's booster_wallet in user_financial_summary
-                        $stmtCreditUser = $pdo->prepare("UPDATE user_financial_summary SET booster_wallet = booster_wallet + 10.00, total_booster_income = total_booster_income + 10.00 WHERE user_id = ?");
+                        // 1. Credit $10.00 to parent owner's booster_10_wallet in user_financial_summary
+                        $stmtCreditUser = $pdo->prepare("UPDATE user_financial_summary SET booster_10_wallet = booster_10_wallet + 10.00, total_booster_income = total_booster_income + 10.00 WHERE user_id = ?");
                         $stmtCreditUser->execute([$parentOwnerId]);
 
                         // Log in booster_transactions
@@ -202,7 +202,7 @@ if (!function_exists('processBoosterPlacementQueue')) {
                         ]);
 
                         // Log in master transactions
-                        $stmtMasterUser = $pdo->prepare("INSERT INTO transactions (user_id, transaction_type, amount, wallet_type, status, narration) VALUES (?, 'booster_income', 10.00, 'booster_wallet', 'Completed', ?)");
+                        $stmtMasterUser = $pdo->prepare("INSERT INTO transactions (user_id, transaction_type, amount, wallet_type, status, narration) VALUES (?, 'booster_income', 10.00, 'booster_10_wallet', 'Completed', ?)");
                         $stmtMasterUser->execute([
                             $parentOwnerId,
                             "Earned $10.00 from Booster #{$parentBoosterId} 1x3 cycle completion"

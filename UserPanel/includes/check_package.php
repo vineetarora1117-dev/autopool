@@ -58,7 +58,7 @@ if (!$isActive) {
         <div style="font-size: 50px; color: #ff4d4d; margin-bottom: 20px;">
             <i class="fa-solid fa-circle-xmark"></i>
         </div>
-        <h2 style="color: #ff4d4d; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Autopool Pack <?php echo $pack; ?> Not Active</h2>
+        <h2 style="color: #ff4d4d; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Infinity Crypto Hub <?php echo $pack; ?> Not Active</h2>
         <p style="color: #a0aec0; font-size: 15px; margin-bottom: 30px;">You do not have this package active. Please review your eligibility status below to upgrade.</p>
  
         <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 20px; text-align: left; margin-bottom: 30px; border: 1px dashed rgba(255,183,3,0.3);">

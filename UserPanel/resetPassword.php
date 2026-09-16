@@ -71,9 +71,8 @@ if ($isValid && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_passw
         $message_type = "error";
     } else {
         try {
-            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE user_id = ?");
-            $stmt->execute([$hashedPassword, $userId]);
+            $stmt->execute([$newPassword, $userId]);
             
             // Password successfully reset
             $message = "Password reset successful! Redirecting to login...";

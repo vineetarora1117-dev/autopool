@@ -110,6 +110,7 @@ require_once 'includes/header.php';
                         <td><?php echo number_format($m['direct_team_count'] ?? 0); ?></td>
                         <td><?php echo date('M d, Y', strtotime($m['created_at'])); ?></td>
                         <td>
+                            <button class="btn btn-gold" style="padding: 4px 8px; font-size: 12px; background: #3498db;" onclick="openEditModal('<?php echo $m['user_id']; ?>')">Edit</button>
                             <button class="btn btn-gold" style="padding: 4px 8px; font-size: 12px;" onclick="impersonate('<?php echo $m['user_id']; ?>')">Login</button>
                             <?php if ($m['status'] !== 'blocked'): ?>
                                 <button class="btn btn-gold" style="padding: 4px 8px; font-size: 12px; background: #ff4d4d;" onclick="blockUser('<?php echo $m['user_id']; ?>')">Block</button>
@@ -130,6 +131,109 @@ require_once 'includes/header.php';
 </div>
 
 <script>
+function openEditModal(userId) {
+    const formData = new FormData();
+    formData.append('action', 'get_user');
+    formData.append('user_id', userId);
+
+    fetch('api/users.php', { method: 'POST', body: formData })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) {
+            Swal.fire({icon: 'error', title: 'Error', text: data.message || 'User not found', background: '#1a1a2e', color: '#fff'});
+            return;
+        }
+
+        const user = data.data;
+        Swal.fire({
+            title: 'Edit Member: ' + user.user_id,
+            html: `
+                <div style="text-align: left; font-size: 14px; color: #fff;">
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; margin-bottom: 4px; color: #ffb703; font-weight: bold;">Name</label>
+                        <input id="swal-edit-name" class="swal2-input" value="${user.name || ''}" style="width: 100%; margin: 0; background: #030b14; color: #fff; border: 1px solid #ffb703;">
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; margin-bottom: 4px; color: #ffb703; font-weight: bold;">Email</label>
+                        <input id="swal-edit-email" class="swal2-input" value="${user.email || ''}" style="width: 100%; margin: 0; background: #030b14; color: #fff; border: 1px solid #ffb703;">
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; margin-bottom: 4px; color: #ffb703; font-weight: bold;">Phone</label>
+                        <input id="swal-edit-phone" class="swal2-input" value="${user.phone || ''}" style="width: 100%; margin: 0; background: #030b14; color: #fff; border: 1px solid #ffb703;">
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="display: block; margin-bottom: 4px; color: #ffb703; font-weight: bold;">Password</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input id="swal-edit-password" type="password" class="swal2-input" value="${user.password || ''}" style="flex: 1; margin: 0; background: #030b14; color: #fff; border: 1px solid #ffb703;">
+                            <button type="button" id="btn-toggle-pass" onclick="togglePassVisibility()" style="background: #3498db; color: #fff; border: none; padding: 0 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                                <i class="fa-solid fa-eye" id="pass-eye-icon"></i> View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Save Changes',
+            confirmButtonColor: '#ffb703',
+            cancelButtonColor: '#555',
+            background: '#1a1a2e',
+            color: '#fff',
+            focusConfirm: false,
+            preConfirm: () => {
+                const name = document.getElementById('swal-edit-name').value;
+                const email = document.getElementById('swal-edit-email').value;
+                const phone = document.getElementById('swal-edit-phone').value;
+                const password = document.getElementById('swal-edit-password').value;
+
+                if (!name || !email) {
+                    Swal.showValidationMessage('Name and Email are required');
+                    return false;
+                }
+
+                const updateData = new FormData();
+                updateData.append('action', 'update_user');
+                updateData.append('user_id', user.user_id);
+                updateData.append('name', name);
+                updateData.append('email', email);
+                updateData.append('phone', phone);
+                updateData.append('password', password);
+
+                return fetch('api/users.php', { method: 'POST', body: updateData })
+                .then(res => res.json())
+                .then(resData => {
+                    if (!resData.success) {
+                        throw new Error(resData.message || 'Update failed');
+                    }
+                    return resData;
+                })
+                .catch(error => {
+                    Swal.showValidationMessage(`Request failed: ${error}`);
+                });
+            }
+        }).then(result => {
+            if (result.isConfirmed) {
+                Swal.fire({icon: 'success', title: 'Updated!', text: 'Member details updated successfully.', background: '#1a1a2e', color: '#fff'})
+                .then(() => location.reload());
+            }
+        });
+    });
+}
+
+function togglePassVisibility() {
+    const input = document.getElementById('swal-edit-password');
+    const icon = document.getElementById('pass-eye-icon');
+    const btn = document.getElementById('btn-toggle-pass');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+        btn.style.background = '#e74c3c';
+    } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+        btn.style.background = '#3498db';
+    }
+}
+
 function impersonate(userId) {
     const formData = new FormData();
     formData.append('action', 'impersonate');

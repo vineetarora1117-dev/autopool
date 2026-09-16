@@ -5,7 +5,7 @@ include '../includes/header.php';
 $pack = isset($_GET['pack']) ? (int)$_GET['pack'] : 1;
 
 if ($pack !== 1) {
-    echo "<div style='padding: 24px; color: #e74c3c; font-weight: bold;'>Reward Income is only applicable for Autopool Pack 1 (Starter).</div>";
+    echo "<div style='padding: 24px; color: #e74c3c; font-weight: bold;'>Reward Income is only applicable for Infinity Crypto Hub 1 (Starter).</div>";
     include '../includes/footer.php';
     exit;
 }
@@ -22,10 +22,10 @@ $rewards = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div id="autopoolPack<?php echo $pack; ?>Reward" class="content-section active-view">
     <div class="profile-header-bar">
-        <div class="profile-header-title">Autopool Pack <?php echo $pack; ?> - Reward Income</div>
+        <div class="profile-header-title">Infinity Crypto Hub <?php echo $pack; ?> - Reward Income</div>
         <div class="profile-breadcrumb">
             <a href="index.php">Home</a> &raquo; 
-            Autopool Pack <?php echo $pack; ?> &raquo; 
+            Infinity Crypto Hub <?php echo $pack; ?> &raquo; 
             Reward Income
         </div>
     </div>

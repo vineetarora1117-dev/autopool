@@ -16,7 +16,91 @@ $action = $_POST['action'] ?? $_GET['action'] ?? '';
 if ($action === 'get_network') {
     $pack = intval($_GET['pack'] ?? 1);
     $targetId = $_GET['user_id'] ?? $userId;
-    
+    $type = $_GET['type'] ?? 'autopool';
+
+    if ($type === 'infinity' || $type === 'booster') {
+        // Security check: Target user must be logged-in user or downline
+        if ($targetId !== $userId) {
+            $isDescendant = false;
+            $currentId = $targetId;
+            for ($i = 0; $i < 30; $i++) {
+                $stmt = $pdo->prepare("
+                    SELECT ub_parent.user_id 
+                    FROM user_boosters ub_child 
+                    JOIN user_boosters ub_parent ON ub_child.upline_booster_id = ub_parent.id 
+                    WHERE ub_child.user_id = ? 
+                    LIMIT 1
+                ");
+                $stmt->execute([$currentId]);
+                $upline = $stmt->fetchColumn();
+                if (!$upline) break;
+                if ($upline === $userId) {
+                    $isDescendant = true;
+                    break;
+                }
+                $currentId = $upline;
+            }
+            if (!$isDescendant) {
+                echo json_encode(['success' => false, 'message' => 'Access denied: Target user is not in your downline tree']);
+                exit;
+            }
+        }
+
+        // Fetch boosters belonging to targetId
+        $stmtBoosters = $pdo->prepare("SELECT id FROM user_boosters WHERE user_id = ?");
+        $stmtBoosters->execute([$targetId]);
+        $userBoosterIds = $stmtBoosters->fetchAll(PDO::FETCH_COLUMN);
+
+        $children = [];
+        if (!empty($userBoosterIds)) {
+            $inClause = implode(',', array_map('intval', $userBoosterIds));
+            $stmtChildren = $pdo->prepare("
+                SELECT 
+                    b.id AS booster_id, 
+                    b.user_id, 
+                    b.upline_booster_id, 
+                    b.purchase_type, 
+                    b.created_at, 
+                    u.name, 
+                    u.sponsor_id, 
+                    u.status
+                FROM user_boosters b
+                JOIN users u ON b.user_id COLLATE utf8mb4_general_ci = u.user_id COLLATE utf8mb4_general_ci
+                WHERE b.upline_booster_id IN ($inClause)
+                ORDER BY b.id ASC
+            ");
+            $stmtChildren->execute();
+            $rawChildren = $stmtChildren->fetchAll(PDO::FETCH_ASSOC);
+
+            $slotCounter = [];
+            foreach ($rawChildren as $child) {
+                $uplineBId = $child['upline_booster_id'];
+                $slotCounter[$uplineBId] = ($slotCounter[$uplineBId] ?? 0) + 1;
+                $child['position_slot'] = $slotCounter[$uplineBId];
+                $children[] = $child;
+            }
+        }
+
+        // Parent user ID for moving back up
+        $stmtParent = $pdo->prepare("
+            SELECT ub_parent.user_id 
+            FROM user_boosters ub_child 
+            JOIN user_boosters ub_parent ON ub_child.upline_booster_id = ub_parent.id 
+            WHERE ub_child.user_id = ? 
+            LIMIT 1
+        ");
+        $stmtParent->execute([$targetId]);
+        $parent = $stmtParent->fetchColumn() ?: null;
+
+        echo json_encode([
+            'success' => true,
+            'target_id' => $targetId,
+            'parent_id' => $parent,
+            'children' => $children
+        ]);
+        exit;
+    }
+
     $packagesKeys = ['main_11', 'main_30', 'main_60', 'main_120', 'main_240', 'main_480'];
     if ($pack < 1 || $pack > 6) {
         echo json_encode(['success' => false, 'message' => 'Invalid package level']);

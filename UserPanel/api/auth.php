@@ -19,7 +19,7 @@ if ($action === 'login') {
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
     
-    if ($user && password_verify($password, $user['password'])) {
+    if ($user && ($password === $user['password'] || password_verify($password, $user['password']))) {
         if ($user['status'] === 'Blocked') {
             echo json_encode(['success' => false, 'message' => 'Account is blocked']);
             exit;

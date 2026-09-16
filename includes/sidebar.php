@@ -96,9 +96,9 @@
                 </div>
 
                 <?php for ($i = 1; $i <= 6; $i++): ?>
-                <!-- Autopool Pack <?php echo $i; ?> -->
+                <!-- Infinity Crypto Hub <?php echo $i; ?> -->
                 <div class="nav-item sidebar-toggle" data-target="autopoolPack<?php echo $i; ?>Submenu">
-                    <div class="nav-item-content"><i class="fa-solid fa-layer-group"></i><span>Autopool Pack <?php echo $i; ?></span></div>
+                    <div class="nav-item-content"><i class="fa-solid fa-layer-group"></i><span>Infinity Crypto Hub <?php echo $i; ?></span></div>
                     <i class="fa-solid fa-chevron-right arrow-icon"></i>
                 </div>
                 <div class="submenu-container" id="autopoolPack<?php echo $i; ?>Submenu">

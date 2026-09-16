@@ -14,7 +14,35 @@ if (!$userId) {
 }
 
 try {
-    if ($action === 'impersonate') {
+    if ($action === 'get_user') {
+        $stmt = $pdo->prepare("SELECT user_id, name, email, phone, password, status FROM users WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            echo json_encode(['success' => true, 'data' => $user]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'User not found']);
+        }
+    } elseif ($action === 'update_user') {
+        $name = trim($_POST['name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $newPassword = trim($_POST['password'] ?? '');
+
+        if (!$name || !$email) {
+            echo json_encode(['success' => false, 'message' => 'Name and Email are required']);
+            exit;
+        }
+
+        if ($newPassword !== '') {
+            $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, phone = ?, password = ? WHERE user_id = ?");
+            $stmt->execute([$name, $email, $phone, $newPassword, $userId]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE users SET name = ?, email = ?, phone = ? WHERE user_id = ?");
+            $stmt->execute([$name, $email, $phone, $userId]);
+        }
+        echo json_encode(['success' => true, 'message' => 'User updated successfully']);
+    } elseif ($action === 'impersonate') {
         $result = loginAsUser($pdo, $userId);
         echo json_encode($result);
     } elseif ($action === 'block') {

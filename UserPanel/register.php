@@ -92,7 +92,7 @@ $site_url = getSiteUrl();
                 <div class="action-btns" id="actionBtnsContainer"></div>
             </div>
             <div id="loginProceed" style="margin-top: 20px; display: none;">
-                <a href="login.php" style="color: #ffb703; text-decoration: none;">Proceed to Login</a>
+                <a href="login.php" class="btn-register" style="display: block; text-decoration: none; text-align: center; line-height: 24px;"><i class="fa-solid fa-right-to-bracket"></i> Proceed to Login</a>
             </div>
 
             <form id="registerForm">
@@ -166,8 +166,8 @@ $site_url = getSiteUrl();
                             document.getElementById('newUserId').innerText = userId;
                             document.getElementById('newUserPass').innerText = pass;
                             
-                            const siteUrl = "<?php echo $site_url; ?>/login.php";
-                            const msg = `Welcome to <?php echo htmlspecialchars($site_name); ?>! Your User ID is ${userId} and Password is ${pass}. Login at ${siteUrl}`;
+                            const loginUrl = "<?php echo $site_url; ?>/UserPanel/login.php";
+                            const msg = `Welcome to <?php echo htmlspecialchars($site_name); ?>! Your User ID is ${userId} and Password is ${pass}. Login at ${loginUrl}`;
                             
                             document.getElementById('actionBtnsContainer').innerHTML = `
                                 <button class="btn-action btn-copy" onclick="navigator.clipboard.writeText('User ID: ${userId} | Password: ${pass}'); Swal.fire({icon:'success', title:'Copied', text:'Credentials copied to clipboard!', timer:1500, showConfirmButton:false, background:'#1a1a2e', color:'#fff'});"><i class="fa-solid fa-copy"></i> Copy ID</button>
