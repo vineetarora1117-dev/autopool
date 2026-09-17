@@ -73,15 +73,25 @@ include '../includes/header.php';
     font-size: 12px;
     font-weight: bold;
 }
-.badge-left {
+.badge-slot-1 {
     background: rgba(46, 204, 113, 0.2);
     color: #2ecc71;
     border: 1px solid #2ecc71;
 }
-.badge-right {
+.badge-slot-2 {
     background: rgba(52, 152, 219, 0.2);
     color: #3498db;
     border: 1px solid #3498db;
+}
+.badge-slot-3 {
+    background: rgba(155, 89, 182, 0.2);
+    color: #9b59b6;
+    border: 1px solid #9b59b6;
+}
+.badge-slot-4 {
+    background: rgba(241, 196, 15, 0.2);
+    color: #f1c40f;
+    border: 1px solid #f1c40f;
 }
 .badge-active {
     background: rgba(46, 204, 113, 0.2);
@@ -154,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const tbody = document.getElementById('networkTableBody');
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#a0aec0;"><i class="fa-solid fa-spinner fa-spin"></i> Loading tree downlines...</td></tr>`;
 
-        fetch(`${apiUrl}?action=get_network&type=infinity&pack=${pack}&user_id=${targetUser}`)
+        fetch(`${apiUrl}?action=get_network&type=infinity&pack=${pack}&user_id=${targetUser}&_t=${Date.now()}`)
             .then(res => res.json())
             .then(data => {
                 if (!data.success) {
@@ -197,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const row = document.createElement('tr');
                     
                     const slotText = 'Slot ' + child.position_slot;
-                    const slotClass = 'badge-left';
+                    const slotClass = 'badge-slot-' + (child.position_slot || 1);
 
                     const formattedDate = new Date(child.created_at).toLocaleDateString('en-GB', {
                         day: '2-digit', month: 'short', year: 'numeric'

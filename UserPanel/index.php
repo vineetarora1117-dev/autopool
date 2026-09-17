@@ -19,15 +19,38 @@ $summary = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
 $current_package = $summary['my_package'] ?? 0;
 $direct_team = $summary['direct_team_count'] ?? 0;
-$total_active_team = $summary['total_active_team_count'] ?? 0;
-$total_inactive_team = $summary['total_inactive_team_count'] ?? 0;
 $direct_income = $summary['total_direct_referral_income'] ?? 0;
+
+// Dynamic active / inactive team calculation for accurate stats
+$stmtActive = $pdo->prepare("
+    SELECT COUNT(*) FROM users u 
+    INNER JOIN user_financial_summary ufs ON u.user_id = ufs.user_id 
+    WHERE u.sponsor_id = ? AND u.status = 'Active' AND ufs.my_package >= 11
+");
+$stmtActive->execute([$user_id]);
+$total_active_team = (int)$stmtActive->fetchColumn();
+
+$stmtInactive = $pdo->prepare("
+    SELECT COUNT(*) FROM users u 
+    INNER JOIN user_financial_summary ufs ON u.user_id = ufs.user_id 
+    WHERE u.sponsor_id = ? AND (u.status != 'Active' OR ufs.my_package < 11)
+");
+$stmtInactive->execute([$user_id]);
+$total_inactive_team = (int)$stmtInactive->fetchColumn();
 $team_income = $summary['total_team_level_income'] ?? 0;
 $autopool_income = $summary['total_global_autopool_income'] ?? 0;
 $booster_income = $summary['total_booster_income'] ?? 0;
+
+$infinity_income = (float)($summary['booster_10_wallet'] ?? 0)
+                 + (float)($summary['booster_20_wallet'] ?? 0)
+                 + (float)($summary['booster_40_wallet'] ?? 0)
+                 + (float)($summary['booster_80_wallet'] ?? 0)
+                 + (float)($summary['booster_160_wallet'] ?? 0)
+                 + (float)($summary['booster_320_wallet'] ?? 0);
+
 $total_withdrawal = $summary['total_withdrawal_amount'] ?? 0;
 
-$total_income = $direct_income + $team_income + $autopool_income + $booster_income;
+$total_income = $direct_income + $team_income + $autopool_income + $booster_income + $infinity_income;
 $net_income = $total_income - $total_withdrawal;
 
 // Fetch Announcements
@@ -169,8 +192,8 @@ $marquee_text = !empty($announcements) ? implode(' â˜… ', $announcements) . ' â˜
             <div class="db-card-value">$<?php echo number_format($net_income, 2); ?></div>
         </div>
         <div class="db-gold-card">
-            <div class="db-card-label">Wallet Address (Auto Generated ID)</div>
-            <div class="db-card-value" style="font-size: 16px;"><?php echo htmlspecialchars($user_id); ?></div>
+            <div class="db-card-label">Infinity Pack Income</div>
+            <div class="db-card-value">$<?php echo number_format($infinity_income, 2); ?></div>
         </div>
     </div>
 
@@ -225,6 +248,55 @@ $marquee_text = !empty($announcements) ? implode(' â˜… ', $announcements) . ' â˜
                 <div class="db-card-value">$<?php echo number_format($summary['earnings_480_wallet'] ?? 0.00, 2); ?></div>
             </div>
             <a href="autopoolPackWallet.php?pack=6" style="color: #ffb703; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Wallet</a>
+        </div>
+        <div class="db-gold-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="db-card-label">$10 Infinity Pack Wallet</div>
+                <div class="db-card-value">$<?php echo number_format($summary['booster_10_wallet'] ?? 0.00, 2); ?></div>
+            </div>
+            <a href="infinityPackIncomeReport.php?pack=1" style="color: #ffb703; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Wallet</a>
+        </div>
+        <div class="db-gold-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="db-card-label">$20 Infinity Pack Wallet</div>
+                <div class="db-card-value">$<?php echo number_format($summary['booster_20_wallet'] ?? 0.00, 2); ?></div>
+            </div>
+            <a href="infinityPackIncomeReport.php?pack=2" style="color: #ffb703; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Wallet</a>
+        </div>
+        <div class="db-gold-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="db-card-label">$40 Infinity Pack Wallet</div>
+                <div class="db-card-value">$<?php echo number_format($summary['booster_40_wallet'] ?? 0.00, 2); ?></div>
+            </div>
+            <a href="infinityPackIncomeReport.php?pack=3" style="color: #ffb703; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Wallet</a>
+        </div>
+        <div class="db-gold-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="db-card-label">$80 Infinity Pack Wallet</div>
+                <div class="db-card-value">$<?php echo number_format($summary['booster_80_wallet'] ?? 0.00, 2); ?></div>
+            </div>
+            <a href="infinityPackIncomeReport.php?pack=4" style="color: #ffb703; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Wallet</a>
+        </div>
+        <div class="db-gold-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="db-card-label">$160 Infinity Pack Wallet</div>
+                <div class="db-card-value">$<?php echo number_format($summary['booster_160_wallet'] ?? 0.00, 2); ?></div>
+            </div>
+            <a href="infinityPackIncomeReport.php?pack=5" style="color: #ffb703; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Wallet</a>
+        </div>
+        <div class="db-gold-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="db-card-label">$320 Infinity Pack Wallet</div>
+                <div class="db-card-value">$<?php echo number_format($summary['booster_320_wallet'] ?? 0.00, 2); ?></div>
+            </div>
+            <a href="infinityPackIncomeReport.php?pack=6" style="color: #ffb703; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Wallet</a>
+        </div>
+        <div class="db-gold-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="db-card-label">Growth Engine Wallet</div>
+                <div class="db-card-value">$<?php echo number_format($summary['booster_wallet'] ?? 0.00, 2); ?></div>
+            </div>
+            <a href="boosterBoard.php" style="color: #ffb703; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Board</a>
         </div>
     </div>
 </div>
@@ -309,7 +381,7 @@ function openDirectRegisterModal() {
                 if (data.success) {
                     const newId = data.user_id || (data.data ? data.data.user_id : '');
                     const pass = result.value.password;
-                    const siteUrl = "<?php echo $site_url; ?>/login.php";
+                    const siteUrl = "<?php echo $site_url; ?>/UserPanel/login.php";
                     const msg = `Welcome to <?php echo htmlspecialchars($env['SITE_NAME'] ?? 'SAPG'); ?>! Your User ID is ${newId} and Password is ${pass}. Login at ${siteUrl}`;
 
                     Swal.fire({

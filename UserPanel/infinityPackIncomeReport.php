@@ -20,7 +20,7 @@ $wallet_type = $wallet_map[$pack] ?? 'booster_10_wallet';
 // Fetch booster transactions
 $stmt = $pdo->prepare("
     SELECT * FROM transactions 
-    WHERE user_id = ? AND transaction_type IN ('booster_income', 'sponsor_income', 'sponsor_income_released') AND wallet_type IN (?, 'booster_wallet') 
+    WHERE user_id = ? AND transaction_type IN ('booster_income', 'sponsor_income', 'sponsor_income_released', 'booster_purchase') AND wallet_type = ? 
     ORDER BY id DESC
 ");
 $stmt->execute([$user_id, $wallet_type]);
@@ -77,6 +77,8 @@ include '../includes/header.php';
                             $typeLabel = 'Sponsor Income';
                         } elseif ($inc['transaction_type'] === 'sponsor_income_released') {
                             $typeLabel = 'Released Sponsor';
+                        } elseif ($inc['transaction_type'] === 'booster_purchase') {
+                            $typeLabel = 'Auto Upgrade';
                         }
                     ?>
                         <tr style="height: 50px; border-bottom: 1px solid rgba(255,255,255,0.05); color:#e2e8f0;">

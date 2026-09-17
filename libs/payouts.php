@@ -163,6 +163,28 @@ function processPackagePayout($pdo, $buyerUserId, $packageType, $fundedByUserId 
         
         $stmt = $pdo->prepare("UPDATE users SET status = 'Active' WHERE user_id = ?");
         $stmt->execute([$buyerUserId]);
+
+        // Update sponsor's active/inactive team counts
+        $stmtSponsor = $pdo->prepare("SELECT sponsor_id FROM users WHERE user_id = ?");
+        $stmtSponsor->execute([$buyerUserId]);
+        $spId = $stmtSponsor->fetchColumn();
+        if ($spId) {
+            $stmtUpdTeam = $pdo->prepare("
+                UPDATE user_financial_summary 
+                SET total_active_team_count = (
+                        SELECT COUNT(*) FROM users u 
+                        INNER JOIN user_financial_summary ufs ON u.user_id = ufs.user_id 
+                        WHERE u.sponsor_id = ? AND u.status = 'Active' AND ufs.my_package >= 11
+                    ),
+                    total_inactive_team_count = (
+                        SELECT COUNT(*) FROM users u 
+                        INNER JOIN user_financial_summary ufs ON u.user_id = ufs.user_id 
+                        WHERE u.sponsor_id = ? AND (u.status != 'Active' OR ufs.my_package < 11)
+                    )
+                WHERE user_id = ?
+            ");
+            $stmtUpdTeam->execute([$spId, $spId, $spId]);
+        }
         
         // d) Place in matrix
         $pos = placeInMatrix($pdo, $buyerUserId, $packageType);
@@ -331,52 +353,28 @@ function placeInBoosterMatrix($pdo, $userId, $boosterType) {
         $stmtInsertRoot->execute([$boosterType]);
     }
     
-    // 2. Find the sponsor's position in this matrix to support sponsor-based spillover.
-    $stmtSponsor = $pdo->prepare("SELECT sponsor_id FROM users WHERE user_id = ?");
-    $stmtSponsor->execute([$userId]);
-    $sponsorId = $stmtSponsor->fetchColumn();
-    
-    $startUplineId = 'SA000001';
-    if ($sponsorId) {
-        $stmtSponsorPos = $pdo->prepare("SELECT user_id FROM booster_matrices WHERE user_id = ? AND booster_type = ?");
-        $stmtSponsorPos->execute([$sponsorId, $boosterType]);
-        if ($stmtSponsorPos->fetch()) {
-            $startUplineId = $sponsorId;
-        }
-    }
-    
-    // 3. Perform BFS (level-order traversal) under the $startUplineId to find the first node with < 4 children.
-    $queue = [$startUplineId];
-    $targetUplineId = null;
-    
-    while (!empty($queue)) {
-        $current = array_shift($queue);
-        
-        // Find existing children of current node
-        $stmtChildren = $pdo->prepare("SELECT user_id, position_slot FROM booster_matrices WHERE upline_id = ? AND booster_type = ?");
-        $stmtChildren->execute([$current, $boosterType]);
-        $existingChildren = $stmtChildren->fetchAll(PDO::FETCH_ASSOC);
-        $childrenCount = count($existingChildren);
-        
-        if ($childrenCount < 4) {
-            $targetUplineId = $current;
-            break;
-        }
-        
-        // Push children to queue to keep searching BFS (spillover)
-        foreach ($existingChildren as $child) {
-            $queue[] = $child['user_id'];
-        }
-    }
-    
-    if (!$targetUplineId) {
+    // 2. Perform Global Forced Matrix BFS (Top-to-Bottom, Left-to-Right starting from SA000001)
+    // Find the first node in global order by id ASC that has less than 4 children
+    $stmtTarget = $pdo->prepare("
+        SELECT bm.id, bm.user_id, bm.matrix_level
+        FROM booster_matrices bm
+        LEFT JOIN booster_matrices child ON child.upline_id = bm.user_id AND child.booster_type = bm.booster_type
+        WHERE bm.booster_type = ?
+        GROUP BY bm.id, bm.user_id, bm.matrix_level
+        HAVING COUNT(child.id) < 4
+        ORDER BY bm.id ASC
+        LIMIT 1
+    ");
+    $stmtTarget->execute([$boosterType]);
+    $targetNode = $stmtTarget->fetch(PDO::FETCH_ASSOC);
+
+    if (!$targetNode) {
         $targetUplineId = 'SA000001';
+        $uplineMatrixLevel = 1;
+    } else {
+        $targetUplineId = $targetNode['user_id'];
+        $uplineMatrixLevel = (int)$targetNode['matrix_level'];
     }
-    
-    // Get the level of the target upline
-    $stmtUplineLevel = $pdo->prepare("SELECT matrix_level FROM booster_matrices WHERE user_id = ? AND booster_type = ?");
-    $stmtUplineLevel->execute([$targetUplineId, $boosterType]);
-    $uplineMatrixLevel = (int)$stmtUplineLevel->fetchColumn() ?: 1;
     $matrixLevel = $uplineMatrixLevel + 1;
     
     // Check which slot is available (1 to 4)
@@ -406,19 +404,56 @@ function placeInBoosterMatrix($pdo, $userId, $boosterType) {
 }
 
 /**
- * Checks if a user's 4x2 matrix board is complete (20 downlines) and triggers payouts.
+ * Checks if a user's 4x2 matrix board reaches milestone completions (Level 1 = 4 nodes, Level 2 = 16 nodes) and triggers payouts.
  */
 function checkAndProcessBoosterBoardCompletion($pdo, $uplineId, $boosterType) {
-    if ($uplineId === 'SA000001' || empty($uplineId)) {
+    if (empty($uplineId)) {
         return;
     }
     
-    // Count descendants at Level 1 and Level 2
+    global $BOOSTER_CONFIG;
+    if (!isset($BOOSTER_CONFIG[$boosterType])) return;
+    
+    $config = $BOOSTER_CONFIG[$boosterType];
+    $wallet = $config['wallet'];
+
+    // Count descendants at Level 1
     $stmtL1 = $pdo->prepare("SELECT user_id FROM booster_matrices WHERE upline_id = ? AND booster_type = ?");
     $stmtL1->execute([$uplineId, $boosterType]);
     $l1Users = $stmtL1->fetchAll(PDO::FETCH_COLUMN);
-    
     $l1Count = count($l1Users);
+
+    // 1. Level 1 Milestone: 4 Downlines Filled -> Credit Level 1 Earning
+    if ($l1Count >= 4) {
+        $l1Narration = "Level 1 completion income $" . number_format($config['l1_earning'], 2) . " from " . $config['name'] . " board";
+        
+        // Check if already paid for Level 1 on this booster
+        $stmtCheckL1 = $pdo->prepare("SELECT id FROM transactions WHERE user_id = ? AND wallet_type = ? AND transaction_type = 'booster_income' AND narration = ?");
+        $stmtCheckL1->execute([$uplineId, $wallet, $l1Narration]);
+        
+        if (!$stmtCheckL1->fetch()) {
+            $pdo->beginTransaction();
+            try {
+                $stmtUser = $pdo->prepare("
+                    UPDATE user_financial_summary 
+                    SET {$wallet} = {$wallet} + ?, total_booster_income = total_booster_income + ? 
+                    WHERE user_id = ?
+                ");
+                $stmtUser->execute([$config['l1_earning'], $config['l1_earning'], $uplineId]);
+                
+                insertTransaction($pdo, $uplineId, 'booster_income', $config['l1_earning'], $wallet, 'Completed', $l1Narration);
+                
+                $stmtLiab = $pdo->prepare("UPDATE company_ledger SET total_payout_liability_booster = total_payout_liability_booster + ? WHERE id = 1");
+                $stmtLiab->execute([$config['l1_earning']]);
+                
+                $pdo->commit();
+            } catch (Exception $e) {
+                $pdo->rollBack();
+            }
+        }
+    }
+
+    // Count descendants at Level 2
     $l2Count = 0;
     if ($l1Count > 0) {
         $inQuery = implode(',', array_fill(0, $l1Count, '?'));
@@ -428,8 +463,17 @@ function checkAndProcessBoosterBoardCompletion($pdo, $uplineId, $boosterType) {
     }
     
     $totalDescendants = $l1Count + $l2Count;
-    if ($totalDescendants === 20) {
-        processBoosterPayout($pdo, $uplineId, $boosterType);
+
+    // 2. Level 2 Milestone: 20 Downlines Total (16 on L2) -> Credit Board Completion, Sponsor Bonus, Auto-Upgrade
+    if ($totalDescendants >= 20) {
+        $l2Narration = "Level 2 board completion income $" . number_format($config['l2_earning'], 2) . " from " . $config['name'] . " board";
+        
+        $stmtCheckL2 = $pdo->prepare("SELECT id FROM transactions WHERE user_id = ? AND wallet_type = ? AND transaction_type = 'booster_income' AND narration = ?");
+        $stmtCheckL2->execute([$uplineId, $wallet, $l2Narration]);
+        
+        if (!$stmtCheckL2->fetch()) {
+            processBoosterPayout($pdo, $uplineId, $boosterType);
+        }
     }
 }
 
@@ -450,20 +494,20 @@ function processBoosterPayout($pdo, $userId, $boosterType) {
     
     $pdo->beginTransaction();
     try {
-        // 1. Credit User Earnings
+        // 1. Credit Level 2 User Earnings
         $stmtUser = $pdo->prepare("
             UPDATE user_financial_summary 
             SET {$wallet} = {$wallet} + ?, total_booster_income = total_booster_income + ? 
             WHERE user_id = ?
         ");
-        $stmtUser->execute([$config['user_earnings'], $config['user_earnings'], $userId]);
+        $stmtUser->execute([$config['l2_earning'], $config['l2_earning'], $userId]);
         
-        $narrationUser = "Booster earnings from completed " . $config['name'] . " board";
-        insertTransaction($pdo, $userId, 'booster_income', $config['user_earnings'], $wallet, 'Completed', $narrationUser);
+        $narrationUser = "Level 2 board completion income $" . number_format($config['l2_earning'], 2) . " from " . $config['name'] . " board";
+        insertTransaction($pdo, $userId, 'booster_income', $config['l2_earning'], $wallet, 'Completed', $narrationUser);
         
         // Update company ledger booster liability
         $stmtLiab = $pdo->prepare("UPDATE company_ledger SET total_payout_liability_booster = total_payout_liability_booster + ? WHERE id = 1");
-        $stmtLiab->execute([$config['user_earnings']]);
+        $stmtLiab->execute([$config['l2_earning']]);
         
         // 2. Sponsor Income
         if ($sponsorId) {
@@ -497,17 +541,43 @@ function processBoosterPayout($pdo, $userId, $boosterType) {
             $currentIndex = array_search($boosterType, $boosterKeys);
             $nextBoosterType = $boosterKeys[$currentIndex + 1];
             
-            // Auto upgrade
-            $stmtInsertPkg = $pdo->prepare("INSERT INTO user_packages (user_id, package_type, is_active, funded_by) VALUES (?, ?, 1, 'system') ON DUPLICATE KEY UPDATE is_active = 1");
-            $stmtInsertPkg->execute([$userId, $nextBoosterType]);
+            $nextActive = hasPackageActive($pdo, $userId, $nextBoosterType);
             
-            $posNext = placeInBoosterMatrix($pdo, $userId, $nextBoosterType);
-            
-            $narrationUpgrade = "Auto upgraded to " . $BOOSTER_CONFIG[$nextBoosterType]['name'] . " (Reserve: $" . $config['upgrade_reserve'] . ")";
-            insertTransaction($pdo, $userId, 'booster_purchase', $config['upgrade_reserve'], 'main_deposit', 'Completed', $narrationUpgrade);
-            
-            // Check if upline of next booster completed board
-            checkAndProcessBoosterBoardCompletion($pdo, $posNext['upline_id'], $nextBoosterType);
+            if (!$nextActive) {
+                // Next pack NOT active: Auto upgrade user to next booster tier
+                $stmtInsertPkg = $pdo->prepare("INSERT INTO user_packages (user_id, package_type, is_active, funded_by) VALUES (?, ?, 1, 'system') ON DUPLICATE KEY UPDATE is_active = 1");
+                $stmtInsertPkg->execute([$userId, $nextBoosterType]);
+                
+                $posNext = placeInBoosterMatrix($pdo, $userId, $nextBoosterType);
+                
+                $narrationUpgrade = "Auto upgraded to " . $BOOSTER_CONFIG[$nextBoosterType]['name'] . " (Reserve: $" . number_format($config['upgrade_reserve'], 2) . ")";
+                insertTransaction($pdo, $userId, 'booster_purchase', $config['upgrade_reserve'], $wallet, 'Completed', $narrationUpgrade);
+                
+                // Check if uplines of next booster completed board milestones
+                $currentCheckUserNext = $posNext['upline_id'];
+                for ($lvl = 0; $lvl < 2; $lvl++) {
+                    if (empty($currentCheckUserNext)) break;
+                    checkAndProcessBoosterBoardCompletion($pdo, $currentCheckUserNext, $nextBoosterType);
+                    
+                    $stmtUpNext = $pdo->prepare("SELECT upline_id FROM booster_matrices WHERE user_id = ? AND booster_type = ?");
+                    $stmtUpNext->execute([$currentCheckUserNext, $nextBoosterType]);
+                    $currentCheckUserNext = $stmtUpNext->fetchColumn();
+                }
+            } else {
+                // Next pack ALREADY active: Convert upgrade reserve into cash earnings
+                $upgradeReserveAmt = $config['upgrade_reserve'];
+                $stmtUserEarn = $pdo->prepare("
+                    UPDATE user_financial_summary 
+                    SET {$wallet} = {$wallet} + ?, total_booster_income = total_booster_income + ? 
+                    WHERE user_id = ?
+                ");
+                $stmtUserEarn->execute([$upgradeReserveAmt, $upgradeReserveAmt, $userId]);
+                
+                $narrationCredit = "Upgrade reserve $" . number_format($upgradeReserveAmt, 2) . " credited as earnings (" . $BOOSTER_CONFIG[$nextBoosterType]['name'] . " already active)";
+                insertTransaction($pdo, $userId, 'booster_income', $upgradeReserveAmt, $wallet, 'Completed', $narrationCredit);
+                
+                $stmtLiab->execute([$upgradeReserveAmt]);
+            }
         }
         
         // If it's final tier booster_320, process 40 re-entries
@@ -618,8 +688,16 @@ function processBoosterPurchase($pdo, $buyerUserId, $boosterType, $fundedByUserI
         
         $pdo->commit();
         
-        // e) Check if upline completed board
-        checkAndProcessBoosterBoardCompletion($pdo, $pos['upline_id'], $boosterType);
+        // e) Check if 1st or 2nd level uplines completed board milestones
+        $currentCheckUser = $pos['upline_id'];
+        for ($lvl = 0; $lvl < 2; $lvl++) {
+            if (empty($currentCheckUser)) break;
+            checkAndProcessBoosterBoardCompletion($pdo, $currentCheckUser, $boosterType);
+            
+            $stmtUp = $pdo->prepare("SELECT upline_id FROM booster_matrices WHERE user_id = ? AND booster_type = ?");
+            $stmtUp->execute([$currentCheckUser, $boosterType]);
+            $currentCheckUser = $stmtUp->fetchColumn();
+        }
         
         return true;
     } catch (Exception $e) {

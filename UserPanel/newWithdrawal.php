@@ -102,6 +102,12 @@ include '../includes/header.php';
                         <option value="earnings_120_wallet" data-fee="<?php echo $feesList['earnings_120'] ?? 10; ?>">$120 Package Wallet ($<?php echo number_format($summary['earnings_120_wallet'] ?? 0, 2); ?>)</option>
                         <option value="earnings_240_wallet" data-fee="<?php echo $feesList['earnings_240'] ?? 10; ?>">$240 Package Wallet ($<?php echo number_format($summary['earnings_240_wallet'] ?? 0, 2); ?>)</option>
                         <option value="earnings_480_wallet" data-fee="<?php echo $feesList['earnings_480'] ?? 10; ?>">$480 Package Wallet ($<?php echo number_format($summary['earnings_480_wallet'] ?? 0, 2); ?>)</option>
+                        <option value="booster_10_wallet" data-fee="<?php echo $feesList['booster_10'] ?? $feesList['booster_10_wallet'] ?? 10; ?>">$10 Infinity Pack Wallet ($<?php echo number_format($summary['booster_10_wallet'] ?? 0, 2); ?>)</option>
+                        <option value="booster_20_wallet" data-fee="<?php echo $feesList['booster_20'] ?? $feesList['booster_20_wallet'] ?? 10; ?>">$20 Infinity Pack Wallet ($<?php echo number_format($summary['booster_20_wallet'] ?? 0, 2); ?>)</option>
+                        <option value="booster_40_wallet" data-fee="<?php echo $feesList['booster_40'] ?? $feesList['booster_40_wallet'] ?? 10; ?>">$40 Infinity Pack Wallet ($<?php echo number_format($summary['booster_40_wallet'] ?? 0, 2); ?>)</option>
+                        <option value="booster_80_wallet" data-fee="<?php echo $feesList['booster_80'] ?? $feesList['booster_80_wallet'] ?? 10; ?>">$80 Infinity Pack Wallet ($<?php echo number_format($summary['booster_80_wallet'] ?? 0, 2); ?>)</option>
+                        <option value="booster_160_wallet" data-fee="<?php echo $feesList['booster_160'] ?? $feesList['booster_160_wallet'] ?? 10; ?>">$160 Infinity Pack Wallet ($<?php echo number_format($summary['booster_160_wallet'] ?? 0, 2); ?>)</option>
+                        <option value="booster_320_wallet" data-fee="<?php echo $feesList['booster_320'] ?? $feesList['booster_320_wallet'] ?? 10; ?>">$320 Infinity Pack Wallet ($<?php echo number_format($summary['booster_320_wallet'] ?? 0, 2); ?>)</option>
                         <option value="booster_wallet" data-fee="<?php echo $feesList['booster_wallet'] ?? 10; ?>">Growth Engine Wallet ($<?php echo number_format($summary['booster_wallet'] ?? 0, 2); ?>)</option>
                     </select>
                 </div>

@@ -4,6 +4,7 @@ require_once __DIR__ . '/../../libs/db.php';
 require_once __DIR__ . '/../../libs/payouts.php';
 
 header('Content-Type: application/json');
+header('Cache-Control: no-cache, no-store, must-revalidate');
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
@@ -18,8 +19,62 @@ if ($action === 'get_network') {
     $targetId = $_GET['user_id'] ?? $userId;
     $type = $_GET['type'] ?? 'autopool';
 
-    if ($type === 'infinity' || $type === 'booster') {
-        // Security check: Target user must be logged-in user or downline
+    if ($type === 'infinity') {
+        $boosterKeys = ['booster_10', 'booster_20', 'booster_40', 'booster_80', 'booster_160', 'booster_320'];
+        if ($pack < 1 || $pack > 6) {
+            echo json_encode(['success' => false, 'message' => 'Invalid booster package level']);
+            exit;
+        }
+        $boosterType = $boosterKeys[$pack - 1];
+
+        // Security check: Target user must be logged-in user or a descendant in booster_matrices
+        if ($targetId !== $userId) {
+            $isDescendant = false;
+            $currentId = $targetId;
+            for ($i = 0; $i < 30; $i++) {
+                $stmt = $pdo->prepare("SELECT upline_id FROM booster_matrices WHERE user_id = ? AND booster_type = ?");
+                $stmt->execute([$currentId, $boosterType]);
+                $upline = $stmt->fetchColumn();
+                if (!$upline) break;
+                if ($upline === $userId) {
+                    $isDescendant = true;
+                    break;
+                }
+                $currentId = $upline;
+            }
+            if (!$isDescendant) {
+                echo json_encode(['success' => false, 'message' => 'Access denied: Target user is not in your downline tree']);
+                exit;
+            }
+        }
+
+        // Fetch immediate 4x2 matrix children from booster_matrices
+        $stmt = $pdo->prepare("
+            SELECT bm.user_id, bm.position_slot, bm.matrix_level, u.name, u.sponsor_id, u.status, u.created_at, bm.upline_id
+            FROM booster_matrices bm
+            JOIN users u ON bm.user_id = u.user_id
+            WHERE bm.upline_id = ? AND bm.booster_type = ?
+            ORDER BY bm.position_slot ASC
+        ");
+        $stmt->execute([$targetId, $boosterType]);
+        $children = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Get parent/upline to allow moving back up
+        $stmtParent = $pdo->prepare("SELECT upline_id FROM booster_matrices WHERE user_id = ? AND booster_type = ?");
+        $stmtParent->execute([$targetId, $boosterType]);
+        $parent = $stmtParent->fetchColumn() ?: null;
+
+        echo json_encode([
+            'success' => true,
+            'target_id' => $targetId,
+            'parent_id' => $parent,
+            'children' => $children
+        ]);
+        exit;
+    }
+
+    if ($type === 'booster' || $type === 'growth') {
+        // Growth Engine 1x3 Matrix Query
         if ($targetId !== $userId) {
             $isDescendant = false;
             $currentId = $targetId;
