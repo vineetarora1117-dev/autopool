@@ -32,7 +32,7 @@ if (!function_exists('getBoosterCooldownSecondsRemaining')) {
         $stmtNow = $pdo->query("SELECT UNIX_TIMESTAMP(NOW())");
         $dbNow = intval($stmtNow->fetchColumn());
 
-        $cooldownWindow = 6; // TEMPORARY TESTING VALUE: 6 seconds (Production: 6 * 3600 = 6 hours)
+        $cooldownWindow = 6 * 3600; // 6 hours (21600 seconds)
         $elapsed = $dbNow - intval($lastPurchaseTime);
         $remaining = $cooldownWindow - $elapsed;
         return ($remaining > 0) ? $remaining : 0;
