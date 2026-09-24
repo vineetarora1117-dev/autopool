@@ -2,13 +2,13 @@
 require_once '../libs/db.php';
 require_once '../libs/auth.php';
 require_once '../libs/config.php';
-require_once '../includes/BoosterEngine.php';
+require_once '../includes/GrowthEngine.php';
 
 requireLogin();
 $user_id = $_SESSION['user_id'];
 
 // Fetch user's boosters list
-$stmtBoosters = $pdo->prepare("SELECT * FROM user_boosters WHERE user_id = ? ORDER BY id DESC");
+$stmtBoosters = $pdo->prepare("SELECT * FROM user_growth_engines WHERE user_id = ? ORDER BY id DESC");
 $stmtBoosters->execute([$user_id]);
 $boosters = $stmtBoosters->fetchAll(PDO::FETCH_ASSOC);
 
@@ -22,11 +22,11 @@ foreach ($boosters as $b) {
 }
 
 // Fetch summary metrics
-$stmtSummary = $pdo->prepare("SELECT booster_wallet, total_booster_income FROM user_financial_summary WHERE user_id = ?");
+$stmtSummary = $pdo->prepare("SELECT growth_engine_wallet, total_growth_engine_income FROM user_financial_summary WHERE user_id = ?");
 $stmtSummary->execute([$user_id]);
 $summary = $stmtSummary->fetch(PDO::FETCH_ASSOC);
 
-$totalBoosterIncome = floatval($summary['total_booster_income'] ?? 0);
+$totalBoosterIncome = floatval($summary['total_growth_engine_income'] ?? 0);
 
 include '../includes/header.php';
 ?>
@@ -68,7 +68,7 @@ include '../includes/header.php';
             <h3 style="color: #ffb703; margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px;">
                 <i class="fa-solid fa-list-check"></i> My Growth Engines & Income Payout Log
             </h3>
-            <a href="boosterTree.php" style="background: linear-gradient(135deg, #ffb703, #e6a100); color: #000; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(255, 183, 3, 0.3); transition: transform 0.2s;">
+            <a href="growthEngineTree.php" style="background: linear-gradient(135deg, #ffb703, #e6a100); color: #000; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(255, 183, 3, 0.3); transition: transform 0.2s;">
                 <i class="fa-solid fa-sitemap"></i> Global Growth Engine Tree
             </a>
         </div>
@@ -90,7 +90,7 @@ include '../includes/header.php';
                 <tbody>
                     <?php if (empty($boosters)): ?>
                         <tr>
-                            <td colspan="8" class="empty-row-msg">No Growth Engines purchased yet. <a href="buyBooster.php" style="color:#ffb703;">Buy your first Growth Engine now!</a></td>
+                            <td colspan="8" class="empty-row-msg">No Growth Engines purchased yet. <a href="buyGrowthEngine.php" style="color:#ffb703;">Buy your first Growth Engine now!</a></td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($boosters as $b): ?>
@@ -124,7 +124,7 @@ include '../includes/header.php';
                                 <td><?php echo $statusBadge; ?></td>
                                 <td style="color: #a0aec0; font-size: 13px;"><?php echo date('d M Y, h:i A', strtotime($b['created_at'])); ?></td>
                                 <td>
-                                    <a href="boosterTree.php?id=<?php echo $b['id']; ?>" style="color: #ffb703; font-weight: bold; text-decoration: none; background: rgba(255,183,3,0.1); border: 1px solid #ffb703; padding: 4px 10px; border-radius: 6px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                                    <a href="growthEngineTree.php?id=<?php echo $b['id']; ?>" style="color: #ffb703; font-weight: bold; text-decoration: none; background: rgba(255,183,3,0.1); border: 1px solid #ffb703; padding: 4px 10px; border-radius: 6px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;">
                                         <i class="fa-solid fa-sitemap"></i> Tree
                                     </a>
                                 </td>

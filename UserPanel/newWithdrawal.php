@@ -108,7 +108,7 @@ include '../includes/header.php';
                         <option value="booster_80_wallet" data-fee="<?php echo $feesList['booster_80'] ?? $feesList['booster_80_wallet'] ?? 10; ?>">$80 Infinity Pack Wallet ($<?php echo number_format($summary['booster_80_wallet'] ?? 0, 2); ?>)</option>
                         <option value="booster_160_wallet" data-fee="<?php echo $feesList['booster_160'] ?? $feesList['booster_160_wallet'] ?? 10; ?>">$160 Infinity Pack Wallet ($<?php echo number_format($summary['booster_160_wallet'] ?? 0, 2); ?>)</option>
                         <option value="booster_320_wallet" data-fee="<?php echo $feesList['booster_320'] ?? $feesList['booster_320_wallet'] ?? 10; ?>">$320 Infinity Pack Wallet ($<?php echo number_format($summary['booster_320_wallet'] ?? 0, 2); ?>)</option>
-                        <option value="booster_wallet" data-fee="<?php echo $feesList['booster_wallet'] ?? 10; ?>">Growth Engine Wallet ($<?php echo number_format($summary['booster_wallet'] ?? 0, 2); ?>)</option>
+                        <option value="growth_engine_wallet" data-fee="<?php echo $feesList['growth_engine_wallet'] ?? 10; ?>">Growth Engine Wallet ($<?php echo number_format($summary['growth_engine_wallet'] ?? 0, 2); ?>)</option>
                     </select>
                 </div>
                 <div class="form-group" style="margin-bottom:15px;">

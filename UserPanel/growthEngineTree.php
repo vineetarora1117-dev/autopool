@@ -7,7 +7,7 @@ requireLogin();
 $user_id = $_SESSION['user_id'];
 
 // Fetch all boosters in the global matrix ordered by ID
-$stmt = $pdo->query("SELECT id, user_id, upline_booster_id, downline_count, status FROM user_boosters ORDER BY id ASC");
+$stmt = $pdo->query("SELECT id, user_id, upline_booster_id, downline_count, status FROM user_growth_engines ORDER BY id ASC");
 $allBoosters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Index boosters by ID and by upline_booster_id

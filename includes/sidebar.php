@@ -70,7 +70,7 @@
                 <div class="submenu-container" id="buyPackageSubmenu">
                     <a class="submenu-item" href="#" onclick="openBuyPackageFlow('autopool'); return false;"><i class="fa-regular fa-square"></i> Autopool Package</a>
                     <a class="submenu-item" href="#" onclick="openBuyPackageFlow('infinity'); return false;"><i class="fa-regular fa-square"></i> Infinity Package</a>
-                    <a class="submenu-item" href="buyBooster"><i class="fa-regular fa-square"></i> Buy Growth Engine</a>
+                    <a class="submenu-item" href="buyGrowthEngine"><i class="fa-regular fa-square"></i> Buy Growth Engine</a>
                 </div>
 
 
@@ -90,9 +90,9 @@
                     <i class="fa-solid fa-chevron-right arrow-icon"></i>
                 </div>
                 <div class="submenu-container" id="boosterSubmenu">
-                    <a class="submenu-item" href="boosterIncome"><i class="fa-regular fa-square"></i> Growth Engine Income</a>
-                    <a class="submenu-item" href="boosterTree"><i class="fa-regular fa-square"></i> Global Growth Engine Tree</a>
-                    <a class="submenu-item" href="boosterWallet"><i class="fa-regular fa-square"></i> Growth Engine Wallet</a>
+                    <a class="submenu-item" href="growthEngineIncome"><i class="fa-regular fa-square"></i> Growth Engine Income</a>
+                    <a class="submenu-item" href="growthEngineTree"><i class="fa-regular fa-square"></i> Global Growth Engine Tree</a>
+                    <a class="submenu-item" href="growthEngineWallet"><i class="fa-regular fa-square"></i> Growth Engine Wallet</a>
                 </div>
 
                 <?php for ($i = 1; $i <= 6; $i++): ?>

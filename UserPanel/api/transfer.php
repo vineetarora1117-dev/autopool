@@ -39,7 +39,7 @@ $allowedWallets = [
     'booster_80_wallet'   => 'booster_80',
     'booster_160_wallet'  => 'booster_160',
     'booster_320_wallet'  => 'booster_320',
-    'booster_wallet'      => 'booster_wallet',
+    'growth_engine_wallet'      => 'growth_engine_wallet',
 ];
 
 if (!array_key_exists($sourceWallet, $allowedWallets)) {

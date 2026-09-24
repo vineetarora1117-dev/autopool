@@ -2,7 +2,7 @@
 require_once '../libs/db.php';
 require_once '../libs/auth.php';
 require_once '../libs/config.php';
-require_once '../includes/BoosterEngine.php';
+require_once '../includes/GrowthEngine.php';
 
 requireLogin();
 $user_id = $_SESSION['user_id'];
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     
     if (empty($token) || $token !== $_SESSION['booster_csrf']) {
         // Invalid or stale token -> redirect to prevent duplicate purchase on refresh
-        header("Location: buyBooster.php?msg=stale");
+        header("Location: buyGrowthEngine.php?msg=stale");
         exit;
     }
 
@@ -32,21 +32,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $result = purchaseBooster($pdo, $user_id);
 
     if ($result['success']) {
-        header("Location: buyBooster.php?msg=success&id=" . urlencode($result['booster_id']));
+        header("Location: buyGrowthEngine.php?msg=success&id=" . urlencode($result['booster_id']));
         exit;
     } else {
-        header("Location: buyBooster.php?msg=error&err=" . urlencode($result['message']));
+        header("Location: buyGrowthEngine.php?msg=error&err=" . urlencode($result['message']));
         exit;
     }
 }
 
 // Fetch user financial summary
-$stmtSummary = $pdo->prepare("SELECT main_deposit_balance, booster_wallet FROM user_financial_summary WHERE user_id = ?");
+$stmtSummary = $pdo->prepare("SELECT main_deposit_balance, growth_engine_wallet FROM user_financial_summary WHERE user_id = ?");
 $stmtSummary->execute([$user_id]);
 $summary = $stmtSummary->fetch(PDO::FETCH_ASSOC);
 
 $mainBalance = floatval($summary['main_deposit_balance'] ?? 0);
-$boosterWallet = floatval($summary['booster_wallet'] ?? 0);
+$growthEngineWallet = floatval($summary['growth_engine_wallet'] ?? 0);
 
 // Calculate cooldown seconds remaining
 $cooldownRemaining = getBoosterCooldownSecondsRemaining($pdo, $user_id);
@@ -119,7 +119,7 @@ include '../includes/header.php';
 
         <?php else: ?>
             <!-- Active Purchase Form -->
-            <form method="POST" action="buyBooster.php" id="boosterPurchaseForm">
+            <form method="POST" action="buyGrowthEngine.php" id="boosterPurchaseForm">
                 <input type="hidden" name="action" value="buy_booster">
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['booster_csrf']; ?>">
 
