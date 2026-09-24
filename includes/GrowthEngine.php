@@ -1,6 +1,6 @@
 <?php
 /**
- * BoosterEngine.php
+ * GrowthEngine.php
  * Core 1x3 Auto-Cycling Matrix Engine for Infinity Booster Module
  */
 
@@ -9,7 +9,7 @@ if (!function_exists('getUserLastManualBoosterTime')) {
      * Get unix timestamp of user's last manual booster purchase
      */
     function getUserLastManualBoosterTime($pdo, $userId) {
-        $stmt = $pdo->prepare("SELECT UNIX_TIMESTAMP(created_at) FROM user_boosters WHERE user_id = ? AND purchase_type = 'manual' ORDER BY id DESC LIMIT 1");
+        $stmt = $pdo->prepare("SELECT UNIX_TIMESTAMP(created_at) FROM user_growth_engines WHERE user_id = ? AND purchase_type = 'manual' ORDER BY id DESC LIMIT 1");
         $stmt->execute([$userId]);
         $lastTime = $stmt->fetchColumn();
         return $lastTime ? intval($lastTime) : 0;
@@ -21,7 +21,7 @@ if (!function_exists('getBoosterCooldownSecondsRemaining')) {
      * Calculate seconds remaining for manual purchase lock using MySQL server clock
      */
     function getBoosterCooldownSecondsRemaining($pdo, $userId) {
-        $stmtLast = $pdo->prepare("SELECT UNIX_TIMESTAMP(created_at) FROM user_boosters WHERE user_id = ? AND purchase_type = 'manual' ORDER BY id DESC LIMIT 1");
+        $stmtLast = $pdo->prepare("SELECT UNIX_TIMESTAMP(created_at) FROM user_growth_engines WHERE user_id = ? AND purchase_type = 'manual' ORDER BY id DESC LIMIT 1");
         $stmtLast->execute([$userId]);
         $lastPurchaseTime = $stmtLast->fetchColumn();
         if (!$lastPurchaseTime) {
@@ -75,7 +75,7 @@ if (!function_exists('purchaseBooster')) {
             $stmtDeduct->execute([$userId]);
 
             // 4. Log transaction in master transactions table
-            $stmtTx = $pdo->prepare("INSERT INTO transactions (user_id, transaction_type, amount, wallet_type, status, narration) VALUES (?, 'booster_purchase', 10.00, 'main_deposit', 'Completed', ?)");
+            $stmtTx = $pdo->prepare("INSERT INTO transactions (user_id, transaction_type, amount, wallet_type, status, narration) VALUES (?, 'growth_engine_purchase', 10.00, 'main_deposit', 'Completed', ?)");
             $stmtTx->execute([$userId, "Purchased 1x3 Booster ($10.00)"]);
 
             // 5. Process matrix placement queue
@@ -135,13 +135,13 @@ if (!function_exists('processBoosterPlacementQueue')) {
                 $fromBoosterId = $current['from_booster_id'];
 
                 // Find next available parent node in global 1x3 matrix (Top-to-Bottom, Left-to-Right)
-                $stmtParent = $pdo->query("SELECT id, user_id, downline_count FROM user_boosters WHERE status = 'active' AND downline_count < 3 ORDER BY id ASC LIMIT 1 FOR UPDATE");
+                $stmtParent = $pdo->query("SELECT id, user_id, downline_count FROM user_growth_engines WHERE status = 'active' AND downline_count < 3 ORDER BY id ASC LIMIT 1 FOR UPDATE");
                 $parent = $stmtParent->fetch(PDO::FETCH_ASSOC);
 
                 $uplineBoosterId = $parent ? $parent['id'] : null;
 
                 // Create new booster node
-                $stmtInsert = $pdo->prepare("INSERT INTO user_boosters (user_id, upline_booster_id, downline_count, purchase_type, status) VALUES (?, ?, 0, ?, 'active')");
+                $stmtInsert = $pdo->prepare("INSERT INTO user_growth_engines (user_id, upline_booster_id, downline_count, purchase_type, status) VALUES (?, ?, 0, ?, 'active')");
                 $stmtInsert->execute([$currentUserId, $uplineBoosterId, $currentType]);
                 $newBoosterId = $pdo->lastInsertId();
 
@@ -149,9 +149,9 @@ if (!function_exists('processBoosterPlacementQueue')) {
                     $placedInitialBoosterId = $newBoosterId;
                 }
 
-                // If this entry was an auto re-entry, log in booster_transactions
+                // If this entry was an auto re-entry, log in growth_engine_transactions
                 if ($currentType === 'reentry') {
-                    $stmtLog = $pdo->prepare("INSERT INTO booster_transactions (booster_id, user_id, from_booster_id, from_user_id, amount, type, narration) VALUES (?, ?, ?, ?, 10.00, 'auto_reentry', ?)");
+                    $stmtLog = $pdo->prepare("INSERT INTO growth_engine_transactions (booster_id, user_id, from_booster_id, from_user_id, amount, type, narration) VALUES (?, ?, ?, ?, 10.00, 'auto_reentry', ?)");
                     $stmtLog->execute([
                         $newBoosterId,
                         $currentUserId,
@@ -161,7 +161,7 @@ if (!function_exists('processBoosterPlacementQueue')) {
                     ]);
 
                     // Also log in master transactions table
-                    $stmtMasterTx = $pdo->prepare("INSERT INTO transactions (user_id, transaction_type, amount, wallet_type, status, narration) VALUES (?, 'booster_purchase', 10.00, 'auto_reentry', 'Completed', ?)");
+                    $stmtMasterTx = $pdo->prepare("INSERT INTO transactions (user_id, transaction_type, amount, wallet_type, status, narration) VALUES (?, 'growth_engine_purchase', 10.00, 'auto_reentry', 'Completed', ?)");
                     $stmtMasterTx->execute([
                         $currentUserId,
                         "Auto Re-entry Booster #{$newBoosterId} placed in global matrix"
@@ -170,11 +170,11 @@ if (!function_exists('processBoosterPlacementQueue')) {
 
                 // If attached under a parent, update parent's downline count
                 if ($uplineBoosterId !== null) {
-                    $stmtUpdateParent = $pdo->prepare("UPDATE user_boosters SET downline_count = downline_count + 1 WHERE id = ?");
+                    $stmtUpdateParent = $pdo->prepare("UPDATE user_growth_engines SET downline_count = downline_count + 1 WHERE id = ?");
                     $stmtUpdateParent->execute([$uplineBoosterId]);
 
                     // Re-fetch parent downline count
-                    $stmtCheckParent = $pdo->prepare("SELECT id, user_id, downline_count FROM user_boosters WHERE id = ?");
+                    $stmtCheckParent = $pdo->prepare("SELECT id, user_id, downline_count FROM user_growth_engines WHERE id = ?");
                     $stmtCheckParent->execute([$uplineBoosterId]);
                     $updatedParent = $stmtCheckParent->fetch(PDO::FETCH_ASSOC);
 
@@ -184,15 +184,15 @@ if (!function_exists('processBoosterPlacementQueue')) {
                         $parentOwnerId   = $updatedParent['user_id'];
 
                         // Mark parent booster as completed
-                        $stmtComplete = $pdo->prepare("UPDATE user_boosters SET status = 'completed', completed_at = CURRENT_TIMESTAMP WHERE id = ?");
+                        $stmtComplete = $pdo->prepare("UPDATE user_growth_engines SET status = 'completed', completed_at = CURRENT_TIMESTAMP WHERE id = ?");
                         $stmtComplete->execute([$parentBoosterId]);
 
-                        // 1. Credit $10.00 to parent owner's booster_10_wallet in user_financial_summary
-                        $stmtCreditUser = $pdo->prepare("UPDATE user_financial_summary SET booster_10_wallet = booster_10_wallet + 10.00, total_booster_income = total_booster_income + 10.00 WHERE user_id = ?");
+                        // 1. Credit $10.00 to parent owner's growth_engine_wallet in user_financial_summary
+                        $stmtCreditUser = $pdo->prepare("UPDATE user_financial_summary SET growth_engine_wallet = growth_engine_wallet + 10.00, total_growth_engine_income = total_growth_engine_income + 10.00 WHERE user_id = ?");
                         $stmtCreditUser->execute([$parentOwnerId]);
 
-                        // Log in booster_transactions
-                        $stmtLogEarning = $pdo->prepare("INSERT INTO booster_transactions (booster_id, user_id, from_booster_id, from_user_id, amount, type, narration) VALUES (?, ?, ?, ?, 10.00, 'user_earning', ?)");
+                        // Log in growth_engine_transactions
+                        $stmtLogEarning = $pdo->prepare("INSERT INTO growth_engine_transactions (booster_id, user_id, from_booster_id, from_user_id, amount, type, narration) VALUES (?, ?, ?, ?, 10.00, 'user_earning', ?)");
                         $stmtLogEarning->execute([
                             $parentBoosterId,
                             $parentOwnerId,
@@ -202,7 +202,7 @@ if (!function_exists('processBoosterPlacementQueue')) {
                         ]);
 
                         // Log in master transactions
-                        $stmtMasterUser = $pdo->prepare("INSERT INTO transactions (user_id, transaction_type, amount, wallet_type, status, narration) VALUES (?, 'booster_income', 10.00, 'booster_10_wallet', 'Completed', ?)");
+                        $stmtMasterUser = $pdo->prepare("INSERT INTO transactions (user_id, transaction_type, amount, wallet_type, status, narration) VALUES (?, 'growth_engine_income', 10.00, 'growth_engine_wallet', 'Completed', ?)");
                         $stmtMasterUser->execute([
                             $parentOwnerId,
                             "Earned $10.00 from Booster #{$parentBoosterId} 1x3 cycle completion"
@@ -248,7 +248,7 @@ if (!function_exists('getUserBoosterSummary')) {
      * Fetch user's active & completed boosters with progress
      */
     function getUserBoosterSummary($pdo, $userId) {
-        $stmt = $pdo->prepare("SELECT * FROM user_boosters WHERE user_id = ? ORDER BY id DESC");
+        $stmt = $pdo->prepare("SELECT * FROM user_growth_engines WHERE user_id = ? ORDER BY id DESC");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

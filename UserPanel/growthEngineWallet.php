@@ -7,14 +7,14 @@ requireLogin();
 $user_id = $_SESSION['user_id'];
 
 // Fetch booster wallet balance
-$stmtSummary = $pdo->prepare("SELECT booster_wallet, total_booster_income FROM user_financial_summary WHERE user_id = ?");
+$stmtSummary = $pdo->prepare("SELECT growth_engine_wallet, total_growth_engine_income FROM user_financial_summary WHERE user_id = ?");
 $stmtSummary->execute([$user_id]);
 $summary = $stmtSummary->fetch(PDO::FETCH_ASSOC);
 
-$boosterWallet = floatval($summary['booster_wallet'] ?? 0);
+$growthEngineWallet = floatval($summary['growth_engine_wallet'] ?? 0);
 
 // Fetch booster transactions (Both Purchases and Income/Payouts)
-$stmtLedger = $pdo->prepare("SELECT * FROM transactions WHERE user_id = ? AND (wallet_type = 'booster_wallet' OR transaction_type IN ('booster_purchase', 'booster_income')) ORDER BY id DESC LIMIT 50");
+$stmtLedger = $pdo->prepare("SELECT * FROM transactions WHERE user_id = ? AND (wallet_type = 'growth_engine_wallet' OR transaction_type IN ('growth_engine_purchase', 'growth_engine_income')) ORDER BY id DESC LIMIT 50");
 $stmtLedger->execute([$user_id]);
 $ledger = $stmtLedger->fetchAll(PDO::FETCH_ASSOC);
 
@@ -35,7 +35,7 @@ include '../includes/header.php';
     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px;">
         <div class="db-gold-card">
             <div class="db-card-label">Available Growth Engine Wallet Balance</div>
-            <div class="db-card-value" style="font-size: 32px;">$<?php echo number_format($boosterWallet, 2); ?></div>
+            <div class="db-card-value" style="font-size: 32px;">$<?php echo number_format($growthEngineWallet, 2); ?></div>
             <div class="db-card-watermark"><i class="fa-solid fa-bolt fa-2x"></i></div>
         </div>
 
@@ -79,10 +79,10 @@ include '../includes/header.php';
                             $amount = floatval($tx['amount']);
 
                             // Format type and amount badges
-                            if ($type === 'booster_income') {
+                            if ($type === 'growth_engine_income') {
                                 $typeLabel = '<span style="color: #2ecc71; font-weight: bold;"><i class="fa-solid fa-arrow-down"></i> Income</span>';
                                 $amountDisplay = '<span style="color: #2ecc71; font-weight: bold;">+$' . number_format($amount, 2) . '</span>';
-                            } elseif ($type === 'booster_purchase') {
+                            } elseif ($type === 'growth_engine_purchase') {
                                 if ($walletType === 'auto_reentry') {
                                     $typeLabel = '<span style="color: #9b59b6; font-weight: bold;"><i class="fa-solid fa-arrows-rotate"></i> Auto Re-entry</span>';
                                     $amountDisplay = '<span style="color: #9b59b6; font-weight: bold;">$' . number_format($amount, 2) . '</span>';

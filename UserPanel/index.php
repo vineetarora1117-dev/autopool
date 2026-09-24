@@ -294,9 +294,9 @@ $marquee_text = !empty($announcements) ? implode(' â˜… ', $announcements) . ' â˜
         <div class="db-gold-card" style="display: flex; flex-direction: column; justify-content: space-between;">
             <div>
                 <div class="db-card-label">Growth Engine Wallet</div>
-                <div class="db-card-value">$<?php echo number_format($summary['booster_wallet'] ?? 0.00, 2); ?></div>
+                <div class="db-card-value">$<?php echo number_format($summary['growth_engine_wallet'] ?? 0.00, 2); ?></div>
             </div>
-            <a href="boosterBoard.php" style="color: #ffb703; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Board</a>
+            <a href="growthEngineBoard.php" style="color: #ffb703; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; font-weight: bold;"><i class="fa-solid fa-eye"></i> View Board</a>
         </div>
     </div>
 </div>
