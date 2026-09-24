@@ -184,7 +184,7 @@ $marquee_text = !empty($announcements) ? implode(' â˜… ', $announcements) . ' â˜
             <div class="db-card-value">$<?php echo number_format($total_income, 2); ?></div>
         </div>
         <div class="db-gold-card">
-            <div class="db-card-label">Total Withdrawal Income</div>
+            <div class="db-card-label">Total Withdrawl</div>
             <div class="db-card-value">$<?php echo number_format($total_withdrawal, 2); ?></div>
         </div>
         <div class="db-gold-card">
