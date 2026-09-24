@@ -93,7 +93,7 @@ if (isset($_SESSION['user_id'])) {
             const formData = new FormData(this);
             formData.append('action', 'login');
             
-            fetch('api/auth.php', {
+            fetch('UserPanel/api/auth.php', {
                 method: 'POST',
                 body: formData
             })
