@@ -49,6 +49,22 @@ foreach ($allUsers as $uid) {
 $updateQuery = "UPDATE user_financial_summary SET direct_team_count = ?, strong_leg_count = ?, other_legs_count = ? WHERE user_id = ?";
 $stmtUpdate = $pdo->prepare($updateQuery);
 
+$reward_levels = [
+    1 => ['target' => 15, 'reward' => 15.00],
+    2 => ['target' => 18, 'reward' => 3.00],
+    3 => ['target' => 24, 'reward' => 6.00],
+    4 => ['target' => 36, 'reward' => 12.00],
+    5 => ['target' => 60, 'reward' => 24.00],
+    6 => ['target' => 108, 'reward' => 48.00],
+    7 => ['target' => 204, 'reward' => 96.00],
+    8 => ['target' => 396, 'reward' => 192.00],
+    9 => ['target' => 780, 'reward' => 384.00],
+    10 => ['target' => 1548, 'reward' => 768.00]
+];
+$stmtCheckReward = $pdo->prepare("SELECT id FROM user_rewards WHERE user_id = ? AND level = ?");
+$stmtInsertReward = $pdo->prepare("INSERT INTO user_rewards (user_id, level, amount) VALUES (?, ?, ?)");
+$stmtAddRewardMoney = $pdo->prepare("UPDATE user_financial_summary SET main_deposit_balance = main_deposit_balance + ?, total_reward_income = total_reward_income + ? WHERE user_id = ?");
+$stmtAddTx = $pdo->prepare("INSERT INTO transactions (user_id, transaction_type, amount, description) VALUES (?, 'reward_income', ?, ?)");
 $pdo->beginTransaction();
 
 $count = 0;
@@ -78,6 +94,18 @@ foreach ($allUsers as $uid) {
     }
     
     $stmtUpdate->execute([$directCount, $strongLeg, $otherLegs, $uid]);
+    
+    foreach ($reward_levels as $level => $req) {
+        if ($strongLeg >= $req['target'] && $otherLegs >= $req['target']) {
+            $stmtCheckReward->execute([$uid, $level]);
+            if (!$stmtCheckReward->fetch()) {
+                $stmtInsertReward->execute([$uid, $level, $req['reward']]);
+                $stmtAddRewardMoney->execute([$req['reward'], $req['reward'], $uid]);
+                $stmtAddTx->execute([$uid, 'reward_income', $req['reward'], "Reward Achieved for Level $level"]);
+            }
+        }
+    }
+    
     $count++;
 }
 
