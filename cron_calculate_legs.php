@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/libs/db.php';
 
-echo "Starting Leg Calculation Engine...\n";
+// echo "Starting Leg Calculation Engine...\n";
 
 // 1. Fetch all users and their sponsors
 $stmt = $pdo->query("SELECT user_id, sponsor_id FROM users");
@@ -83,5 +83,5 @@ foreach ($allUsers as $uid) {
 
 $pdo->commit();
 
-echo "Finished. Updated leg counts for $count users.\n";
+// echo "Finished. Updated leg counts for $count users.\n";
 ?>
