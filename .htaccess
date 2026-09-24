@@ -4,10 +4,10 @@ Options -Indexes
 RewriteEngine On
 
 # Route /register or /register.php to UserPanel/register.php
-RewriteRule ^register(?:\.php)?$ UserPanel/register.php [L,QSA]
+RewriteRule ^register(?:\.php)?$ UserPanel/register.php [R=301,L,QSA]
 
 # Route /login or /login.php to UserPanel/login.php
-RewriteRule ^login(?:\.php)?$ UserPanel/login.php [L,QSA]
+RewriteRule ^login(?:\.php)?$ UserPanel/login.php [R=301,L,QSA]
 
 # Internally add .php if the file exists
 RewriteCond %{REQUEST_FILENAME} !-d
